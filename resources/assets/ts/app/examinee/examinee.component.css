@@ -1,0 +1,9 @@
+span.Clicked {
+	background-color: #ff0;
+}
+span.Wrong {
+	color: #0f0;
+}
+span.Correct {
+	color: #f00;
+}

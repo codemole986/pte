@@ -1,0 +1,31 @@
+<div class="login-page">
+    <div class="row justify-content-md-center">
+        <div class="col-md-4">
+            <nav class="navbar">
+                <h1 style="width: 100%; text-align: center;">Quiz</h1>
+            </nav>
+            <form #userreg="ngForm" (ngSubmit) = "onClickSubmit(userreg.value)" >
+                <div class="form-content">
+                    <p class="text-center pv">REGISTER TO GET INSTANT ACCESS.</p>
+                    <div class="form-group hasfeedback">
+                        <input type="text" class="form-control ng-pristine ng-invalid ng-invalid-required ng-touched" id="" name="name" placeholder="Full Name" ngModel>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" class="form-control ng-pristine ng-invalid ng-invalid-required ng-touched" id="" name="email" placeholder="Email" ngModel>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password" class="form-control ng-pristine ng-invalid ng-invalid-required ng-touched" id="" name="password" placeholder="Password" ngModel>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control ng-pristine ng-valid-email ng-invalid ng-invalid-required ng-touched" id="" name="confirmpassword" placeholder="Repeat Password" ngModel>
+                    </div>&nbsp;
+                    <input type="submit" class="btn btn-block btn-primary mt-lg" value="Register">                     
+                    <a class="btn btn-block btn-default" [routerLink]="['/login']"> Log in </a>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>

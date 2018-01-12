@@ -1,0 +1,116 @@
+<app-header></app-header>
+<section class="main-container">
+    <div [@routerTransition]>
+        <h2 class="text-muted">Dashboard <small>Statistics Overview</small></h2>
+        <div class="row">
+            <div class="col-md-12">
+                <ngb-carousel>
+                    <ng-template ngbSlide *ngFor="let slider of sliders">
+                        <img class="img-fluid mx-auto d-block" [src]="slider.imagePath" alt="Random first slide" width="100%">
+                        <div class="carousel-caption">
+                            <h3>{{slider.label}}</h3>
+                            <p>{{slider.text}}</p>
+                        </div>
+                    </ng-template>
+                </ngb-carousel>
+            </div>
+        </div>
+        <hr />
+        <!-- START widget-->
+        <!-- <div class="row">
+            <div class="col-md-12">
+                <div  class="card card-default mb-3">
+                    <div class="card-header">
+                        <i class="fa fa-comments fa-fw"></i> Tab lists
+                    </div>                    
+                    <div class="card-body">
+                        <ngb-accordion>
+                            <ngb-panel>
+                                <ng-template ngbPanelTitle > hkgkhggh  </ng-template>
+                                <ng-template ngbPanelContent > 
+                                    <div> 
+                                        <h2>dkfjaskjf </h2>                                         
+                                    </div>
+                                </ng-template>
+                            </ngb-panel>
+                            <ngb-panel>
+                                <ng-template ngbPanelTitle > khggh  </ng-template>
+                                <ng-template ngbPanelContent > 
+                                    <div> 
+                                        <h2>dkfjasdfasfskjf </h2>                                        
+                                    </div>
+                                </ng-template>
+                            </ngb-panel>
+                        </ngb-accordion>                        
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <!-- END widget-->
+
+        <!-- START widget-->
+        <div class="row">
+            <div class="col-md-12">
+                <div  class="card card-default mb-3">
+                    <div class="card-header">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> Chart
+                    </div>                    
+                    <div class="card-body">
+                        <chart [type]="charttype" [data]="chartdata" [options]="chartoptions" style="height:300px;"></chart>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END widget-->
+
+        
+
+        <hr />
+        <nb-card class="card card-default mb-3">
+            <nb-card-header class="card-header">
+                <i class="fa fa-table fa-fw"></i>Smart Table
+            </nb-card-header>
+
+            <nb-card-body class="card-body">
+                <ng2-smart-table [settings]="gridsettings" [source]="datasource" (custom)="onCustom($event)"></ng2-smart-table>                
+            </nb-card-body>
+        </nb-card>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-default mb-3">
+                    <div class="card-header">
+                        <i class="fa fa-comments fa-fw"></i> Quiz lists
+                    </div>                    
+                    <div class="card-body">
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                                <th> Category</th>
+                                <th> Type</th>
+                                <th> Degree</th>
+                                <th> Title</th>
+                                <th> Maker</th>
+                                <th> Date</th>
+                                <th class="text-center">&nbsp;</th>
+                            </thead>
+                            <tr *ngFor="let problem of httpdata">
+                                <td>{{problem.category}}</td>
+                                <td>{{getTypeName(problem.category, problem.type)}}</td>
+                                <td>{{problem.degree}}</td>
+                                <td>{{problem.title}}</td>
+                                <td>{{problem.maker}}</td>
+                                <td>{{problem.created_at}}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info"
+                                        (click)="goTestForm(problem.id)">
+                                        <i class="fa fa-sign-in fa-fw"></i> Enter
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </div>
+</section>
