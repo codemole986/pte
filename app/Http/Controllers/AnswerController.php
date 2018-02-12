@@ -23,6 +23,40 @@ class AnswerController extends Controller
 		return response()->json($answers, 200);
 	}
 
+	function getexerciseanswers(Request $request) {
+		$page_num = isset($request->_page)?$request->_page:0;
+    	$limit_count = isset($request->_limit)?$request->_limit:15;
+		$userinfo = $request->session()->get('userinfo');
+		if($userinfo!=null) {
+			$fieldnames = array('quiz_answer.*', 'quiz_problems.category', 'quiz_problems.type', 'quiz_problems.degree', 'quiz_problems.title', 'users.email');
+			if($userinfo->permission == 'A' || $userinfo->permission == 'B') {
+				$answers = DB::table('quiz_answer')
+						->addSelect($fieldnames)
+						->leftJoin('quiz_problems', array('quiz_answer.quiz_id'=>'quiz_problems.id'))					
+						->leftJoin('users', array('quiz_answer.uid'=>'users.id'))	
+						->where('quiz_answer.testevent_id',0)				
+						->orderBy('quiz_answer.created_at', 'desc')
+						->paginate($limit_count, ['*'], 'page', $page_num);
+			} else if($userinfo->permission == 'D') {
+				$answers = DB::table('quiz_answer')
+						->addSelect($fieldnames)
+						->leftJoin('quiz_problems', array('quiz_answer.quiz_id'=>'quiz_problems.id'))					
+						->leftJoin('users', array('quiz_answer.uid'=>'users.id'))
+						->where('quiz_answer.testevent_id',0)
+						->where('quiz_answer.uid',$userinfo->id)
+						->orderBy('quiz_answer.created_at', 'desc')
+						->paginate($limit_count, ['*'], 'page', $page_num);	
+			} 
+
+			foreach ($answers as $key => $answer) {
+				if($answer->uid == 0) {
+					$answers[$key]->email = "admin@quiz.com";
+				}				
+			}
+		}
+		return response()->json($answers, 200);
+	}
+
 	function getanswer($testevent_id, $quiz_id) {
 		$answer_row = DB::table("quiz_answer")
 					->where(array('testevent_id'=>$testevent_id, 'quiz_id'=>$quiz_id, 'status'=>0))
@@ -151,8 +185,8 @@ class AnswerController extends Controller
 		
 		$upload_root_path = dirname( __FILE__ ) . DIRECTORY_SEPARATOR ."../../../public/recordings";	
 		$answer_dir = "a1";
-	    $qid = $answer_data["quizid"];	
-	    $tevent_id = $answer_data["testid"];	
+	    $qid = isset($answer_data["quizid"])?$answer_data["quizid"]:0;	
+	    $tevent_id = isset($answer_data["testid"])?$answer_data["testid"]:0;	
 
 	    if($tevent_id == 0) {
 	    	$answer_upload_dir = $upload_root_path . DIRECTORY_SEPARATOR . $userinfo->id. DIRECTORY_SEPARATOR . $qid;	
@@ -177,23 +211,14 @@ class AnswerController extends Controller
 		}*/
 
 		$decodedData = base64_decode($data);
-		$filename = 'speaking-' . date( 'Y-m-d-H-i-s' ) .'.mp3';
+		//$filename = 'speaking-' . date( 'Y-m-d-H-i-s' ) .'.mp3';
+		$filename = sprintf("%d-%s",$qid, $answer_data["fname"]);
+
 		// write the data out to the file
 		$fp = fopen($answer_upload_dir . DIRECTORY_SEPARATOR . $filename, 'wb');
 		fwrite($fp, $decodedData);
 		fclose($fp);
 		$answer = array( 'status' => 'Success', 'filename'=>$filename);    
-
-		
-		/*if(DB::table('quiz_answer')
-			//->where()			
-			->update($update_data)) {
-			$out_data["state"] = "success";
-			$out_data["message"] = "Update success.";
-		} else {
-			$out_data["state"] = "error";				
-			$out_data["message"] = "Update fail.";
-		}*/
 
 		echo json_encode( $answer );
 	}

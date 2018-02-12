@@ -63,10 +63,12 @@ class UserController extends Controller
 					"name": "admin",
 					"email": "admin@quiz.com",
 					"permission": "A",
-					"class": "Gold"
+					"class": "Gold"					
 				 }');
 				$out_data["state"] = "success";
 				$out_data["userinfo"] = $userinfo;	
+				$request->session()->start();		
+				$out_data["_token"] = csrf_token();			
 				$request->session()->put('userinfo', $userinfo);
 			} else {
 				//
@@ -81,6 +83,8 @@ class UserController extends Controller
 					} else if($userinfo[0]->password == md5($password)) {
 						$out_data["state"] = "success";
 						$out_data["userinfo"] = $userinfo[0];	
+						$request->session()->start();
+						$out_data["_token"] = csrf_token();			
 						$request->session()->put('userinfo', $userinfo[0]);
 					} else {
 						$out_data["state"] = "error";

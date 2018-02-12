@@ -7,6 +7,8 @@ import { GlobalService } from '../shared/services/global.service';
 import { Problem } from '../model/problem';
 import { Testevent } from '../model/testevent';
 import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
+import { FileUploadDirective } from './file-upload.directive';
+
 declare var $:any;
 declare var angular:any;
 declare var Dropzone: any;
@@ -19,7 +21,7 @@ declare var Dropzone: any;
     animations: [routerTransition()],
     providers: [GlobalService]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     public alerts: Array<any> = [];
     public sliders: Array<any> = [];
 
@@ -59,13 +61,19 @@ export class DashboardComponent implements OnInit {
                 text:
                     'Praesent commodo cursus magna, vel scelerisque nisl consectetur.'
             }
-        );        
+        );      
+
+    }
+
+    ngAfterViewInit() {
+    }
+
+    ngOnDestroy() {
+        
     }
 
     ngOnInit() {
-        //Dropzone.autoDiscover = false;
-        //this.create_dropzone();
-
+        
         this.curselectedtestid = 0;
         this.testgridsettings = {
             mode: 'inline',
@@ -243,29 +251,6 @@ export class DashboardComponent implements OnInit {
         };
 
     }
-
-    create_dropzone() {
-    
-        var audioNgApp = angular.module('uploadaudio',[
-            'thatisuday.dropzone'
-        ])
-
-        //console.log("aaaaaaaaaaaaaa");
-        //console.log(audioNgApp);
-
-        audioNgApp.config(function(dropzoneOpsProvider: any){
-
-            dropzoneOpsProvider.setOptions({
-                url : '/uploadfile.php',
-                maxFilesize : '10',   
-                //acceptedFiles : 'audio/mp3',
-                addRemoveLinks : true, 
-                //params: {"type": "LWS", "kind":"problem"},                 
-            });
-        });
-        
-    }
-
 
     onTestRowSelect(event: any) {
         if(this.curselectedtestid == event.data.id) {

@@ -13,7 +13,6 @@ import { Problem } from '../model/problem';
 import { Answer } from '../model/answer';
 import { TypeRenderComponent } from '../test/type-render.component';
 
-
 @Component({
   	selector: 'app-exercise',
   	template: require('./exercise.component.html'),
@@ -65,6 +64,13 @@ export class ExerciseComponent implements OnInit {
 
 	quiz_id: number;
 	progressvalue: number;
+	audiovisibleflag : boolean = false;
+
+	listflag : boolean = true;
+	exercisegridsettings: any;
+    exercisedatasource: ServerDataSource;
+	
+	_token : string = window.sessionStorage.getItem('_token');
 
 	constructor(private http: Http, private route: ActivatedRoute, private router: Router, private globalService: GlobalService) { 
 		this.quiz_id = 0;
@@ -73,18 +79,107 @@ export class ExerciseComponent implements OnInit {
 		this.currentProblem.type = "WSM";	
 		this.currentProblem.content = this.globalService.getContentObject(this.currentProblem.type);
 		this.currentAnswer = new Answer;	
-		this.currentAnswer.answer = this.globalService.getSolutionObject(this.currentProblem.type);	
+		this.currentAnswer.answer = this.globalService.getSolutionObject(this.currentProblem.type);			
 	}
 
 	ngOnInit() {		
 		this.quiz_id = this.route.snapshot.params['id'];
 		if(this.quiz_id!=null) {
+			this.listflag = false;
 			this.getProblem(this.quiz_id);									
+		} else {
+			this.listflag = true;
 		}
+
+		this.exercisegridsettings = {
+            mode: 'inline',
+            selectMode: 'single',
+            hideHeader: false,
+            hideSubHeader: true,
+            actions: {
+                columnTitle: 'Actions',
+                add: false,
+                edit: false,
+                'delete': false,                
+                position: 'left'
+            },
+            attr: {
+                id: 'exercisetestgrid',
+                class: 'table table-bordered table-hover table-striped',
+            },
+            noDataMessage: 'No data found',            
+            pager: {
+                display: true,
+                perPage: 15,
+            },
+            columns: {
+            	created_at: {
+                	title: "date",
+                },
+                email: {
+                	title: "Creater"
+                },
+                category: {
+                	title: "Category",
+                },
+                type: {
+                    title: 'Type',
+                    type: 'custom',
+                    renderComponent: TypeRenderComponent,
+                },
+                degree: {
+                	title: "Degree",
+                },
+                title: {
+                	title: "QuizTitle",	
+                },
+                limit_time: {
+                	title: "LimitTime"
+                },
+                points: {
+                	title: "Points"
+                },
+                evaluate_mode: {
+                	title: "Mode"
+                },
+                evaluate_mark: {
+                	title: "Mode"
+                }
+            }
+        };
+
+        this.exercisedatasource = new ServerDataSource(this.http, {totalKey: "total", dataKey: "data", endPoint: '/answer/getexerciseanswers' });
 	}
+
+	evaluateExercise() {
+		var eval_point = Math.round(Math.random() * Number(this.currentProblem.points).valueOf());
+		
+		this.currentAnswer.evaluate_mark = eval_point;
+	}
+
+	saveExercise() {
+		console.log("amswer quiz_id:");	
+		console.log(this.currentAnswer.quiz_id);
+		if(typeof this.currentAnswer.quiz_id == "number") {
+			//this.evaluateExercise();		
+			
+			this.http.post("/answer/insert", this.currentAnswer).
+	    	map(
+	            (response) => response.json()
+	        ).
+	        subscribe(
+	    		(data) => {
+	    			if(data.state == "error") {
+	    				alert(data.message);	
+	    			}    			
+	    		}
+	    	);
+		}		
+    }
 
 	endExercise() {
 		clearInterval(this.ctimer);
+		this.saveExercise();
 		this.endbutton = true;	
 		this.nextbutton = this.nextability;
 		this.previousbutton = this.prevability;	
@@ -92,12 +187,14 @@ export class ExerciseComponent implements OnInit {
 			
 		if(this.audio_flag) {
 			stopRecording();
+			this.audiovisibleflag = true;
 		}
 	}
 
 	nextExercise() {
+		this.saveExercise();
 		this.quiz_count++;
-
+		this.audiovisibleflag = false;
 		this.http.get("/problem/getnextproblemid/"+this.quiz_id).
 		map(
 			(response) => response.json()
@@ -126,8 +223,9 @@ export class ExerciseComponent implements OnInit {
 	}
 
 	prevExercise() {
+		this.saveExercise();
 		this.quiz_count++;
-
+		this.audiovisibleflag = false;
 		this.http.get("/problem/getprevproblemid/"+this.quiz_id).
 		map(
 			(response) => response.json()
@@ -171,29 +269,15 @@ export class ExerciseComponent implements OnInit {
 		subscribe(
 			(data) => {
 				if(typeof data.id == "number") {
-					this.currentProblem = data;
-					/*this.http.get("/answer/getanswer/0/"+data.id).
-					map(
-						(response) => response.json()
-					).
-					subscribe(
-						(ansdata) => {
-							if(typeof ansdata.id == "number") {
-								this.currentAnswer = ansdata;									
-							} else {
-								this.currentAnswer.answer = this.globalService.getSolutionObject(this.currentProblem.type);
-								this.currentAnswer.testevent_id = 0;					
-								this.currentAnswer.quiz_id = data.id;	
-								this.currentAnswer.evaluate_mark = 0;
-							}
-						}
-					);*/
-
+					this.currentProblem = data;	
+					this.currentAnswer.testevent_id = 0;	
+					this.currentAnswer.quiz_id = data.id;	
+					this.currentAnswer.evaluate_mark = 0;			
 					this.currentAnswer.type = data.type;									
 					
 					if(this.currentProblem.category=="Speaking") {
 						this.audio_flag = true;	
-						startRecording(0, data.id, window.sessionStorage.getItem('userid'));		
+						startRecording(0, data.id, window.sessionStorage.getItem('userid'), this._token);		
 					}
 
 					this.currentlimittime = Number(data.limit_time).valueOf();	

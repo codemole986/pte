@@ -235,7 +235,7 @@
                         <div *ngIf="currentProblem.type=='SRS' ||currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SSA'"  class="card-body">
                             <div *ngIf="currentProblem.solution.audio">
                                 <audio controls autoplay="true">
-                                   <source src="/upload/s0/{{currentProblem.type}}/{{currentProblem.solution.audio}}" type="audio/mpeg">
+                                   <source src="/upload/s0/{{currentProblem.id}}/{{currentProblem.solution.audio}}" type="audio/mpeg">
                                 </audio> 
                             </div>
                         </div>
@@ -433,6 +433,11 @@
             <div *ngIf="currentProblem.type=='SRS' || currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SSA'" class="row">
                 <div class="col-lg-12">
                     <ngb-progressbar value="{{progressvalue}}" type="info" class="progress-striped progress-xs form-control">{{progressvalue}}%</ngb-progressbar>
+                    <div *ngIf="audiovisibleflag">
+                        <audio controls autoplay="false">
+                           <source id="selfaudiosource" src="" type="audio/mpeg">
+                        </audio> 
+                    </div>
                 </div>
             </div>
 
@@ -485,7 +490,7 @@
                         <div *ngIf="currentProblem.type=='SRS' ||currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SSA'"  class="card-body">
                             <div *ngIf="currentProblem.solution.audio">
                                 <audio controls autoplay="true">
-                                   <source src="/upload/s0/{{currentProblem.type}}/{{currentProblem.solution.audio}}" type="audio/mpeg">
+                                   <source src="/upload/s0/{{currentProblem.id}}/{{currentProblem.solution.audio}}" type="audio/mpeg">
                                 </audio> 
                             </div>
                         </div>

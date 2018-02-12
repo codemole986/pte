@@ -20,7 +20,3 @@ Homestead.json
 .rocketeer/
 public/mix-manifest.json
 public/js
-
-
-config/app.php
-config/database.php

@@ -68,7 +68,7 @@
                         <div *ngIf="currentProblem.type == 'SRS' || currentProblem.type == 'SSA' || currentProblem.type == 'LWS' || currentProblem.type == 'LTS' || currentProblem.type == 'LSA' || currentProblem.type == 'LSB'" class="row">
                             <div *ngIf="currentProblem.content.audio">
                                 <audio controls="false" autoplay="{{audio_autoplay}}" onpause="">
-                                   <source src="/upload/q2/{{currentProblem.type}}/{{currentProblem.content.audio}}" type="audio/mpeg">
+                                   <source src="/upload/q2/{{currentProblem.id}}/{{currentProblem.content.audio}}" type="audio/mpeg">
                                 </audio> 
                             </div>                    
                         </div>
@@ -186,7 +186,7 @@
                                     <div *ngIf="currentProblem.type=='SRS' || currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SSA'" class="card-body">
                                         <div *ngIf="currentAnswer.answer.audio">
                                             <audio controls autoplay="true">
-                                               <source src="/upload/a1/{{currentAnswer.type}}/{{currentAnswer.answer.audio}}" type="audio/mpeg">
+                                               <source src="/recordings/{{currentAnswer.testevent_id}}/{{currentAnswer.answer.audio}}" type="audio/mpeg">
                                             </audio> 
                                         </div>
                                     </div>
@@ -245,7 +245,7 @@
                                     <div *ngIf="currentProblem.type=='SRS' ||currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SSA'"  class="card-body">
                                         <div *ngIf="currentProblem.solution.audio">
                                             <audio controls autoplay="true">
-                                               <source src="/upload/s0/{{currentProblem.type}}/{{currentProblem.solution.audio}}" type="audio/mpeg">
+                                               <source src="/upload/s0/{{currentProblem.id}}/{{currentProblem.solution.audio}}" type="audio/mpeg">
                                             </audio> 
                                         </div>
                                     </div>

@@ -106,8 +106,8 @@
 				//console.log ("The Mp3 data " + e.data.buf);
 
 				var mp3Blob = new Blob([new Uint8Array(e.data.buf)], {type: 'audio/mp3'});
-				uploadAudio(mp3Blob);
-				//uploadAudio2(mp3Blob);
+				//uploadAudio(mp3Blob);
+				uploadAudio2(mp3Blob);
 
 				/*var url = 'data:audio/mp3;base64,'+encode64(e.data.buf);
 				var li = document.createElement('li');
@@ -221,6 +221,7 @@
 			fd.append('testid', record_test_id);
 			fd.append('quizid', record_quiz_id);
 			fd.append('userid', record_user_id);
+			fd.append('_token', record_token);
 			$.ajax({
 				type: 'POST',
 				url: '/answer/uploadaudio',
@@ -228,9 +229,18 @@
 				processData: false,
 				contentType: false
 			}).done(function(data) {
-				alert("audio-file saved.");
-				//console.log(data);
-				//log.innerHTML += "\n" + data;
+				var res = JSON.parse(data);
+				if(res.status == "Success") {
+					var saudio_src = "";
+					if(record_test_id == 0) {
+						saudio_src = "/recording/"+record_user_id+"/"+record_quiz_id+"/"+record_quiz_id+"_"+mp3Name;
+					} else {
+						saudio_src = "/recording/"+record_test_id+"/"+record_quiz_id+"/"+record_quiz_id+"_"+mp3Name;
+					}
+					$('#selfaudiosource').attr("src", saudio_src);	
+				} else {
+					alert("audio-file upload fail.");	
+				}
 			});
 		};
 		reader.readAsDataURL(mp3Data);

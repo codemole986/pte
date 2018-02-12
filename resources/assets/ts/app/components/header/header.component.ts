@@ -15,6 +15,7 @@ export class HeaderComponent implements OnInit {
     evalmanageable: boolean;
     usermanageable: boolean;
     testmanageable: boolean; 
+    exercisemanageable: boolean;
 
     constructor(private translate: TranslateService, public router: Router) {
 
@@ -35,15 +36,19 @@ export class HeaderComponent implements OnInit {
         this.examineemanageable = false; 
         this.evalmanageable = false; 
         this.testmanageable = false; 
+        this.exercisemanageable = false;
+
 
         if(window.sessionStorage.getItem('permission')=='A') {
             this.usermanageable = true;
             this.quizmanageable = true;
+            this.exercisemanageable = true;
             this.testmanageable = true; 
             this.examineemanageable = true;
             this.evalmanageable = true;
         } else if(window.sessionStorage.getItem('permission').indexOf('B')>-1 ) {
             this.quizmanageable = true;
+            this.exercisemanageable = true;
             this.testmanageable = true; 
             this.examineemanageable = true;
             this.evalmanageable = true;            
@@ -51,6 +56,7 @@ export class HeaderComponent implements OnInit {
             this.evalmanageable = true;            
         } else if(window.sessionStorage.getItem('permission').indexOf('D')>-1 ) {
             this.quizmanageable = true;
+            this.exercisemanageable = true;
             this.examineemanageable = true;
             this.testmanageable = true; 
         } 

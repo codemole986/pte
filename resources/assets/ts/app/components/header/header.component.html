@@ -22,6 +22,9 @@
                     <a *ngIf="quizmanageable" href="javascript:void(0)" class="dropdown-item" [routerLink]="['/quizlist']" [routerLinkActive]="['router-link-active']">
                         <i class="fa fa-sdf"></i> {{ 'Quiz' | translate }} 
                     </a>
+                    <a *ngIf="exercisemanageable" href="javascript:void(0)" class="dropdown-item" [routerLink]="['/exercise']" [routerLinkActive]="['router-link-active']">
+                        <i class="fa fa-sdf"></i> {{ 'Exercise' | translate }} 
+                    </a>
                     <a *ngIf="testmanageable" href="javascript:void(0)" class="dropdown-item" [routerLink]="['/test']" [routerLinkActive]="['router-link-active']">
                         <i class="fa fa-sdf"></i> {{ 'Test' | translate }} 
                     </a>

@@ -47,6 +47,7 @@ export class LoginComponent implements OnInit {
 				} else {
 					window.sessionStorage.setItem("isLoggedin", 'true');
 					window.sessionStorage.setItem("userid", data.userinfo.id);
+					window.sessionStorage.setItem("_token", data._token);
 					window.sessionStorage.setItem('permission', data.userinfo.permission);
 					
 					this.router.navigate(['dashboard']);					

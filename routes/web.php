@@ -61,6 +61,8 @@ Route::post('/answer/updatemarks', 'AnswerController@updatemarks');
 
 Route::get('/answer/getlist', 'AnswerController@getlist');
 
+Route::get('/answer/getexerciseanswers', 'AnswerController@getexerciseanswers');
+
 Route::get('/answer/delete/{id}', 'AnswerController@delete');
 
 Route::get('/answer/getanswer/{testevent_id}/{quiz_id}', 'AnswerController@getanswer');

@@ -22,7 +22,7 @@ import { EvalstatusRenderComponent } from './evalexam/evalstatus-render.componen
 import { EditorComponent } from './examinee/editor/editor.component';
 import { ProblemComponent } from './examinee/problem/problem.component';
 import { ConverttimestampPipe } from './examinee/examinee.converttimestamp';
-
+import { FileUploadDirective } from './dashboard/file-upload.directive';
 
 import {
     HeaderComponent,
@@ -67,6 +67,7 @@ export function createTranslateLoader(http: HttpClient) {
         HeaderComponent,
         SignupComponent,
         DashboardComponent,
+        FileUploadDirective,
         LoginComponent,
         SignupComponent,        
         QuizlistComponent,
@@ -136,6 +137,11 @@ export function createTranslateLoader(http: HttpClient) {
             {
                 path: 'quizlist',
                 component: QuizlistComponent,
+                canActivate: [AuthGuard]
+            },
+            {
+                path: 'exercise',
+                component: ExerciseComponent,
                 canActivate: [AuthGuard]
             },  
             {

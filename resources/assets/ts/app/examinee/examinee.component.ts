@@ -91,6 +91,8 @@ export class ExamineeComponent implements OnInit {
     curevaluatestatus: number; 
 
     viewexamflag: boolean = false;
+    audiovisibleflag : boolean = false;
+    _token : string = window.sessionStorage.getItem('_token');
 	
 	constructor(private http: Http, private route: ActivatedRoute,
   private router: Router, private globalService: GlobalService) { 
@@ -343,8 +345,9 @@ export class ExamineeComponent implements OnInit {
 			this.markvisible = true;
 			this.audio_autoplay = false; 
 			
-			if(this.audio_flag) {
+			if(this.audio_flag) {				
 				stopRecording();
+				this.audiovisibleflag = true;	
 			}
 			//this.onSave();	
 			this.evaluateExamine();		
@@ -406,8 +409,9 @@ export class ExamineeComponent implements OnInit {
 			this.nextbutton = false;
 		}
 
+		this.audiovisibleflag = false;	
 		this.quiz_id = this.quiz_list[this.quiz_number];
-		this.getProblem(this.quiz_id);			
+		this.getProblem(this.quiz_id);	
 	}
 
 	nextExamine() {
@@ -431,8 +435,9 @@ export class ExamineeComponent implements OnInit {
 			this.previousbutton = false;
 		}
 		
+		this.audiovisibleflag = false;	
 		this.quiz_id = this.quiz_list[this.quiz_number];
-		this.getProblem(this.quiz_id);			
+		this.getProblem(this.quiz_id);	
 	}
 
     exitExamine() {
@@ -460,26 +465,28 @@ export class ExamineeComponent implements OnInit {
 			(data) => {
 				if(typeof data.id == "number") {
 					this.currentProblem = data;
-					this.http.get("/answer/getanswer/"+this.testevent_id+"/"+data.id).
-					map(
-						(response) => response.json()
-					).
-					subscribe(
-						(ansdata) => {
-							if(typeof ansdata.id == "number") {
-								this.currentAnswer = ansdata;									
-							} else {
-								this.currentAnswer.answer = this.globalService.getSolutionObject(this.currentProblem.type);
-								if(this.testvisible) {
-									this.currentAnswer.testevent_id = this.testevent_id;					
+					if(!this.selfexam) { 
+						this.http.get("/answer/getanswer/"+this.testevent_id+"/"+data.id).
+						map(
+							(response) => response.json()
+						).
+						subscribe(
+							(ansdata) => {
+								if(typeof ansdata.id == "number") {
+									this.currentAnswer = ansdata;									
 								} else {
-									this.currentAnswer.testevent_id = 0;					
+									this.currentAnswer.answer = this.globalService.getSolutionObject(this.currentProblem.type);
+									if(this.testvisible) {
+										this.currentAnswer.testevent_id = this.testevent_id;					
+									} else {
+										this.currentAnswer.testevent_id = 0;					
+									}
+									this.currentAnswer.quiz_id = data.id;	
+									this.currentAnswer.evaluate_mark = 0;
 								}
-								this.currentAnswer.quiz_id = data.id;	
-								this.currentAnswer.evaluate_mark = 0;
 							}
-						}
-					);
+						);
+					}
 
 					this.currentAnswer.type = data.type;									
 					
@@ -488,7 +495,7 @@ export class ExamineeComponent implements OnInit {
 
 					if(this.currentProblem.category=="Speaking") {
 						this.audio_flag = true;					
-						startRecording();		
+						startRecording(this.currentAnswer.testevent_id, this.currentProblem.id, window.sessionStorage.getItem('userid'), this._token );		
 					}
 
 					if(this.selfexam && this.timerflag) {

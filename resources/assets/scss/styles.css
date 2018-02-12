@@ -6785,3 +6785,7 @@ a.text-dark:focus, a.text-dark:hover {
 .hidden {
   display: none;
 }
+
+.ng2-smart-row.selected {
+  background-color: #cbf2f2 !important;
+}

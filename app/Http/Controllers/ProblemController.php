@@ -236,17 +236,25 @@ class ProblemController extends Controller
    	}
 
 	function uploadfile(Request $request) {
-		$problem_data = $request->all();
+		$problem_data = $request->all();		
 		$upload_root_path = dirname( __FILE__ ) . DIRECTORY_SEPARATOR ."../../../public/upload";	
 		$solution_dir = "s0";
 	    $answer_dir = "a1";
 	    $quiz_dir = "q2";
-	    $qid = $problem_data["quizid"];	
+	    $qid = isset($problem_data["quizid"])?$problem_data["quizid"]:"0";	
+	    $type = isset($problem_data["type"])?$problem_data["type"]:"quiz";	
+
+	    if($type=="quiz"){
+			$upload_dir = $upload_root_path . DIRECTORY_SEPARATOR . $quiz_dir . DIRECTORY_SEPARATOR . $qid;		
+		} else {
+			$upload_dir = $upload_root_path . DIRECTORY_SEPARATOR . $solution_dir . DIRECTORY_SEPARATOR . $qid;		
+		}
+
 		$quiz_upload_dir = $upload_root_path . DIRECTORY_SEPARATOR . $quiz_dir . DIRECTORY_SEPARATOR . $qid;
 		$solution_upload_dir = $upload_root_path . DIRECTORY_SEPARATOR . $solution_dir . DIRECTORY_SEPARATOR . $qid;	
 		$count = 0;
 
-		if($request->hasFile('qfile') || $request->hasFile('sfile')) {	
+		/*if($request->hasFile('qfile') || $request->hasFile('sfile')) {	
 			if($request->hasFile('qfile')) {
 				if (!file_exists($quiz_upload_dir)) {
 			       	$this->RecursiveMkdir($quiz_upload_dir);
@@ -266,10 +274,25 @@ class ProblemController extends Controller
 				}	
 			}	
 			$answer = array( 'status' => 'Success', 'filecount'=>$count);    
+		} */
+		if($request->hasFile('file')) {	
+			if($request->hasFile('file')) {
+				
+				if (!file_exists($upload_dir)) {
+			       	$this->RecursiveMkdir($upload_dir);
+			   	}	
+			   	
+			   	$file = $request->file('file');
+			   	$file->move($upload_dir, $file->getClientOriginalName());
+	    		$count++;				
+			}	
+			$answer = array( 'status' => 'Success', 'filecount'=>$count);    
 		} else {
 		    $answer = array( 'status' => 'Error', 'message' => 'No Files' );
 		}
-
+		
 		echo json_encode( $answer );
 	}
+
+	
 }
