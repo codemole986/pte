@@ -14,17 +14,18 @@ class QuizAnswer extends Migration
     public function up()
     {
         Schema::create('quiz_answer', function (Blueprint $table) {
-            $table->increments('id', 32);
-            $table->integer('quiz_id');
+            $table->increments('id');
+            $table->integer('testevent_id')->index();
+            $table->integer('quiz_id')->index();
             $table->text('answer');
-            $table->integer('examine_uptime')->nullable();
+            $table->unsignedInteger('examine_uptime')->nullable();
             $table->float('evaluate_mark', 10, 2);
-            $table->integer('uid');
+            $table->integer('uid')->index();
             $table->timestamp('start_time')->nullable();
             $table->timestamp('end_time')->nullable();
-            $table->integer('checker_id')->nullable();
+            $table->integer('checker_id')->nullable()->index();
             $table->timestamp('check_time')->nullable();
-            $table->integer('status');
+            $table->unsignedTinyInteger('status');
             $table->rememberToken();
             $table->timestamps();
         });

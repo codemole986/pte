@@ -6,4 +6,5 @@ export class User {
   	password: string;
   	confirmpassword: string;
   	permission: string;
+  	class: any;
 }

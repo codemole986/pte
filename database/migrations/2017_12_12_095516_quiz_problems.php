@@ -14,10 +14,10 @@ class QuizProblems extends Migration
     public function up()
     {
         Schema::create('quiz_problems', function (Blueprint $table) {
-            $table->increments('id', 32);
-            $table->enum('category', array('Writing', 'Reading', 'Speaking', 'Listening'));
-            $table->string('type', 100);
-            $table->enum('degree', array('easy', 'medium', 'difficult'));
+            $table->increments('id');
+            $table->enum('category', array('Writing', 'Reading', 'Speaking', 'Listening'))->index();
+            $table->string('type', 3)->index();
+            $table->enum('degree', array('Easy', 'Medium', 'Hard'), 'Easy')->index();
             $table->string('title', 255);
             $table->text('guide');
             $table->text('content');
@@ -26,7 +26,7 @@ class QuizProblems extends Migration
             $table->enum('evaluate_mode', array('Auto', 'Manual'), 'Auto');
             $table->integer('points');
             $table->integer('uid');
-            $table->integer('status');
+            $table->unsignedTinyInteger('status');
             $table->rememberToken();
             $table->timestamps();
         });

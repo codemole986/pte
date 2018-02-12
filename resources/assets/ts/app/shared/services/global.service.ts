@@ -3,7 +3,34 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class GlobalService {
 	
+	permissionNames = [
+					{ value:"E", title:"Register" },
+					{ value:"D", title:"Student" },
+					{ value:"C", title:"Evaluator" },
+					{ value:"B", title:"Teacher" },
+					{ value:"A", title:"Manager" },
+			];
+
+	simpleclassnames = [        
+        { value:"Basic", title:"Basic" },
+        { value:"Bronze", title:"Bronze" },
+        { value:"Silver", title:"Silver" },
+        { value:"Gold", title:"Gold" }
+        ];
+	classnames = [
+        { value:"", title:"User Class" },
+        { value:"Basic", title:"Basic" },
+        { value:"Bronze", title:"Bronze" },
+        { value:"Silver", title:"Silver" },
+        { value:"Gold", title:"Gold" },
+        ];
 	problemCategoryNames = ["Writing", "Listening", "Speaking", "Reading"];
+	quizCategoryNames = [
+					{ value:"Writing", title:"Writing" },
+					{ value:"Listening", title:"Listening" },
+					{ value:"Speaking", title:"Speaking" },
+					{ value:"Reading", title:"Reading" }
+				];
 
 	problemTypes = {
 		'Writing' : [
@@ -34,6 +61,26 @@ export class GlobalService {
 				]
 	};
 
+	quizTypeNames = [
+					{ value:"WSM", title:"Writing: Summarize Written Text" },
+					{ value:"WES", title:"Writing: Write Essay" },
+					{ value:"LWS", title:"Listening: Listen and Write a Summary" },
+					{ value:"LSA", title:"Listening: Listen and Select Answer" },
+					{ value:"LTW", title:"Listening: Listen and Type Words" },
+					{ value:"LSB", title:"Listening: Listen and Select the Best" },
+					{ value:"LCD", title:"Listening: Listen and Click Differ" },
+					{ value:"LTS", title:"Listening: Listen and Type Sentence" },
+					{ value:"SAL", title:"Speaking: Speak Aloud" },
+					{ value:"SRS", title:"Speaking: Repeat Sentence" },
+					{ value:"SPI", title:"Speaking: Speak about Picture" },
+					{ value:"SRL", title:"Speaking: Retell about Lecture" },
+					{ value:"SSA", title:"Speaking: Speak Shot Answer" },
+					{ value:"RSA", title:"Reading: Read and Single Answer" },
+					{ value:"RMA", title:"Reading: Read and Multiple Answer" },
+					{ value:"RRO", title:"Reading: Read and Restore Order" },
+					{ value:"RFB", title:"Reading: Read and Fill in the Blanks" },
+					{ value:"RAN", title:"Reading: Read and Select Answer" }
+				];
 
 	getContentObject(type: string) {
 		switch (type) {

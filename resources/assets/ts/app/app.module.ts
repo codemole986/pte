@@ -10,8 +10,15 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { QuizlistComponent } from './quizlist/quizlist.component';
+import { TestComponent } from './test/test.component';
+import { StatusRenderComponent } from './test/status-render.component';
+import { TypeRenderComponent } from './test/type-render.component';
 import { ManageComponent } from './manage/manage.component';
+import { PermissionRenderComponent } from './manage/permission-render.component';
+import { ExerciseComponent } from './exercise/exercise.component';
 import { ExamineeComponent } from './examinee/examinee.component';
+import { EvalexamComponent } from './evalexam/evalexam.component';
+import { EvalstatusRenderComponent } from './evalexam/evalstatus-render.component';
 import { EditorComponent } from './examinee/editor/editor.component';
 import { ProblemComponent } from './examinee/problem/problem.component';
 import { ConverttimestampPipe } from './examinee/examinee.converttimestamp';
@@ -35,6 +42,7 @@ import { ChartModule } from 'angular2-chartjs';
 import { NbCardModule } from '@nebular/theme';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 
+
 import {
     TimelineComponent,
     NotificationComponent,
@@ -55,20 +63,27 @@ export function createTranslateLoader(http: HttpClient) {
     declarations: [
         AppComponent,
         ManageComponent,
+        PermissionRenderComponent,
         HeaderComponent,
         SignupComponent,
         DashboardComponent,
         LoginComponent,
         SignupComponent,        
         QuizlistComponent,
+        ExerciseComponent,
+        TestComponent,
+        StatusRenderComponent,
+        TypeRenderComponent,        
         ExamineeComponent,
+        EvalexamComponent,
+        EvalstatusRenderComponent,
         EditorComponent,
         ProblemComponent,
         ConverttimestampPipe,
         TimelineComponent,
         NotificationComponent,
         ChatComponent      
-    ],
+    ],    
 	imports: [
 		CommonModule,
         BrowserModule,
@@ -77,14 +92,7 @@ export function createTranslateLoader(http: HttpClient) {
         HttpModule,
         HttpClientModule,
         ChartModule,   
-        Ng2SmartTableModule,     
-        TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: createTranslateLoader,
-                deps: [HttpClient]
-            }
-        }),
+        Ng2SmartTableModule,        
         NbCardModule,
         NgbModule.forRoot(),
         NgbDropdownModule.forRoot(),
@@ -92,15 +100,25 @@ export function createTranslateLoader(http: HttpClient) {
         NgbPaginationModule.forRoot(),
         NgbCarouselModule.forRoot(),
         NgbAccordionModule.forRoot(),
+        
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: createTranslateLoader,
+                deps: [HttpClient]
+            }
+        }),
+        
         RouterModule.forRoot([
             {
                 path: '',
-                component: LoginComponent,
+                component: DashboardComponent,
                 canActivate: [AuthGuard]
             },
             {
                 path: 'manage',
-                component: ManageComponent
+                component: ManageComponent,
+                canActivate: [AuthGuard]
             },
             {
                 path: 'login',
@@ -112,22 +130,52 @@ export function createTranslateLoader(http: HttpClient) {
             },
             {
                 path: 'dashboard',
-                component: DashboardComponent
+                component: DashboardComponent,
+                canActivate: [AuthGuard]
             },            
             {
                 path: 'quizlist',
-                component: QuizlistComponent
+                component: QuizlistComponent,
+                canActivate: [AuthGuard]
+            },  
+            {
+                path: 'exercise/:id',
+                component: ExerciseComponent,
+                canActivate: [AuthGuard]
+            },          
+            {
+                path: 'test',
+                component: TestComponent,
+                canActivate: [AuthGuard]
             },            
             {
                 path: 'examinee',
-                component: ExamineeComponent
-            },            
+                component: ExamineeComponent,
+                canActivate: [AuthGuard]
+            },          
+            {
+                path: 'examinee/:testid',
+                component: ExamineeComponent,
+                canActivate: [AuthGuard]
+            },           
             {
                 path: 'problem/:id',
-                component: ExamineeComponent
+                component: ExamineeComponent,
+                canActivate: [AuthGuard]
+            },           
+            {
+                path: 'eval',
+                component: EvalexamComponent,
+                canActivate: [AuthGuard]
             }
         ]) 
 	],
+    entryComponents: [
+        PermissionRenderComponent,
+        StatusRenderComponent,
+        TypeRenderComponent,
+        EvalstatusRenderComponent
+    ],
 	providers: [AuthGuard],
 	bootstrap: [AppComponent]
 })

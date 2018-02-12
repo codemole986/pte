@@ -1,11 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Directive, OnDestroy, OnChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import 'rxjs/add/operator/map';
 import { routerTransition } from '../router.animations';
 import { GlobalService } from '../shared/services/global.service';
 import { Problem } from '../model/problem';
+import { Testevent } from '../model/testevent';
 import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
+declare var $:any;
+declare var angular:any;
+declare var Dropzone: any;
 
 
 @Component({
@@ -19,18 +23,22 @@ export class DashboardComponent implements OnInit {
     public alerts: Array<any> = [];
     public sliders: Array<any> = [];
 
-    httpdata: any[];
-
-    gridsettings: any;
-    //datasource: ServerDataSource;
-    datasource: LocalDataSource = new LocalDataSource();
+    
+    testgridsettings: any;
+    testdatasource: ServerDataSource;
+    curselectedtestid: number;
+    curevent_id: number;
+    curtestevent_info: Testevent;
+    
+    examgridsettings: any;
+    examdatasource: ServerDataSource;
     
     arr_types: any[];
     i: number;
     charttype: String;
     chartdata: any;
+    chartdata2: any;
     chartoptions: any;
-
 
     constructor(private http: Http, private router: Router, private globalService: GlobalService) {
         this.sliders.push(
@@ -51,52 +59,19 @@ export class DashboardComponent implements OnInit {
                 text:
                     'Praesent commodo cursus magna, vel scelerisque nisl consectetur.'
             }
-        );
-
-        
+        );        
     }
 
     ngOnInit() {
-        this.getProblems();
-        //this.datasource = new ServerDataSource(this.http, { endPoint: '/problem/getproblems' });
-        this.charttype = 'bar';
-        this.chartdata = {
-            labels: ["January", "February", "March", "April", "May", "June", "July"],
-            
-            datasets: [
-                {
-                    label: "My First dataset",              
-                    data: [65, 59, 80, 81, 56, 55, 40],
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor:'rgba(75, 192, 192, 1)',
-                    borderWidth: 1            
-                },
-                {
-                    label: "My Second dataset",
-                    data: [15, 79, 60, 91, 65, 75, 30],
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255,99,132, 1)',
-                    borderWidth: 1
-                }
-            ]
-        };
-        this.chartoptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            legend: {
-                display: true,
-                labels: {
-                    fontColor: 'rgb(255, 99, 132)'
-                }
-            }
-        };
+        //Dropzone.autoDiscover = false;
+        //this.create_dropzone();
 
-
-        this.gridsettings = {
+        this.curselectedtestid = 0;
+        this.testgridsettings = {
             mode: 'inline',
             selectMode: 'single',
             hideHeader: false,
-            hideSubHeader: false,
+            hideSubHeader: true,
             actions: {
                 columnTitle: 'Actions',
                 add: false,
@@ -126,57 +101,178 @@ export class DashboardComponent implements OnInit {
                 confirmDelete: false,
             },
             attr: {
-                id: 'mygrid',
+                id: 'testgrid',
                 class: 'table table-bordered table-hover table-striped',
             },
             noDataMessage: 'No data found',            
             pager: {
-                display: true,
+                display: false,
                 perPage: 5,
             },
             columns: {
-                category: {
-                    title: 'Category'
+                testname: {
+                    title: 'Test Name'
                 },
-                type: {
-                    title: 'Type'
+                testclass: {
+                    title: 'Test Class'
                 },
-                degree: {
-                    title: 'Degree'
+                testdegree: {
+                    title: 'Test Degree'
                 },
-                title: {
-                    title: 'Title'
+                totalmarks: {
+                    title: 'FullMarks'
                 },
-                maker: {
-                    title: 'Creator'
+                limit_time: {
+                    title: 'limit_time'
                 },
-                created_at: {
-                    title: 'Date'
-                },
-                examine: {
-                    title: '',
-                    type: 'html',
-
+                count: {
+                    title: 'Quiz Count'
                 }
             }
         };
-    }
 
-    getProblems() {
-        this.http.get("/problem/getproblems").
-        map(
-            (response) => response.json()
-        ).
-        subscribe(
-            (data) => {
-                this.httpdata = data;
-                this.datasource.load(data);
+        this.testdatasource = new ServerDataSource(this.http, { endPoint: '/test/getcustomlist' });
+
+        this.examgridsettings = {
+            mode: 'inline',
+            selectMode: 'single',
+            hideHeader: false,
+            hideSubHeader: true,
+            actions: {
+                columnTitle: 'Actions',
+                add: false,
+                edit: false,
+                'delete': false,                
+                position: 'left'
+            },
+            attr: {
+                id: 'examgrid',
+                class: 'table table-bordered table-hover table-striped',
+            },
+            noDataMessage: 'No data found',            
+            pager: {
+                display: false,
+                perPage: 5,
+            },
+            columns: {
+                start_at: {
+                    title: 'Start Time'
+                },
+                testclass: {
+                    title: 'Test Class'
+                },
+                testdegree: {
+                    title: 'Test Degree'
+                },
+                end_at: {
+                    title: 'End Time'
+                },
+                marks: {
+                    title: 'Marks'
+                }
             }
-        )
+        };
+
+        this.examdatasource = new ServerDataSource(this.http, { endPoint: '/test/getsimpletesteventlist' });
+              
+        this.charttype = 'bar';
+        this.chartdata = {
+            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            
+            datasets: [
+                {
+                    label: "Writing",              
+                    data: [65, 59, 80, 81, 56, 55, 40],
+                    backgroundColor: 'rgba(75, 192, 132, 0.2)',
+                    borderColor:'rgba(75, 192, 132, 1)',
+                    borderWidth: 1            
+                },
+                {
+                    label: "Listening",
+                    data: [35, 29, 70, 81, 76, 95, 14],
+                    backgroundColor: 'rgba(132, 75, 192, 0.2)',
+                    borderColor: 'rgba(132,75,192, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: "Speaking",
+                    data: [15, 79, 60, 91, 65, 75, 30],
+                    backgroundColor: 'rgba(0, 75, 255, 0.2)',
+                    borderColor: 'rgba(0, 132, 255, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: "Reading",
+                    data: [15, 79, 60, 91, 65, 75, 30],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255,99,132, 1)',
+                    borderWidth: 1
+                }
+            ]
+        };
+        this.chartoptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: {
+                display: true,
+                labels: {
+                    fontColor: 'rgb(99, 99, 216)'
+                }
+            }
+        };
+
+        this.chartdata2 = {
+            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            
+            datasets: [
+                {
+                    label: "Max",              
+                    data: [65, 59, 80, 81, 86, 75, 90],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor:'rgba(75, 192, 192, 1)',
+                    borderWidth: 1            
+                },
+                {
+                    label: "Min",
+                    data: [35, 29, 17, 41, 56, 35, 14],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }
+            ]
+        };
+
     }
 
-    onCustom(event: any) {
-        alert(`Custom event '${event.action}' fired on row №: ${event.data.id}`)
+    create_dropzone() {
+    
+        var audioNgApp = angular.module('uploadaudio',[
+            'thatisuday.dropzone'
+        ])
+
+        //console.log("aaaaaaaaaaaaaa");
+        //console.log(audioNgApp);
+
+        audioNgApp.config(function(dropzoneOpsProvider: any){
+
+            dropzoneOpsProvider.setOptions({
+                url : '/uploadfile.php',
+                maxFilesize : '10',   
+                //acceptedFiles : 'audio/mp3',
+                addRemoveLinks : true, 
+                //params: {"type": "LWS", "kind":"problem"},                 
+            });
+        });
+        
+    }
+
+
+    onTestRowSelect(event: any) {
+        if(this.curselectedtestid == event.data.id) {
+            this.curselectedtestid = 0;
+        } else {
+            this.curselectedtestid = event.data.id;          
+        }
     }
 
     public closeAlert(alert: any) {
@@ -197,7 +293,74 @@ export class DashboardComponent implements OnInit {
         return '';
     }
 
-    goTestForm(prob_id: number) {
-        this.router.navigate(['/problem', prob_id]);
+    goExamineeForm(event_id: number) {
+        this.router.navigate(['/examinee', event_id]);
     }
+
+    showTestForm() {
+        if( this.curselectedtestid == 0 ) {
+            window.alert("Select test row.");
+        } else {
+            /* continue/new confirm */
+            
+            /* get testevent_info with uid */
+            this.http.get("/test/gettestevent/"+this.curselectedtestid).
+            map(
+                (response) => response.json()
+            ).
+            subscribe(
+                (data) => {
+                    if(data.length > 0 ) {
+                        // if exist testevent_info
+                        //      confirm(continue/new)
+                        this.curtestevent_info = data[0]; 
+                        if(window.confirm("Continue Test?")) {
+                            // if yes(continue)
+                            //      go old_testevent
+                            this.goExamineeForm(this.curtestevent_info.id);
+                        } else {
+                            // if no(new)
+                            //      update status in old_testevent
+                            this.http.get("/test/updateteststatus/"+this.curtestevent_info.id).
+                            map(
+                                (response) => response.json()
+                            ).
+                            subscribe(
+                                (data) => {
+                                    if(data.state == "success") {
+                                        //      new testevent generate
+                                        this.http.get("/test/generatetestevent/"+this.curselectedtestid).
+                                        map(
+                                            (response) => response.json()
+                                        ).
+                                        subscribe(
+                                            (data) => {
+                                                this.curevent_id = data;
+                                                this.goExamineeForm(this.curevent_id);
+                                            }
+                                        );
+                                    } else {
+                                        alert("old testevent update error. Retry!")
+                                    }                                    
+                                }
+                            );
+                        }
+                    } else {                    
+                        this.http.get("/test/generatetestevent/"+this.curselectedtestid).
+                        map(
+                            (response) => response.json()
+                        ).
+                        subscribe(
+                            (data) => {
+                                this.curevent_id = data;
+                                this.goExamineeForm(this.curevent_id);
+                            }
+                        );
+                    }     
+                }
+            );
+        }
+        
+    }
+
 }

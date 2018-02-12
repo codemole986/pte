@@ -2,51 +2,39 @@
 <section class="main-container">
     <div [@routerTransition]>
         <div *ngIf="listvisible">
-            <h2 class="text-muted">Examinee <small>Examine > List</small></h2>
+            <h3 class="page-title">Examinee Manage <small> <a [routerLink]="['/']" style="text-decoration: none;"><i class="fa fa-home"></i> Home </a><i class="fa fa-angle-right"></i> Manage <i class="fa fa-angle-right"></i><a href="javascript:void(0)" style="text-decoration: none;"> Examinee </a></small></h3>   
             <hr/>
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="card card-default mb-3">                        
+                    <div class="card card-default mb-3">   
+                        <div class="card-header">
+                            <div class="caption">
+                                <i class="fa fa-table fa-fw"></i> Examinee List
+                            </div>  
+                            <div class="actions">   
+                                <a href="javascript:;" class="btn btn-default btn-sm" (click)="viewExam()">
+                                    <i class="fa fa-list-alt fa-fw"></i> View </a>         
+                                <a href="javascript:;" class="btn btn-default btn-sm" (click)="deleteExam()">
+                                    <i class="fa fa-trash-o fa-fw"></i> Delete </a>         
+                            </div>
+                        </div>                     
                         <div class="card-body">
-                            <table class="table table-bordered table-hover table-striped">
-                                <thead>
-                                    <th> Category</th>
-                                    <th> Type</th>
-                                    <th> Degree</th>
-                                    <th> Title</th>
-                                    <th> User</th>
-                                    <th class="text-center"> Time</th>
-                                    <th class="text-center"> Mark</th>
-                                    <th class="text-center">&nbsp;</th>
-                                </thead>
-                                <tr *ngFor="let answer of httpdata">
-                                    <td>{{answer.category}}</td>
-                                    <td>{{getTypeName(answer.category, answer.type)}}</td>
-                                    <td>{{answer.degree}}</td>
-                                    <td>{{answer.title}}</td>
-                                    <td>{{answer.email}}</td>
-                                    <td class="text-center">{{answer.examine_uptime | converttimestamp}}</td>
-                                    <td class="text-center">{{answer.evaluate_mark}}</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info"
-                                            (click)="showViewExamineAnswerForm(answer)">
-                                            <i class="fa fa-pencil-square fa-fw"></i> View
-                                        </button>
-                                        <button class="btn btn-sm btn-danger"
-                                            (click)="onClickDelete(answer.id)">
-                                            <i class="fa fa-minus-square fa-fw"></i> Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            </table>
+                            <ng2-smart-table [settings]="examineegridsettings" [source]="examineedatasource" (userRowSelect)="onExamineeRowSelect($event)"></ng2-smart-table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    	<form *ngIf="!listvisible" #examineeForm="ngForm" style="padding: 15px;">
-            <h2 class="text-muted"> Examinee <small> Quiz  No.{{quiz_id}} </small> 
-            <div *ngIf="markvisible" style="float:right; color:#FF0000;" >{{currentAnswer.evaluate_mark}}</div></h2>
+
+        <form *ngIf="viewexamflag" #viewexamineeForm="ngForm" style="padding: 15px;">
+
+            <h3 class="page-title"> 
+                <span >{{curtestevent_info.testclass}} Test </span> 
+                <small > Quiz  No.{{quiz_number}} </small>   
+                <div style="float:right; color:#FF0000;" >
+                    <span *ngIf="testvisible">{{mark}}</span>                    
+                </div>
+            </h3>
             <hr/>  
             <div class="row col-lg-12">
                 <div class="col-sm-3 mb-3">
@@ -59,6 +47,256 @@
                     <h6 style="color:#6CF;">Degree: {{ currentProblem.degree }}</h6>
                 </div>
                 <div class="col-sm-3 mb-3">
+                    <h6 style="color:#09F;">Marks: {{currentAnswer.evaluate_mark}}</h6>                    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="col-sm-12 mb-3">
+                        <div style="font-weight:bold;">
+                            {{currentProblem.guide}} 
+                        </div>
+                        <!-- <app-problem [data]="quiz_id"></app-problem> -->
+                        <div *ngIf="currentProblem.type == 'WSM' || currentProblem.type == 'WES' || currentProblem.type == 'SAL'" class="row">
+                            <div class="col-sm-12 mb-3">
+                                {{ currentProblem.content.text }}
+                            </div>                            
+                        </div>
+                        <div *ngIf="currentProblem.type == 'SRS' || currentProblem.type == 'SSA' || currentProblem.type == 'LWS' || currentProblem.type == 'LTS' || currentProblem.type == 'LSA' || currentProblem.type == 'LSB'" class="row">
+                            <div *ngIf="currentProblem.content.audio">
+                                <audio controls="false" autoplay="false" onpause="">
+                                   <source src="/upload/q2/{{currentProblem.id}}/{{currentProblem.content.audio}}" type="audio/mpeg">
+                                </audio> 
+                            </div>                    
+                        </div>
+                        <div *ngIf="currentProblem.type == 'SPI' " class="row">
+                            <div *ngIf="currentProblem.content.picture">
+                                <img src="/upload/q2/{{currentProblem.id}}/{{currentProblem.content.picture}}" />
+                            </div>
+                        </div>
+                        <div *ngIf="currentProblem.type == 'RSA'  ||  currentProblem.type == 'RMA'">
+                            <div class="col-sm-12 mb-3">
+                                {{ currentProblem.content.text }}
+                            </div> 
+                            <div *ngIf="currentProblem.content.picture"><img src="/upload/q2/{{currentProblem.id}}/{{currentProblem.content.picture}}" /></div>
+                            <div class="col-sm-12 mb-3">
+                                {{ currentProblem.content.select.guide }}
+                            </div>
+                            <div *ngIf="currentProblem.type == 'RSA'" class="col-sm-12 mb-3">
+                                <div *ngFor="let n of currentProblem.content.select.options; let i = index" class="radio">
+                                    <label>
+                                        <input type="radio" name="optionsRadios" [value]="n" [(ngModel)]="radio_answer_val"> {{n}}
+                                    </label>
+                                </div>
+                            </div>
+                            <div *ngIf="currentProblem.type == 'RMA'" class="col-sm-12 mb-3">
+                                <div *ngFor="let n of currentProblem.content.select.options; let i = index" class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="optionsChecks" [value]="n" [(ngModel)]="check_answer_val[i]" (change)="onClickCheck()" [disabled]="solutiontextvisible"> {{n}}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="currentProblem.type == 'LSA'  ||  currentProblem.type == 'LSB'">
+                            <div class="col-sm-12 mb-3">
+                                {{ currentProblem.content.select.guide }}
+                            </div>
+                            <div *ngIf="currentProblem.type == 'LSB'" class="col-sm-12 mb-3">
+                                <div *ngFor="let n of currentProblem.content.select.options; let i = index" class="radio">
+                                    <label>
+                                        <input type="radio" name="optionsRadios" [value]="n" [(ngModel)]="radio_answer_val" (change)="onClickRadio()" [disabled]="solutiontextvisible"> {{n}}
+                                    </label>
+                                </div>
+                            </div>
+                            <div *ngIf="currentProblem.type == 'LSA'" class="col-sm-12 mb-3">
+                                <div *ngFor="let n of currentProblem.content.select.options; let i = index" class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="optionsChecks" [value]="n" [(ngModel)]="check_answer_val[i]" (change)="onClickCheck()" [disabled]="solutiontextvisible"> {{n}}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="currentProblem.type == 'RRO'" class="row" style="margin-top: 15px;">
+                            <table width="100%" anign="center"><tr>
+                            <td width="5%">
+                            </td>
+                            <td width="40%">
+                                <div class="col-lg-12 form-control" style="padding: 10px;">
+                                    <select name="select_left" class="form-control" [(ngModel)]="select_left_values" (change)="onChangeLeftSelect()" multiple>
+                                        <option *ngFor="let op of order_left_options" value="{{op}}">{{op}}</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td width="10%" align="center">
+                                <button class="btn btn-sm btn-success" type="button" (click)="onLeft()" [disabled]="solutiontextvisible"><i class="fa fa-chevron-left fa-fw"></i></button>
+                                <button class="btn btn-sm btn-success" type="button" (click)="onRight()" [disabled]="solutiontextvisible"><i class="fa fa-chevron-right fa-fw"></i></button>
+                            </td>
+                            <td width="40%">
+                                <div class="col-lg-12 form-control" style="padding: 10px; height: 100%;">
+                                    <select name="select_right" class="form-control" [(ngModel)]="select_right_values" (change)="onChangeRightSelect()" multiple>
+                                        <option *ngFor="let op of order_right_options" value="{{op}}">{{op}}</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td width="5%">
+                                <table>
+                                <tr><td style="padding-left: 5px;">
+                                    <button class="btn btn-sm btn-success" (click)="onUp()" type="button" [disabled]="solutiontextvisible"><i class="fa fa-chevron-up fa-fw"></i></button>
+                                </td></tr>
+                                <tr><td style="padding-left: 5px;">
+                                    <button class="btn btn-sm btn-success" (click)="onDown()" type="button" [disabled]="solutiontextvisible"><i class="fa fa-chevron-down fa-fw"></i></button>
+                                </td></tr>
+                                </table>
+                            </td>
+                            </tr></table>
+                        </div>
+                        <div *ngIf="currentProblem.type == 'RFB'" class="row" style="margin-top: 15px; padding: 15px;">
+                            <div #htmldata class="col-lg-12"></div>
+                            <div #choicepanel class="col-lg-12"></div>
+                            {{createRFBView()}}
+                        </div>
+                        <div *ngIf="currentProblem.type == 'RAN'" class="row" style="margin-top: 15px; padding: 15px;">
+                            <div #htmldata class="col-lg-12"></div>
+                            {{createRANView()}}
+                        </div>
+                        <div *ngIf="currentProblem.type == 'LTW'" class="row" style="margin-top: 15px; padding: 15px;">
+                            <div #htmldata class="col-lg-12"></div>
+                            {{createLTWView()}}
+                        </div>
+                        <div *ngIf="currentProblem.type == 'LCD'" class="row" style="margin-top: 15px; padding: 15px;">
+                            <div #htmldata class="col-lg-12"></div>
+                            {{createLCDView()}}
+                        </div>
+                    </div>
+                </div>
+            </div> 
+
+            <!-- <app-editor [data]="quiz_id"></app-editor> -->
+            <div *ngIf="currentProblem.type=='WSM' || currentProblem.type=='WES' || currentProblem.type=='LWS' || currentProblem.type=='LTS'" class="row">
+                <div class="col-lg-12">
+                    <div class="col-sm-12 mb-3">
+                        <textarea name="content" id="txtanswer" class="form-control"  placeholder="Problem Sentences" title="Problem Sentences" rows="5" [(ngModel)]="currentAnswer.answer.text" [disabled]="answertext" ></textarea>                    
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="currentProblem.type=='SRS' || currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SSA'" class="row">
+                <div class="col-lg-12">
+                    <ngb-progressbar value="{{progressvalue}}" type="info" class="progress-striped progress-xs form-control">{{progressvalue}}%</ngb-progressbar>
+                </div>
+            </div>
+
+            <div *ngIf="solutiontextvisible" class="row">
+                <div class="col-lg-12">
+                    <div class="card card-default mb-3">
+                        <div class="card-header">
+                            <i class="fa fa-edit fa-fw"></i> Solution 
+                        </div>
+                        <div *ngIf="currentProblem.type=='WSM' || currentProblem.type=='WES' || currentProblem.type=='LWS' || currentProblem.type=='LTS' "  class="card-body">
+                            {{ currentProblem.solution.text }}
+                        </div>
+                        <div *ngIf="currentProblem.type == 'RSA'" class="col-sm-12 mb-3">
+                            <div *ngFor="let n of currentProblem.content.select.options; let i = index" class="radio">
+                                <label>
+                                    <input type="radio" name="optionsRadios1" [value]="n" checked="i==currentProblem.solution.optionno" disabled> {{n}}
+                                </label>
+                            </div>
+                        </div>
+                        <div *ngIf="currentProblem.type == 'RMA'" class="col-sm-12 mb-3">
+                            <div *ngFor="let n of currentProblem.content.select.options; let j = index" class="checkbox">
+                                <label>
+                                    <input *ngIf="check_solution_val[j]" type="checkbox" name="optionsChecks1" checked disabled>
+                                    <input *ngIf="check_solution_val[j]==false" type="checkbox" name="optionsChecks1" disabled> {{n}}
+                                </label>
+                            </div>
+                        </div>
+                        <div *ngIf="currentProblem.type == 'LSB'" class="col-sm-12 mb-3">
+                            <div *ngFor="let n of currentProblem.content.select.options; let i = index" class="radio">
+                                <label>
+                                    <input type="radio" name="optionsRadios1" [value]="n" checked="i==currentProblem.solution.optionno" disabled> {{n}}
+                                </label>
+                            </div>
+                        </div>
+                        <div *ngIf="currentProblem.type == 'LSA'" class="col-sm-12 mb-3">
+                            <div *ngFor="let n of currentProblem.content.select.options; let j = index" class="checkbox">
+                                <label>
+                                    <input *ngIf="check_solution_val[j]" type="checkbox" name="optionsChecks1" checked disabled>
+                                    <input *ngIf="check_solution_val[j]==false" type="checkbox" name="optionsChecks1" disabled> {{n}}
+                                </label>
+                            </div>
+                        </div>
+                        <div *ngIf="currentProblem.type == 'RRO'" class="col-sm-12 mb-3">
+                            <div class="col-lg-5 form-control" style="padding: 10px;">
+                                <select name="select_solution" class="form-control" multiple>
+                                    <option *ngFor="let op of this.currentProblem.content.select.options" value="{{op}}">{{op}}</option>
+                                </select>
+                            </div>
+                        </div>                        
+                        <div *ngIf="currentProblem.type=='SRS' ||currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SSA'"  class="card-body">
+                            <div *ngIf="currentProblem.solution.audio">
+                                <audio controls autoplay="true">
+                                   <source src="/upload/s0/{{currentProblem.type}}/{{currentProblem.solution.audio}}" type="audio/mpeg">
+                                </audio> 
+                            </div>
+                        </div>
+                        <div *ngIf="currentProblem.type == 'RFB'" class="row" style="margin-top: 15px; padding: 15px;">
+                            <div #html_answerdata class="col-lg-12"></div>
+                            {{createRFBSolutionView()}}
+                        </div>
+                        <div *ngIf="currentProblem.type == 'RAN'" class="row" style="margin-top: 15px; padding: 15px;">
+                            <div #html_answerdata class="col-lg-12"></div>
+                            {{createRANSolutionView()}}
+                        </div>
+                        <div *ngIf="currentProblem.type == 'LTW'" class="row" style="margin-top: 15px; padding: 15px;">
+                            <div #html_answerdata class="col-lg-12"></div>
+                            {{createLTWSolutionView()}}
+                        </div>
+                        <div *ngIf="currentProblem.type == 'LCD'" class="row" style="margin-top: 15px; padding: 15px;">
+                            <div #html_answerdata class="col-lg-12"></div>
+                            {{createLCDSolutionView()}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr/>
+            
+            <div class="row">
+                <div class="col text-right">
+                <p class="ng-tns-c14-20 my-2">
+                    <button class="btn btn-sm btn-pill-left btn-primary" type="button" *ngIf=" (testvisible && endbutton) || selfexam " (click)="solutiontextvisible=!solutiontextvisible" ><i class="fa fa-file-text-o fa-fw"></i> Solution </button>
+                    <button class="btn btn-sm btn-pill-left btn-primary" type="button" *ngIf="currentProblem.test_id!=0" [disabled]="!previousbutton" (click)="prevExamine()" ><i class="fa fa-arrow-left fa-fw"></i> Previous </button>
+                    <button class="btn btn-sm btn-primary" type="button" [disabled]="endbutton" (click)="listvisible=true;"><i class="fa fa-stop fa-fw"></i> End </button>
+                    <button class="btn btn-sm btn-pill-right btn-primary" type="button" *ngIf="currentProblem.test_id!=0" [disabled]="!nextbutton" (click)="nextExamine()">Next <i class="fa fa-arrow-right fa-fw"></i> </button>
+                    <button class="btn btn-sm btn-pill-right btn-primary" type="button" *ngIf="currentProblem.test_id!=0" (click)="listvisible=true;">Exit <i class="fa fa-mail-reply-all fa-fw"></i> </button>
+                </p>
+                </div>
+            </div>         
+        </form>
+
+    	<form *ngIf="!listvisible && !viewexamflag" #examineeForm="ngForm" style="padding: 15px;">
+
+            <h3 class="page-title"> 
+                <span *ngIf="selfexam"> Self Exam </span> 
+                <span *ngIf="testvisible">{{curtestevent_info.testclass}} Test </span> 
+                <small *ngIf="testvisible"> Quiz  No.{{quiz_number}} </small>   
+                <span *ngIf="testvisible" style="margin-left: 5em; font-size: .6em;">Remain Time: {{currentlimittime | converttimestamp }}</span>
+                <div *ngIf="markvisible" style="float:right; color:#FF0000;" >
+                    <span *ngIf="testvisible">{{mark}}</span>
+                    <span *ngIf="selfexam">{{currentAnswer.evaluate_mark}}</span>
+                </div>
+            </h3>
+            <hr/>  
+            <div *ngIf="selfexam" class="row col-lg-12">
+                <div class="col-sm-3 mb-3">
+                    <h6 style="color:#6CF;">Category: {{ currentProblem.category }}</h6>
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <h6 style="color:#6CF;">Type: {{ getTypeName(currentProblem.category, currentProblem.type) }}</h6>
+                </div>
+                <div class="col-sm-3 mb-3">
+                    <h6 style="color:#6CF;">Degree: {{ currentProblem.degree }}</h6>
+                </div>
+                <div class="col-sm-3 mb-3" *ngIf="selfexam">
                     <h6 style="color:#09F;">Remain Time: {{currentlimittime | converttimestamp }}</h6>                    
                 </div>
             </div>
@@ -76,21 +314,21 @@
                         </div>
                         <div *ngIf="currentProblem.type == 'SRS' || currentProblem.type == 'SSA' || currentProblem.type == 'LWS' || currentProblem.type == 'LTS' || currentProblem.type == 'LSA' || currentProblem.type == 'LSB'" class="row">
                             <div *ngIf="currentProblem.content.audio">
-                                <audio controls="false" autoplay="true" onpause="">
-                                   <source src="{{currentProblem.content.audio}}" type="audio/mpeg">
+                                <audio controls="false" autoplay="{{audio_autoplay}}" onpause="">
+                                   <source src="/upload/q2/{{currentProblem.id}}/{{currentProblem.content.audio}}" type="audio/mpeg">
                                 </audio> 
                             </div>                    
                         </div>
                         <div *ngIf="currentProblem.type == 'SPI' " class="row">
                             <div *ngIf="currentProblem.content.picture">
-                                <img src="{{currentProblem.content.picture}}" />
+                                <img src="/upload/q2/{{currentProblem.id}}/{{currentProblem.content.picture}}" />
                             </div>
                         </div>
                         <div *ngIf="currentProblem.type == 'RSA'  ||  currentProblem.type == 'RMA'">
                             <div class="col-sm-12 mb-3">
                                 {{ currentProblem.content.text }}
                             </div> 
-                            <div *ngIf="currentProblem.content.picture"><img src="{{currentProblem.content.picture}}" /></div>
+                            <div *ngIf="currentProblem.content.picture"><img src="/upload/q2/{{currentProblem.id}}/{{currentProblem.content.picture}}" /></div>
                             <div class="col-sm-12 mb-3">
                                 {{ currentProblem.content.select.guide }}
                             </div>
@@ -163,20 +401,20 @@
                             </tr></table>
                         </div>
                         <div *ngIf="currentProblem.type == 'RFB'" class="row" style="margin-top: 15px; padding: 15px;">
-                            <div id="html_data" class="col-lg-12"></div>
-                            <div id="choice_panel" class="col-lg-12" style="margin-top: 50px; background-color: #D1E3F8;"></div>
+                            <div #htmldata class="col-lg-12"></div>
+                            <div #choicepanel class="col-lg-12"></div>
                             {{createRFBView()}}
                         </div>
                         <div *ngIf="currentProblem.type == 'RAN'" class="row" style="margin-top: 15px; padding: 15px;">
-                            <div id="html_data" class="col-lg-12"></div>
+                            <div #htmldata class="col-lg-12"></div>
                             {{createRANView()}}
                         </div>
                         <div *ngIf="currentProblem.type == 'LTW'" class="row" style="margin-top: 15px; padding: 15px;">
-                            <div id="html_data" class="col-lg-12"></div>
+                            <div #htmldata class="col-lg-12"></div>
                             {{createLTWView()}}
                         </div>
                         <div *ngIf="currentProblem.type == 'LCD'" class="row" style="margin-top: 15px; padding: 15px;">
-                            <div id="html_data" class="col-lg-12"></div>
+                            <div #htmldata class="col-lg-12"></div>
                             {{createLCDView()}}
                         </div>
                     </div>
@@ -247,24 +485,24 @@
                         <div *ngIf="currentProblem.type=='SRS' ||currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SSA'"  class="card-body">
                             <div *ngIf="currentProblem.solution.audio">
                                 <audio controls autoplay="true">
-                                   <source src="{{currentProblem.solution.audio}}" type="audio/mpeg">
+                                   <source src="/upload/s0/{{currentProblem.type}}/{{currentProblem.solution.audio}}" type="audio/mpeg">
                                 </audio> 
                             </div>
                         </div>
                         <div *ngIf="currentProblem.type == 'RFB'" class="row" style="margin-top: 15px; padding: 15px;">
-                            <div id="html_answerdata" class="col-lg-12"></div>
+                            <div #html_answerdata class="col-lg-12"></div>
                             {{createRFBSolutionView()}}
                         </div>
                         <div *ngIf="currentProblem.type == 'RAN'" class="row" style="margin-top: 15px; padding: 15px;">
-                            <div id="html_answerdata" class="col-lg-12"></div>
+                            <div #html_answerdata class="col-lg-12"></div>
                             {{createRANSolutionView()}}
                         </div>
                         <div *ngIf="currentProblem.type == 'LTW'" class="row" style="margin-top: 15px; padding: 15px;">
-                            <div id="html_answerdata" class="col-lg-12"></div>
+                            <div #html_answerdata class="col-lg-12"></div>
                             {{createLTWSolutionView()}}
                         </div>
                         <div *ngIf="currentProblem.type == 'LCD'" class="row" style="margin-top: 15px; padding: 15px;">
-                            <div id="html_answerdata" class="col-lg-12"></div>
+                            <div #html_answerdata class="col-lg-12"></div>
                             {{createLCDSolutionView()}}
                         </div>
                     </div>
@@ -275,10 +513,11 @@
             <div class="row">
                 <div class="col text-right">
                 <p class="ng-tns-c14-20 my-2">
-                	<button class="btn btn-sm btn-pill-left btn-primary" type="button" [disabled]="!endbutton" (click)="solutiontextvisible=!solutiontextvisible" ><i class="fa fa-arrow-left fa-fw"></i> Solution </button>
-                    <button class="btn btn-sm btn-pill-left btn-primary" type="button" [disabled]="previousbutton" (click)="prevExamine()" ><i class="fa fa-arrow-left fa-fw"></i> Previous </button>
+                	<button class="btn btn-sm btn-pill-left btn-primary" type="button" *ngIf=" (testvisible && endbutton) || selfexam " (click)="solutiontextvisible=!solutiontextvisible" ><i class="fa fa-file-text-o fa-fw"></i> Solution </button>
+                    <button class="btn btn-sm btn-pill-left btn-primary" type="button" *ngIf="currentProblem.test_id!=0" [disabled]="!previousbutton" (click)="prevExamine()" ><i class="fa fa-arrow-left fa-fw"></i> Previous </button>
                     <button class="btn btn-sm btn-primary" type="button" [disabled]="endbutton" (click)="endExamine()"><i class="fa fa-stop fa-fw"></i> End </button>
-                    <button class="btn btn-sm btn-pill-right btn-primary" type="button" [disabled]="nextbutton" (click)="nextExamine()">Next <i class="fa fa-arrow-right fa-fw"></i> </button>
+                    <button class="btn btn-sm btn-pill-right btn-primary" type="button" *ngIf="currentProblem.test_id!=0" [disabled]="!nextbutton" (click)="nextExamine()">Next <i class="fa fa-arrow-right fa-fw"></i> </button>
+                    <button class="btn btn-sm btn-pill-right btn-primary" type="button" *ngIf="currentProblem.test_id!=0" (click)="exitExamine()">Exit <i class="fa fa-mail-reply-all fa-fw"></i> </button>
                 </p>
                 </div>
             </div>         

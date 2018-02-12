@@ -1,0 +1,23 @@
+span.Clicked {
+	background-color: #ff0;
+}
+span.Wrong {
+	color: #0f0;
+}
+span.Correct {
+	color: #f00;
+}
+.form .form-body {
+    padding: 10px;
+}
+.form .form-bordered .form-body {
+    margin: 0;
+    padding: 0;
+}
+.form .form-bordered .form-group {
+    margin: 0;
+    border-bottom: 1px solid #efefef;
+}
+.form .form-bordered .form-group .control-label {
+    padding-top: 20px;
+}

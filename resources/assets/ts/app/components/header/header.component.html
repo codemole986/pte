@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg fixed-top">
+<nav class="navbar navbar-expand-md fixed-top">
     <a class="navbar-brand" href="#"><i class="fa fa-graduation-cap"></i> Quiz </a>
     <button class="navbar-toggler" type="button" (click)="toggleSidebar()">
         <!-- <span class="navbar-toggler-icon"></span> -->
@@ -18,14 +18,17 @@
                 <div class="dropdown-menu dropdown-menu-right">
                     <a *ngIf="usermanageable" href="javascript:void(0)" class="dropdown-item" [routerLink]="['/manage']" [routerLinkActive]="['router-link-active']">
                         <i class="fa fa-sdf"></i> {{ 'User' | translate }} 
-                    </a>
-                    <a *ngIf="examinemanageable" href="javascript:void(0)" class="dropdown-item" [routerLink]="['/examinee']" [routerLinkActive]="['router-link-active']">
-                        <i class="fa fa-sdf"></i> {{ 'Examinee' | translate }} 
-                    </a>
+                    </a>                    
                     <a *ngIf="quizmanageable" href="javascript:void(0)" class="dropdown-item" [routerLink]="['/quizlist']" [routerLinkActive]="['router-link-active']">
                         <i class="fa fa-sdf"></i> {{ 'Quiz' | translate }} 
                     </a>
-                    <a href="javascript:void(0)" class="dropdown-item" >
+                    <a *ngIf="testmanageable" href="javascript:void(0)" class="dropdown-item" [routerLink]="['/test']" [routerLinkActive]="['router-link-active']">
+                        <i class="fa fa-sdf"></i> {{ 'Test' | translate }} 
+                    </a>
+                    <a *ngIf="examineemanageable" href="javascript:void(0)" class="dropdown-item" [routerLink]="['/examinee']" [routerLinkActive]="['router-link-active']">
+                        <i class="fa fa-sdf"></i> {{ 'Examinee' | translate }} 
+                    </a>
+                    <a *ngIf="evalmanageable" href="javascript:void(0)" class="dropdown-item" [routerLink]="['/eval']" [routerLinkActive]="['router-link-active']" >
                         <i class="fa fa-sdf"></i> {{ 'Evaluation' | translate }} 
                     </a>
                 </div>

@@ -1,40 +1,50 @@
 import { Component, OnInit } from '@angular/core';
-
+import { NgForm } from "@angular/forms";
+import { Router } from '@angular/router';
 import {Http, Response, Headers, RequestOptions } from "@angular/http";
 import 'rxjs/add/operator/map';
 import { User } from '../model/user';
+import { GlobalService } from '../shared/services/global.service';
+import { routerTransition } from '../router.animations';
 
 @Component({
     selector: 'app-signup',
     template: require('./signup.component.html'),
-	styles: [`${require('./signup.component.css')}`]  
-    
+	styles: [`${require('./signup.component.css')}`],
+    animations: [routerTransition()],
+    providers: [GlobalService]
 })
 export class SignupComponent implements OnInit {
     
     httpdata="";
+    class: any[];
+    user: User;
+    
+    constructor(private http: Http, private router: Router, private globalService: GlobalService) { 
+        this.user = new User;
+    }
 
-    constructor(private http: Http) { }
-
-    ngOnInit() {}
+    ngOnInit() {
+        this.class = this.globalService.classnames;
+        this.user.class = "";
+    }
 
     onClickSubmit(data: User) {
-    	if(data.name=='') {
-    		alert("Input Your Name.");
+        
+        if(data.name==null) {
+    		return false;
+    	}
+
+    	if(data.email==null) {
     		return;
     	}
 
-    	if(data.email=='') {
-    		alert("Input Your Email Address.");
-    		return;
-    	}
-
-    	if(data.password=='') {
+    	if(data.password==null) {
     		alert("Input Your Password.");
     		return;
     	}
 
-    	if(data.confirmpassword=='') {
+    	if(data.confirmpassword==null) {
     		alert("Input Your Repeat Password.");
     		return;
     	}
@@ -44,16 +54,22 @@ export class SignupComponent implements OnInit {
     		return;
     	}
 
+        if(data.class=="") {
+            alert("Select User Class");
+            return;
+        }
+
         this.http.post("/user/register", data).
 			map(
 				(response) => response.json()
 			).
 			subscribe(
 				(data) => {				
-					if(data.state = "fail") {
-						alert(data.message);
+					if(data.state == "fail") {
+                        alert(data.message);
 					} else {
-						// redirect dashboard
+						// redirect login
+						this.router.navigate(['/login']);
 					}
 				}
 			)

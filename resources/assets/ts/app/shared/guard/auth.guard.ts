@@ -8,9 +8,8 @@ export class AuthGuard {
 	constructor(private router: Router) { }
 
 	canActivate() {
-        if (localStorage.getItem('isLoggedin')) {
-        	this.router.navigate(['/dashboard']);
-            return true;
+        if (window.sessionStorage.getItem('isLoggedin')) {
+        	return true;
         }
 
         this.router.navigate(['/login']);

@@ -6,7 +6,7 @@
             </nav>
             <form #userlogin="ngForm" novalidate (ngSubmit) = "onClickSubmit(userlogin.value)">
                 <div class="form-content">
-                    <p class="text-center pv">SIGN IN TO CONTINUE.</p>
+                    <p class="text-center pv"> {{ 'SIGN IN TO CONTINUE.' | translate }} </p>
                     <div class="form-group">
                         <input type="email" name="email" class="form-control" placeholder="Enter email" id="email" required   
                         [(ngModel)]="user.email" #email="ngModel" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$">                         

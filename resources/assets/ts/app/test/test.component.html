@@ -1,0 +1,110 @@
+<app-header></app-header>
+<section class="main-container">
+    <div [@routerTransition]>
+        <div *ngIf="listtestflag">
+            <h3 class="page-title">
+                Test Manage <small> <a [routerLink]="['/']" style="text-decoration: none;"><i class="fa fa-home"></i> Home </a> <i class="fa fa-angle-right"></i> Manage <i class="fa fa-angle-right"></i><a href="javascript:void(0)" style="text-decoration: none;"> Test </a></small></h3>        
+            <hr/> 
+            <div class="row">
+                <div class="col-lg-12">
+                    <nb-card class="card card-default mb-3">
+                        <nb-card-header class="card-header">
+                            <div class="caption">
+                                <i class="fa fa-table fa-fw"></i> Test List 
+                            </div>
+                            <div class="actions">
+                                <a href="javascript:;" class="btn btn-default btn-sm" (click)="goTestingRoom()">
+                                    <i class="fa fa-cubes fa-fw"></i> go Testing </a>   
+                                <a *ngIf="actionflag" href="javascript:;" class="btn btn-default btn-sm" (click)="newConfigTestForm()">
+                                    <i class="fa fa-plus fa-fw"></i> Add </a>   
+                                <a *ngIf="actionflag" href="javascript:;" class="btn btn-default btn-sm" (click)="chgConfigTestForm()">
+                                    <i class="fa fa-edit fa-fw"></i> Edit </a>
+                                <a *ngIf="actionflag" href="javascript:;" class="btn btn-default btn-sm" (click)="deleteTest()">
+                                    <i class="fa fa-trash-o fa-fw"></i> Delete </a>                             
+                            </div>                                  
+                        </nb-card-header>
+
+                        <nb-card-body class="card-body">
+                            <ng2-smart-table [settings]="gridsettings" [source]="testdatasource" (userRowSelect)="onTestRowSelect($event)"></ng2-smart-table>                
+                        </nb-card-body>
+                    </nb-card>
+                </div>
+            </div>
+        </div>
+        <form *ngIf="newtestconfigflag" novalidate #testconfigForm="ngForm">
+            <h3 class="page-title">Test Config <small> <a [routerLink]="['/']" style="text-decoration: none;"><i class="fa fa-home"></i> Home </a><i class="fa fa-angle-right"></i> Manage <i class="fa fa-angle-right"></i><a href="javascript:void(0)" (click)="onClickList()" style="text-decoration: none;"> Test </a><i class="fa fa-angle-right"></i><a href="javascript:void(0)" style="text-decoration: none;"> Add/Edit </a></small></h3>                    
+            <hr/> 
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card card-default mb-3">
+                        <div class="card-header">
+                            <i class="fa fa-cog fa-fw"></i> Config of Test 
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-6 mb-3">
+                                    <input maxlength="100" name="testname" class="form-control needfull" placeholder=" * TestName" title="TestName" [(ngModel)]="curselectedTest.testname" required #testname="ngModel" reverse="true">
+                                    <small [hidden]="testname.valid ||  (testname.pristine && savefalg)" class="text-danger">
+                                        Testname field is required for 1~100 chars.
+                                    </small>
+                                </div>                            
+                                <div class="col-sm-2 mb-3">
+                                    <select name="testclass" class="form-control needfull" title="Class" [(ngModel)]="curselectedTest.testclass" required #testclass="ngModel">
+                                        <option *ngFor="let c of pclasses" [ngValue]="c.value" ng-selected="c.value==curselectedTest.testclass"> {{c.title | translate}}</option>
+                                    </select>
+                                    <small [hidden]="testclass.valid || (testclass.pristine && savefalg)" class="text-danger">
+                                        Testclass field is required.
+                                    </small>
+                                </div>
+                                <div class="col-sm-2 mb-3">
+                                    <select name="testdegree" class="form-control needfull" title="Degree" [(ngModel)]="curselectedTest.testdegree" required #testdegree="ngModel">
+                                        <option *ngFor="let d of pdegrees" [ngValue]="d.value" ng-selected="d.value==curselectedTest.testdegree">{{d.title | translate}}</option>
+                                    </select>
+                                    <small [hidden]="testdegree.valid || (testdegree.pristine && savefalg)" class="text-danger">
+                                        Testdegree field is required.
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3 mb-3">
+                                    <input type="number" min="0" name="totalmarks" class="form-control needfull" placeholder=" * TotalMarks" title="TotalMarks" [(ngModel)]="curselectedTest.totalmarks" required reverse="true" #totalmarks="ngModel">
+                                    <small [hidden]="totalmarks.valid || (totalmarks.pristine && savefalg )" class="text-danger">
+                                        Totalmarks field is required.
+                                    </small>
+                                </div>                            
+                                <div class="col-sm-3 mb-3">
+                                    <input type="number" min="0" name="limit_time" class="form-control needfull" placeholder=" * Limit Time" title="Limit Time" [(ngModel)]="curselectedTest.limit_time" required reverse="true" #limit_time="ngModel">
+                                    <small [hidden]="limit_time.valid || (limit_time.pristine && savefalg )" class="text-danger">
+                                        Limit_time field is required.
+                                    </small>
+                                </div>
+                                <div class="col-sm-3 mb-3">
+                                    <input type="number" name="count" class="form-control" placeholder="QuizCount" title="QuizCount" [(ngModel)]="curselectedTest.count" disabled="disabled">
+                                </div>
+                                <div class="col-sm-2 mb-3">
+                                    <label><div class="checker"><span><input type="checkbox" name="status" class="form-control needfull" placeholder="" title="" [(ngModel)]="curselectedTest.status"></span></div> Public </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 mb-3">
+                                    <fieldset class="form-group my-6">
+                                        <legend>Quiz Config</legend>
+                                        <ng2-smart-table [settings]="quizsettings" [source]="quizdatasource" (createConfirm)="onCreateConfirm($event)" (editConfirm)="onSaveConfirm($event)" (deleteConfirm)="onDeleteConfirm($event)" ></ng2-smart-table> 
+                                    </fieldset>
+                                </div>  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>            
+            <div class="row">
+                <div class="col text-right">
+                    <p class="ng-tns-c14-20 my-2">
+                        <button class="btn btn-sm btn-primary" type="button" (click)="onClickList()"><i class="fa fa-table fa-fw"></i> List</button>
+                        <button class="btn btn-sm btn-primary" type="button" (click)="onClickSave()"><i class="fa fa-save fa-fw"></i> Save</button>
+                    </p>                
+                </div>
+            </div>
+        </form>
+    </div>
+</section>

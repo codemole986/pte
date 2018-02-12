@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
   	}
 
   	onClickSubmit(data: User) {
-  		if( data.email =='') {
+  		if( data.email == '') {
   			alert("Enter Your Email.");
   			return;
   		}
@@ -42,14 +42,14 @@ export class LoginComponent implements OnInit {
 		).
 		subscribe(
 			(data) => {				
-				if(data.state == "fail") {
+				if(data.state == "error") {
 					alert(data.message);
 				} else {
-					localStorage.setItem('isLoggedin', 'true');
-					localStorage.setItem('permission', data.userinfo.permission);
+					window.sessionStorage.setItem("isLoggedin", 'true');
+					window.sessionStorage.setItem("userid", data.userinfo.id);
+					window.sessionStorage.setItem('permission', data.userinfo.permission);
 					
-					this.router.navigate(['dashboard']);
-					
+					this.router.navigate(['dashboard']);					
 				}
 			}
 		);

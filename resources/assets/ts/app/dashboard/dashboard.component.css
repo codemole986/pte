@@ -8,6 +8,42 @@
     position: relative;
     overflow: hidden;
 }
+.card-header > .caption-subject {
+    font-size: 16px;
+}
+.font-green-sharp {
+    color: #4DB3A2 !important;
+}
+.font-blue-steel {
+    color: #4B77BE !important;
+}
+.font-purple-intense {
+    color: #8775a7 !important;
+}
+.font-red-sunglo {
+    color: #E26A6A !important;
+}
+.uppercase {
+    text-transform: uppercase !important;
+}
+.bold {
+    font-weight: 700 !important;
+}
+.card-header > .caption-helper {
+  padding: 0;
+  margin: 0;
+  line-height: 13px;
+  color: #9eacb4;
+  font-size: 13px;
+  font-weight: 400;
+}
+.green-haze.btn {
+    color: #FFFFFF;
+    background-color: #44b6ae;
+}
+.btn-circle {
+    border-radius: 15px !important;
+}
 @media screen and (max-width: 992px) {
     .main-container {
         margin-left: 0px !important;

@@ -1,5 +1,8 @@
   var audio_context;
   var recorder;
+  var record_user_id;
+  var record_test_id;
+  var record_quiz_id;
 
   function startUserMedia(stream) {
     if(audio_context!=null) {
@@ -8,7 +11,10 @@
     } 
   }
 
-  function startRecording() {
+  function startRecording(tid=0, qid=0, uid=0 ) {
+    record_test_id = tid;
+    record_quiz_id = qid;
+    record_user_id = uid;
     enableaudiorecord();
     recorder && recorder.record();    
   }
@@ -19,7 +25,7 @@
     // create WAV download link using audio data blob
     createDownloadLink();
 
-    recorder.clear();  
+    recorder && recorder.clear();  
     disableaudiorecord();  
   }
 
@@ -34,6 +40,7 @@
 
   function disableaudiorecord() {
     audio_context = null;
+    recorder = null;
   }
 
   window.onload = function init() {

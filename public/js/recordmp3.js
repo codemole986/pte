@@ -84,10 +84,6 @@
 		var buffer = new Uint8Array(arrayBuffer),
         data = parseWav(buffer);
 
-        //console.log(data);
-		//console.log("Mp3으로 변환중...");
-		//log.innerHTML += "\n" + "Mp3으로 변환하고있습니다";
-
         encoderWorker.postMessage({ cmd: 'init', config:{
             mode : 3,
 			channels:1,
@@ -100,8 +96,8 @@
         encoderWorker.onmessage = function(e) {
             if (e.data.cmd == 'data') {
 
-				//console.log("Mp3으로 변환하였습니다");
-				//log.innerHTML += "\n" + "Mp3으로 변환하였습니다";
+				//console.log("Converting to Mp3-format...");
+				//log.innerHTML += "\n" + "Success";
 
 				/*var audio = new Audio();
 				audio.src = 'data:audio/mp3;base64,'+encode64(e.data.buf);
@@ -111,6 +107,7 @@
 
 				var mp3Blob = new Blob([new Uint8Array(e.data.buf)], {type: 'audio/mp3'});
 				uploadAudio(mp3Blob);
+				//uploadAudio2(mp3Blob);
 
 				/*var url = 'data:audio/mp3;base64,'+encode64(e.data.buf);
 				var li = document.createElement('li');
@@ -184,12 +181,49 @@
 		reader.onload = function(event){
 			var fd = new FormData();
 			var mp3Name = encodeURIComponent('speaking-' + new Date().getTime() + '.mp3');
-			//console.log("mp3name = " + mp3Name);
 			fd.append('fname', mp3Name);
 			fd.append('data', event.target.result);
+			fd.append('testid', record_test_id);
+			fd.append('quizid', record_quiz_id);
+			fd.append('userid', record_user_id);
 			$.ajax({
 				type: 'POST',
-				url: 'uploadaudio.php',
+				url: '/uploadaudio.php',
+				data: fd,
+				processData: false,
+				contentType: false
+			}).done(function(data) {
+				alert("audio-file saved.");
+				/*var odata = JSON.parse(data);
+				$.ajax({
+					type: 'POST',
+					url: '/answer/updateanseraudio',
+					data: odata["filename"],
+					processData: false,
+					contentType: false
+				}).done(function(data) {
+					
+					//console.log(data);
+					//log.innerHTML += "\n" + data;
+				});*/
+			});
+		};
+		reader.readAsDataURL(mp3Data);
+	}
+
+	function uploadAudio2(mp3Data){
+		var reader = new FileReader();
+		reader.onload = function(event){
+			var fd = new FormData();
+			var mp3Name = encodeURIComponent('speaking-' + new Date().getTime() + '.mp3');
+			fd.append('fname', mp3Name);
+			fd.append('data', event.target.result);
+			fd.append('testid', record_test_id);
+			fd.append('quizid', record_quiz_id);
+			fd.append('userid', record_user_id);
+			$.ajax({
+				type: 'POST',
+				url: '/answer/uploadaudio',
 				data: fd,
 				processData: false,
 				contentType: false

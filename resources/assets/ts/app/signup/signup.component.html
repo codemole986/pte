@@ -4,25 +4,47 @@
             <nav class="navbar">
                 <h1 style="width: 100%; text-align: center;">Quiz</h1>
             </nav>
-            <form #userreg="ngForm" (ngSubmit) = "onClickSubmit(userreg.value)" >
+            <form #userreg="ngForm" novalidate (ngSubmit)="onClickSubmit(userreg.value)">                
                 <div class="form-content">
-                    <p class="text-center pv">REGISTER TO GET INSTANT ACCESS.</p>
-                    <div class="form-group hasfeedback">
-                        <input type="text" class="form-control ng-pristine ng-invalid ng-invalid-required ng-touched" id="" name="name" placeholder="Full Name" ngModel>
-                    </div>
-
+                    <h3>Sign Up</h3>
+                    <p class="hint">
+                         Enter your personal details below:
+                    </p>
                     <div class="form-group">
-                        <input type="text" class="form-control ng-pristine ng-invalid ng-invalid-required ng-touched" id="" name="email" placeholder="Email" ngModel>
-                    </div>
-
-                    <div class="form-group">
-                        <input type="password" class="form-control ng-pristine ng-invalid ng-invalid-required ng-touched" id="" name="password" placeholder="Password" ngModel>
+                        <input type="text" class="form-control needfull" name="name" placeholder="Full Name" [ngModel]="user.name" required reverse="true" #name="ngModel">
+                        <small [hidden]="name.valid || (name.pristine && !userreg.submitted)" class="text-danger">
+                            This field is required.
+                        </small>
                     </div>
                     <div class="form-group">
-                        <input type="password" class="form-control ng-pristine ng-valid-email ng-invalid ng-invalid-required ng-touched" id="" name="confirmpassword" placeholder="Repeat Password" ngModel>
-                    </div>&nbsp;
-                    <input type="submit" class="btn btn-block btn-primary mt-lg" value="Register">                     
-                    <a class="btn btn-block btn-default" [routerLink]="['/login']"> Log in </a>
+                        <input type="email" name="email" class="form-control needfull" placeholder="Email" id="email" required   
+                        [(ngModel)]="user.email" #email="ngModel" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$">
+                        <small [hidden]="email.valid || (email.pristine && !userreg.submitted)" class="text-danger">
+                            Email is required and format should be <i>john@doe.com</i>.
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control needfull" name="password" placeholder="Password" [ngModel]="user.password" required reverse="true" #password="ngModel">
+                        <small [hidden]="password.valid || (password.pristine && !userreg.submitted)" class="text-danger">
+                            This field is required.
+                        </small>                        
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control needfull" name="confirmpassword" placeholder="Re-type Your Password" [ngModel]="user.confirmpassword" #confirmpassword="ngModel">
+                    </div>                      
+                    <div class="form-group">
+                    	<select name="class" class="form-control needfull" required reverse="true" [(ngModel)]="user.class" #userclass="ngModel" >
+                    		<option *ngFor="let c of class" value="{{c.value}}" ng-selected="c.value==user.class"> {{c.title}}</option>
+                        </select>  
+                        <small [hidden]="userclass.valid || (userclass.pristine && !userreg.submitted)" class="text-danger">
+                            This field is required.
+                        </small>                    
+                    </div>                    
+               
+                    <div class="form-actions">
+                        <button type="button" id="register-back-btn" class="btn btn-default" [routerLink]="['/login']">Back</button>
+                        <button type="submit" id="register-submit-btn" class="btn btn-success uppercase pull-right">Register</button>
+                    </div>
                 </div>
                 
             </form>

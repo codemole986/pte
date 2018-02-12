@@ -2,123 +2,190 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {Http, Response, Headers, RequestOptions } from "@angular/http";
 import 'rxjs/add/operator/map';
+import { GlobalService } from '../shared/services/global.service';
+import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
 import { routerTransition } from '../router.animations';
 
 import { User } from '../model/user'
+import { PermissionRenderComponent } from './permission-render.component';
 
 @Component({
-  selector: 'app-manage',
-  template: require('./manage.component.html'),
-  styles:  [`${require('./manage.component.css')}`],
-  animations: [routerTransition()]  
+  	selector: 'app-manage',
+  	template: require('./manage.component.html'),
+  	styles:  [`${require('./manage.component.css')}`],
+  	animations: [routerTransition()],
+	providers: [GlobalService]  
 })
 export class ManageComponent implements OnInit {
-	userlist: User[];
-	chgpermission: Boolean;
-  	userinfo: User;
-  	isStudent = false;
-  	isTeacher = false;
-  	isChecker = false;
-  	isManager = false;
+	
+  	gridsettings: any;
+    userdatasource: LocalDataSource;
 
-  	constructor(private http: Http, private router: Router) { }
+    currentuserid: number;
+
+    permissionNames: any[];
+    classNames: any[];
+
+
+  	constructor(private http: Http, private router: Router, private globalService: GlobalService) { }
 
   	ngOnInit() {
-  		this.getUsers();
+  	
+  		this.permissionNames = this.globalService.permissionNames;
+  		this.classNames = this.globalService.simpleclassnames;
+
+  		//this.userdatasource = new ServerDataSource(this.http, { totalKey: "total", dataKey: "data", endPoint: '/user/getuserlist' });
+  		this.getUserlist();
+
+  		this.gridsettings = {
+            mode: 'inline',
+            selectMode: 'single',
+            hideHeader: false,
+            hideSubHeader: true,
+            actions: {
+                columnTitle: '',
+                add: false,
+                edit: true,
+                'delete': true,                
+                position: 'left'
+            },             
+            filter: {
+                inputClass: '',
+            },
+            edit: {
+                inputClass: '',
+                editButtonContent: 'Edit',
+                saveButtonContent: 'Update',
+                cancelButtonContent: 'Cancel',
+                confirmSave: true,
+            },
+            delete: {
+                deleteButtonContent: 'Delete',
+                confirmDelete: true,
+            },
+            attr: {
+                id: 'usergrid',
+                class: 'table table-bordered table-hover table-striped',
+            },
+            noDataMessage: 'No data found',            
+            pager: {
+                display: true,
+                perPage: 15,
+            },
+            columns: {                
+                name: {
+                    title: 'Full Name'
+                },                               
+                email: {
+                    title: 'Email'
+                },
+                permission: {
+                    title: 'Permission',
+                    type: 'custom',
+                    renderComponent: PermissionRenderComponent,
+                    editor: {
+                      type: 'list',
+                      config: {
+                        list: this.permissionNames,
+                      },
+                    }
+                },
+                class: {
+                    title: 'Class',
+                    editor: {
+                      type: 'list',
+                      config: {
+                        list: this.classNames,
+                      },
+                    }
+                },
+                created_at: {
+                    title: 'Reg. Date',
+                    editable: false
+                }
+            }
+        };
   	}
 
-  	getUsers() {
-		this.http.get("/user/getusers").
-		map(
-			(response) => response.json()
-		).
-		subscribe(
-			(data) => {
-				this.userlist = data;
-			}
-		)
-	}
-
-	showAllowPermissionForm(uinfo: User) {
-		this.userinfo = new User;
-		this.userinfo = uinfo;
-		this.chgpermission = true;
-		if(uinfo.permission.indexOf('A')!=-1) {
-			this.isStudent = true;
-			this.isTeacher = true;
-			this.isChecker = true;
-			this.isManager = true;			
-		} else {
-			if(uinfo.permission.indexOf('D')!=-1) {
-				this.isStudent = true;			
-			}
-			if(uinfo.permission.indexOf('C')!=-1) {
-				this.isTeacher = true;				
-			}
-			if(uinfo.permission.indexOf('B')!=-1) {
-				this.isChecker = true;				
-			}
-		}
-	}
-
-	checkpermission() {
-		if(!this.isManager){
-			this.isStudent = true;
-			this.isTeacher = true;
-			this.isChecker = true;
-		} else {
-			this.isStudent = false;
-			this.isTeacher = false;
-			this.isChecker = false;
-		}
-	}
-
-	onClickUpdate() {
-		this.userinfo.permission = "";
-		if(this.isStudent) {
-			this.userinfo.permission += 'D';
-		}
-		if(this.isTeacher) {
-			this.userinfo.permission += 'C';
-		}
-		if(this.isChecker) {
-			this.userinfo.permission += 'B';
-		}
-		if(this.isManager) {
-			this.userinfo.permission = 'A';
-		}
-
-    	this.http.post("/user/update", this.userinfo).
+  	getUserlist() {
+  		this.http.get("/user/getusers").
     	map(
-            (response) => response.json()
-        ).
-        subscribe(
-    		(data) => {
-    			alert(data.message);
-    			this.getUsers();
-    		}
-    	);
+        (response) => response.json()
+      ).
+      subscribe(
+  		  (data) => {
+  			 this.userdatasource = new LocalDataSource(data);
+  		  }
+    	);    	      
+  	}
+
+    onUserRowSelect(event: any) {
+        if(this.currentuserid == event.data.id) {
+            this.currentuserid = 0;
+        } else {
+            this.currentuserid = event.data.id;
+        }
     }
 
-    onClickDelete(id: number) {
-    	if(window.confirm("Delete really?")) {
-	    	this.http.get("/user/delete/"+id).
+    initUserPassword() {
+      if(this.currentuserid == null || this.currentuserid == 0) {
+        window.alert("Select User row.");
+        return;
+      } else {
+        this.http.get("/user/initpassword/"+this.currentuserid).
+        map(
+          (response) => response.json()
+        ).
+        subscribe(
+          (data) => {
+            if(data.state == "error") {
+              alert(data.message);
+            }
+          }
+        );       
+      }
+    }
+
+  	onSaveConfirm(event: any) {
+        if (window.confirm('Are you sure you want to save?')) {            
+          this.http.post("/user/update", event.newData).
+  	    	map(
+  	            (response) => response.json()
+  	        ).
+  	        subscribe(
+  	    		(data) => {  	    			
+              if(data.state == "success"){
+  	    			  event.confirm.resolve(event.newData);      
+              } else {
+                alert(data.message);
+              }
+  	    		}
+  	    	);    	                            
+        } else {
+            event.confirm.reject();
+        }
+    }
+
+    onDeleteConfirm(event: any) {
+    	if (window.confirm('Are you sure you want to delete?')) {
+	    	this.http.get("/user/delete/"+event.data.id).
 	    	map(
 	            (response) => response.json()
 	        ).
 	        subscribe(
 	    		(data) => {
-	    			alert(data.message);
-	    			this.chgpermission = false;
-	    			this.userinfo = new User;
-	    			this.isStudent = false;
-  					this.isTeacher = false;
-  					this.isChecker = false;
-  					this.isManager = false;
-	    			this.getUsers();
+	    			if(data.state == "success"){
+              event.confirm.resolve();
+            } else {
+              alert(data.message);
+            }	    			
 	    		}
 	    	);
-	    }
+	    } else {
+            event.confirm.reject();
+        }
     }
+
+  	
 
 }

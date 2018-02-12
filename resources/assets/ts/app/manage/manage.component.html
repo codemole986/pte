@@ -1,85 +1,25 @@
 <app-header></app-header>
 <section class="main-container">
     <div [@routerTransition]>
-        <form #problemForm="ngForm">
-            <h2 class="text-muted">Manager <small>User > List</small></h2>
-            <hr/>            
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="card card-default mb-3">
-                        <div class="card-header">
-                            <i class="fa fa-cog fa-fw"></i> List of Users 
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-bordered table-hover table-striped">
-                                <thead>
-                                    <th> No </th>
-                                    <th> Name </th>
-                                    <th> Email </th>
-                                    <th> Permission </th>
-                                    <th> Reg. Date </th>
-                                    <th class="text-center">&nbsp;</th>
-                                </thead>
-                                <tr *ngFor="let user of userlist">
-                                    <td>{{user.no}}</td>
-                                    <td>{{user.name}}</td>
-                                    <td>{{user.email}}</td>
-                                    <td>{{user.permission}} </td>
-                                    <td>{{user.created_at}}</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info"
-                                            (click)="showAllowPermissionForm(user)">
-                                            <i class="fa fa-pencil-square fa-fw"></i> Permission
-                                        </button>                                      
-                                        <button class="btn btn-sm btn-danger"
-                                            (click)="onClickDelete(user.id)">
-                                            <i class="fa fa-minus-square fa-fw"></i> Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-</section>
-<section>
-    <form *ngIf="chgpermission" #permissionForm="ngForm" style="padding: 15px;">
-        <input name="id" type="hidden" class="form-control" [(ngModel)]="userinfo.id">
-        <h2 class="text-muted"> >> <small>Permission > Allow</small></h2>
+        <h3 class="page-title">User Manage <small> <a [routerLink]="['/']" style="text-decoration: none;"><i class="fa fa-home"></i> Home</a> <i class="fa fa-angle-right"></i> Manage <a [routerLink]="['/manage']" style="text-decoration: none;"><i class="fa fa-angle-right"></i> User </a></small></h3>
         <hr/>            
         <div class="row">
             <div class="col-lg-12">
                 <div class="card card-default mb-3">
                     <div class="card-header">
-                        <i class="fa fa-cog fa-fw"></i> Setting of Permission
+                        <div class="caption">
+                            <i class="fa fa-user fa-fw"></i> User List
+                        </div>  
+                        <div class="actions">    
+                            <a href="javascript:;" class="btn btn-default btn-sm" (click)="initUserPassword()">
+                                <i class="fa fa-unlock-alt fa-fw"></i> Init Password </a>  
+                        </div>
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <label><input type="checkbox" name="isStudent" [(ngModel)]="isStudent" value="D" >Student</label>
-                        </div>
-                        <div class="row">
-                            <label><input type="checkbox" name="isTeacher" [(ngModel)]="isTeacher" value="C">Teacher</label>
-                        </div>
-                        <div class="row">
-                            <label><input type="checkbox" name="isChecker" [(ngModel)]="isChecker" value="B">Checker</label>
-                        </div>
-                        <div class="row">
-                            <label><input type="checkbox" name="isManager" [(ngModel)]="isManager" value="A" (click)="checkpermission();">Manager</label>
-                        </div>
+                        <ng2-smart-table [settings]="gridsettings" [source]="userdatasource" (editConfirm)="onSaveConfirm($event)" (deleteConfirm)="onDeleteConfirm($event)" (userRowSelect)="onUserRowSelect($event)"></ng2-smart-table>
                     </div>
                 </div>
             </div>
         </div>
-        <hr/>
-        <div class="row">
-            <div class="col text-right">
-            <p class="ng-tns-c14-20 my-2">
-                <button class="btn btn-sm btn-primary" type="button" (click)="onClickUpdate(permissionForm.value)"><i class="fa fa-save fa-fw"></i> Save</button>                                 
-            </p>
-            </div>
-        </div>
-    </form>
+    </div>
 </section>

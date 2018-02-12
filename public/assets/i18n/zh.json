@@ -3,6 +3,7 @@
     "Charts": "Charts",
     "Tables": "Tables",
     "Forms": "Forms",
+    "Home": "zhHome",
     "Bootstrap Element": "Bootstrap Element",
     "Bootstrap Grid": "Bootstrap Grid",
     "Component": "Component",
@@ -35,5 +36,7 @@
     "Read and Answer" : "Read and Answer",
     "Read and Restore Order" : "Read and Restore Order",
     "Read and Fill in the Blanks" : "Read and Fill in the Blanks",
-    "Read and Select the Answer" : "Read and Select the Answer"
+    "Read and Select the Answer" : "Read and Select the Answer",
+
+    "SIGN IN TO CONTINUE." : "zh SIGN IN TO CONTINUE."
 }

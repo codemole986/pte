@@ -1,10 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Directive, OnDestroy, OnChanges } from '@angular/core';
+import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { NgForm } from "@angular/forms";
 import { Router } from '@angular/router';
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import 'rxjs/add/operator/map';
 import { routerTransition } from '../router.animations';
+import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
 import { GlobalService } from '../shared/services/global.service';
 import { Problem } from '../model/problem';
+import { TypeRenderComponent } from '../test/type-render.component';
+declare var $:any;
+declare var angular:any;
+declare var Dropzone: any;
+declare var CKEDITOR: any;
 
 @Component({
 	selector: 'app-quizlist',
@@ -15,12 +23,20 @@ import { Problem } from '../model/problem';
 })
 export class QuizlistComponent implements OnInit {
 	httpdata: any[];
-	degree = ['easy', 'medium', 'difficult'];
+	pdegree = [
+		{ value:"", title:"* Degree" },
+        { value:"Easy", title:"Easy" },
+        { value:"Medium", title:"Medium" },
+        { value:"Hard", title:"Hard" }
+        ];
+    degree = ['Easy', 'Medium', 'Hard'];
+    actionflag : boolean = window.sessionStorage.getItem('permission')=='A' || window.sessionStorage.getItem('permission')=='B';
+
 	newproblem:boolean;
 	editproblem:boolean;
 	editedProblem: Problem;
 
-	optionSentence: string;
+	strOptionSentence: string;
 
 	categoryNames: any[];
 	types: any[];
@@ -36,22 +52,147 @@ export class QuizlistComponent implements OnInit {
     show_chngoption: boolean;
     dis_deleteoption: boolean;
 
-    _CKEDITOR: any;
+    _CKEDITOR: any; 
     str_blank: string;
+
+    savefalg: boolean = true;
 
     select_blank_values: string[];
     select_blank_options: string[];
     blank_selectlist: any[];
     solution_selectlist: any;
+
+    @ViewChild('audioproblemFile') audioproblemfile: ElementRef;
+    @ViewChild('audiosolutionFile') audiosolutionfile: ElementRef;
+    @ViewChild('pictureproblemFile') pictureproblemfile: ElementRef;
+    @ViewChild('lectureproblemFile') lectureproblemfile: ElementRef;
+    @ViewChild('optionsentence') optionsentence: ElementRef;
+
+    quizgridsettings: any;
+    quizdatasource: ServerDataSource;
+    curselectedrowid: number;
+
     
-    constructor(private http: Http, private router: Router, private globalService: GlobalService) { this._CKEDITOR = CKEDITOR; }
+    constructor(private http: Http, private router: Router, private globalService: GlobalService) { 
+        this._CKEDITOR = CKEDITOR;
+    }
+
+    ngAfterViewInit() {
+        //Dropzone.autoDiscover = false;
+        //this.create_dropzone();
+    }
 
 	ngOnInit() {
-		this.getProblems();
+        Dropzone.autoDiscover = false;
+        //this.create_dropzone();
+
+        this.newproblem = false;
+        this.editproblem = false;
 		this.categoryNames = this.globalService.problemCategoryNames;
+		this.curselectedrowid = 0;
+
+		this.quizgridsettings = {
+            mode: 'inline',
+            selectMode: 'single',
+            hideHeader: false,
+            hideSubHeader: true,
+            actions: {
+                columnTitle: 'Actions',
+                add: false,
+                edit: false,
+                'delete': false,                
+                position: 'left'
+            },            
+            filter: {
+                inputClass: '',
+            },
+            edit: {
+                inputClass: '',
+                editButtonContent: 'Edit',
+                saveButtonContent: 'Update',
+                cancelButtonContent: 'Cancel',
+                confirmSave: false,
+            },
+            add: {
+                inputClass: '',
+                addButtonContent: 'Add New',
+                createButtonContent: 'Create',
+                cancelButtonContent: 'Cancel',
+                confirmCreate: false,
+            },
+            delete: {
+                deleteButtonContent: 'Delete',
+                confirmDelete: false,
+            },
+            attr: {
+                id: 'quiztestgrid',
+                class: 'table table-bordered table-hover table-striped',
+            },
+            noDataMessage: 'No data found',            
+            pager: {
+                display: true,
+                perPage: 15,
+            },
+            columns: {
+                category: {
+                	title: "Category",
+                },
+                type: {
+                    title: 'Type',
+                    type: 'custom',
+                    renderComponent: TypeRenderComponent,
+                },
+                degree: {
+                	title: "Degree",
+                },
+                title: {
+                	title: "QuizTitle",	
+                },
+                limit_time: {
+                	title: "LimitTime"
+                },
+                points: {
+                	title: "Points"
+                },
+                evaluate_mode: {
+                	title: "Mode"
+                },
+                email: {
+                	title: "Creater"
+                }
+            }
+        };
+
+        this.quizdatasource = new ServerDataSource(this.http, {totalKey: "total", dataKey: "data", endPoint: '/problem/getproblems' });
+
 	}
 	
-	getProblems() {
+    dz_flag: boolean = false;
+
+    create_dropzone() {
+        //Dropzone.autoDiscover = false;
+
+        if (!this.dz_flag) {
+            Dropzone.autoDiscover = false;
+            var audioNgApp = angular.module('audiofileupload',[
+                'thatisuday.dropzone'
+            ])
+
+            audioNgApp.config(function(dropzoneOpsProvider: any){
+                dropzoneOpsProvider.setOptions({
+                    url : '/uploadfile.php',
+                    maxFilesize : '10',   
+                    //acceptedFiles : 'audio/mp3',
+                    addRemoveLinks : true, 
+                    //params: {"type": "LWS", "kind":"problem"},                 
+                });
+            });
+
+            this.dz_flag = true;
+        }
+    }
+
+    getProblems() {
 		this.http.get("/problem/getproblems").
 		map(
 			(response) => response.json()
@@ -63,15 +204,24 @@ export class QuizlistComponent implements OnInit {
 		)
 	}
 
-	showEditProblemForm(problem: Problem) {
-		if(!problem) {		  
+	onQuizRowSelect(event: any) {
+		if(this.curselectedrowid == event.data.id) {
+            this.curselectedrowid = 0;
+            this.editedProblem = new Problem;
+        } else {
+            this.curselectedrowid = event.data.id;
+            this.editedProblem = event.data;      
+        }
+    }
+
+	showEditProblemForm() {
+		if(this.curselectedrowid == 0) {
+			window.alert("Select row.");
 			return;
 		}
 		this.newproblem = false;
 		this.editproblem = true;
-        this.editedProblem = new Problem;
-		this.editedProblem = problem;
-
+        
         if (this.editedProblem.type == 'RSA') {
             this.select_solution_value = this.editedProblem.content.select.options[this.editedProblem.solution.optionno];
         } else if (this.editedProblem.type == 'RMA') {
@@ -112,11 +262,11 @@ export class QuizlistComponent implements OnInit {
         this.dis_editoption = true;
         this.show_chngoption = false;
         this.dis_deleteoption = true;
-        this.optionSentence = "";
+        this.strOptionSentence = "";
         this.select_problem_values = [];
 
-        if (this._CKEDITOR.instances.ck_editor != null)
-            this._CKEDITOR.instances.ck_editor.destroy();
+        //if (this._CKEDITOR.instances.ck_editor != null)
+        //    this._CKEDITOR.instances.ck_editor.destroy();
 
 	}
 
@@ -129,17 +279,46 @@ export class QuizlistComponent implements OnInit {
         this.initProblem();
 	}
 
+    ck_flag: boolean = false;
+    ck_editor_selrange: any;
+
     createCkEditor() {
-        // Replace the <textarea id="ck_editor"> with an CKEditor instance.
-        // alert(this._CKEDITOR.instances.ck_editor);
-        if (this._CKEDITOR.instances.ck_editor == null) {
-            this._CKEDITOR.replace( 'ck_editor' );
-            this.convertContentToCkData();
+        if (!this.ck_flag) {
+            if (this._CKEDITOR.instances instanceof Array) {
+                for (var inst in this._CKEDITOR.instances)
+                    this._CKEDITOR.instances[inst].destroy(true);
+            }
+            this._CKEDITOR.removeAllListeners();
+            if (typeof this._CKEDITOR.destroy === "function") 
+                this._CKEDITOR.destroy();
+
+            if (typeof this._CKEDITOR.instances.ck_editor !=="undefined") {
+                try {
+                    this._CKEDITOR.instances.ck_editor.destroy(true);
+                } catch(e) { };
+            }
+            var that = this;
+            setTimeout(function(){
+                    that._CKEDITOR.replace( 'ck_editor', {
+                        on: {
+                            contentDom: function() {
+                                this.editable().on('blur',
+                                function(e:any) {
+                                    
+                                });
+                            }
+                        }
+                    } );
+                    that.convertContentToCkData();
+                },
+            10);
+            
+            this.ck_flag = true;
         }
     }
 
     initProblem() {
-        this.editedProblem.degree = 'easy';
+        this.editedProblem.degree = "";
         this.editedProblem.content = [];
         this.editedProblem.solution = [];
         this.editedProblem.content = this.globalService.getContentObject(this.editedProblem.type);
@@ -150,84 +329,71 @@ export class QuizlistComponent implements OnInit {
         this.dis_editoption = true;
         this.show_chngoption = false;
         this.dis_deleteoption = true;
-        this.optionSentence = "";
+        this.strOptionSentence = "";
         this.select_problem_values = [];
         this.select_blank_values = [];
         this.select_blank_options = [];
         this.blank_selectlist = [];
         
-        if (this._CKEDITOR.instances.ck_editor != null)
-            this._CKEDITOR.instances.ck_editor.destroy();
+        this.ck_flag = false;
+        this.dz_flag = false;
+        //alert("aaa");
+        //console.log(this._CKEDITOR.instances);
+
+        //if (this._CKEDITOR.instances.ck_editor != null)
+        //    this._CKEDITOR.instances.ck_editor.destroy();
     }
 
-    uploadfile(objname: any, fkind: string) {
-        var pfile = document.getElementById(objname);  
-        var ofile = pfile.files;
+    onClickSave() {
+        if(this.editedProblem.title == null || this.editedProblem.title.length == 0 || this.editedProblem.title.length > 255 ) {
+            this.savefalg = false;            
+            return;
+        }
 
-        var xhr: any;
-        var formData, key = ''||'file';
-    
-        xhr = new XMLHttpRequest();
-        formData = new FormData();
-        xhr.open('POST', "/uploadfile.php", true);
+        if(isNaN(this.editedProblem.limit_time) || this.editedProblem.limit_time < 0  ) {
+            this.savefalg = false;
+            return;
+        }
 
-        // Triggered when upload starts:
-        xhr.upload.onloadstart = function() {
-            
-        };
+        if(isNaN(this.editedProblem.points) || this.editedProblem.points < 0  ) {
+            this.savefalg = false;
+            return;
+        }
 
-        // Triggered many times during upload:
-        xhr.upload.onprogress = function(event: any) {
 
-        };
+        var qattrfile: any;
+        var sattrfile: any;        
+        var qformData = new FormData;
 
-        // Triggered when upload is completed:
-        xhr.onload = function() {
-            var responsetext = xhr.responseText;
-            alert("fileupload ok!");
-        };
 
-        // Triggered when upload fails:
-        xhr.onerror = function() {
-            alert("fileupload fail!");
-        };
-        
-
-        var strfilename = pfile.value;
-        var paths = strfilename.split('\\');
-        var fname = paths[paths.length-1];    
-
-        formData.append(key, ofile[0], fname);   
-        formData.append('type', this.editedProblem.type);   
-        formData.append('kind', fkind);   
-
-        xhr.withCredentials = false;
-   
-        // Initiate upload:
-        xhr.send(formData); 
-
-        //return xhr;       
-    }
-
-    uploadfilecheck(ufiletype: any, kind: string) {        
-        var objname = ufiletype+kind+"File";
-        this.uploadfile(objname, kind);        
-        var pfile = document.getElementById(objname);  
-        var strfilename = pfile.value;
-        var paths = strfilename.split('\\');
-        if(kind=="problem"){
-            if(ufiletype=="audio") {
-                this.editedProblem.content.audio = paths[paths.length-1];    
-            } else {
-                this.editedProblem.content.picture = paths[paths.length-1];    
-            }
-        } else {
-            this.editedProblem.solution.audio = paths[paths.length-1];
-        }        
-    }
-
-	onClickSave() {
         switch (this.editedProblem.type) {
+            case 'LWS':
+            case 'LTS':
+            case 'LSA':
+            case 'LSB':  
+                qattrfile = this.audioproblemfile.nativeElement;
+                for(var i=0; i<qattrfile.files.length; i++) {
+                    qformData.append('qfile[]', qattrfile.files[i]);   
+                    this.editedProblem.content.audio = qattrfile.files[i].name;    
+                }
+                break;              
+            case 'LTW':  
+            case 'LCD':      
+                qattrfile = this.audioproblemfile.nativeElement;      
+                for(var i=0; i<qattrfile.files.length; i++) {
+                    qformData.append('qfile[]', qattrfile.files[i]);   
+                    this.editedProblem.content.audio = qattrfile.files[i].name;    
+                }
+                this.checkCkEditorInfo();
+                break;
+            case 'RSA' :                
+            case 'RMA' :
+                qattrfile = this.pictureproblemfile.nativeElement;   
+                for(var i=0; i < qattrfile.files.length; i++) {
+                    qformData.append('qfile[]', qattrfile.files[i]);   
+                    this.editedProblem.content.picture = qattrfile.files[i].name;    
+                }                
+                break;
             case 'RFB':
                 this.checkCkEditorInfo();
                 break;
@@ -243,58 +409,153 @@ export class QuizlistComponent implements OnInit {
                     this.editedProblem.solution.optionno.push(this.solution_selectlist.optionno[i]);
                 }
                 break;
-
-            case 'LWS' :
-            case 'LTS' :
-                this.uploadfilecheck("audio", "problem");                
-                break;
-            case 'LTW': case 'LCD':
-                this.checkCkEditorInfo();
-                break;
             case 'SSA' :
             case 'SRS' :
-                this.uploadfilecheck("audio", "problem");     
-                this.uploadfilecheck("audio", "solution");  
-                break;
-            case 'RSA' :
-            case 'RMA' :
-                this.uploadfilecheck("picture", "problem");  
+                qattrfile = this.audioproblemfile.nativeElement;      
+                for(var i=0; i<qattrfile.files.length; i++) {
+                    qformData.append('qfile[]', qattrfile.files[i]);   
+                    this.editedProblem.content.audio = qattrfile.files[i].name;    
+                }
+                sattrfile = this.audiosolutionfile.nativeElement;      
+                for(var i=0; i<sattrfile.files.length; i++) {
+                    qformData.append('sfile[]', sattrfile.files[i]);   
+                    this.editedProblem.solution.audio = sattrfile.files[i].name;    
+                }
                 break;
             case 'SPI' :
-                this.uploadfilecheck("picture", "problem"); 
-                this.uploadfilecheck("audio", "solution");  
+                qattrfile = this.pictureproblemfile.nativeElement;      
+                for(var i=0; i<qattrfile.files.length; i++) {
+                    qformData.append('qfile[]', qattrfile.files[i]);   
+                    this.editedProblem.content.picture = qattrfile.files[i].name;    
+                }
+                sattrfile = this.audiosolutionfile.nativeElement;      
+                for(var i=0; i<sattrfile.files.length; i++) {
+                    qformData.append('sfile[]', sattrfile.files[i]);   
+                    this.editedProblem.solution.audio = sattrfile.files[i].name;    
+                }
                 break;
             case 'SAL' :
-                this.uploadfilecheck("audio", "solution");  
+                sattrfile = this.audiosolutionfile.nativeElement;      
+                for(var i=0; i<sattrfile.files.length; i++) {
+                    qformData.append('sfile[]', sattrfile.files[i]);   
+                    this.editedProblem.solution.audio = sattrfile.files[i].name;    
+                }  
                 break;
             case 'SRL' :
-                break;
+                break;            
         }
+
+        this.savefalg = true;
+
         this.http.post("/problem/insert", this.editedProblem).
     	map(
             (response) => response.json()
         ).
         subscribe(
     		(data) => {
-    			alert(data.message);
-    			this.getProblems();
+                if(data.state == "success") {
+                    this.editedProblem.id = data.qid; 
+                    if( (qattrfile!=null && qattrfile.files.length > 0) || (sattrfile!=null && sattrfile.files.length > 0) ){
+                        qformData.append('quizid', data.qid);
+                        this.http.post("/problem/uploadfile", qformData ).
+                        map(
+                            (response) => response.json()
+                        ).
+                        subscribe(
+                            (data) => {
+                                if(data.status == "Error") {
+                                    alert(data.message);                
+                                } else {
+                                    this.onClickList();                 
+                                }
+                            }
+                        );
+                    } else {
+                        this.onClickList();    
+                    } 
+                } else {
+                    alert(data.message);
+                }
     		}
     	);
+    }
+
+    onClickPlay() {
+        if(this.curselectedrowid != 0) {
+            if(this.editedProblem.id!=null) {            
+                this.router.navigate(['/exercise', this.editedProblem.id]);
+            }
+        } else {
+            alert("Select problem.");            
+        }
+    }
+
+    onClickPreview() {
+        if(this.curselectedrowid != 0) {
+            if(this.editedProblem.id!=null) {            
+                this.router.navigate(['/problem', this.editedProblem.id]);
+            }
+        } else {
+            alert("Select problem.");            
+        }
     }
 
     onClickList() {
         this.newproblem = false;
         this.editproblem = false;
+        this.savefalg = true;
     }
 
-    onClickUpdate(data: Problem) {
-        switch (this.editedProblem.type) {
+    onClickUpdate() {
+    	if(this.editedProblem.title == null || this.editedProblem.title.length == 0 || this.editedProblem.title.length > 255 ) {
+            this.savefalg = false;            
+            return;
+        }
+
+        if(this.editedProblem.degree == ""  ) {
+            this.savefalg = false;
+            return;
+        }
+
+        if(isNaN(this.editedProblem.limit_time) || this.editedProblem.limit_time < 0  ) {
+            this.savefalg = false;
+            return;
+        }
+
+        if(isNaN(this.editedProblem.points) || this.editedProblem.points < 0  ) {
+            this.savefalg = false;
+            return;
+        }
+
+        var qaudiofile: any = null;
+        var qformData = new FormData;
+
+        switch (this.editedProblem.type) {            
+            case 'LWS':
+            case 'LTS':
+            case 'LSA':
+            case 'LSB':
+                qaudiofile = this.audioproblemfile.nativeElement;
+                for(var i=0; i<qaudiofile.files.length; i++) {
+                    qformData.append('qfile[]', qaudiofile.files[i]);   
+                    this.editedProblem.content.audio = qaudiofile.files[i].name;    
+                }
+                break;              
+            case 'LTW':  
+            case 'LCD':
+                var qaudiofile: any;
+                qaudiofile = this.audioproblemfile.nativeElement;
+                for(var i=0; i<qaudiofile.files.length; i++) {
+                    qformData.append('qfile[]', qaudiofile.files[i]);   
+                    this.editedProblem.content.audio = qaudiofile.files[i].name;    
+                }
+                this.checkCkEditorInfo();
+                break;
             case 'RFB':
                 this.checkCkEditorInfo();
                 break;
             case 'RAN':
                 this.checkCkEditorInfo();
-                alert(this.editedProblem.content.text);
                 this.editedProblem.content.selectlist = [];
                 for (var i = 0;  i < this.blank_selectlist.length;  i++) {
                     this.editedProblem.content.selectlist.push({ "options" : this.blank_selectlist[i].options });
@@ -305,35 +566,65 @@ export class QuizlistComponent implements OnInit {
                     this.editedProblem.solution.optionno.push(this.solution_selectlist.optionno[i]);
                 }
                 break;
-            case 'LTW': case 'LCD':
-                this.checkCkEditorInfo();
-                break;
         }
-    	this.http.post("/problem/update", data).
+
+    	this.http.post("/problem/update", this.editedProblem).
     	map(
             (response) => response.json()
         ).
         subscribe(
     		(data) => {
-    			alert(data.message);
-    			this.getProblems();
+                if( data.state == "error") {
+                    alert(data.message);
+                } else {
+                    if(qaudiofile) {
+                        if (qaudiofile.files.length > 0) {
+                            qformData.append('quizid', data.qid);
+                            this.http.post("/problem/uploadfile", qformData ).
+                            map(
+                                (response) => response.json()
+                            ).
+                            subscribe(
+                                (data) => {
+                                    if(data.status == "Error") {
+                                        alert(data.message);                
+                                    } else {
+                                        this.onClickList();                 
+                                    }
+                                }
+                            );
+                        } else {
+                            this.onClickList();
+                        }
+                    } else {
+                        this.onClickList();    
+                    } 
+                }
     		}
     	);
     }
 
-    onClickDelete(id: number) {
-    	if(confirm("Delete really?")) {
-	    	this.http.get("/problem/delete/"+id).
-	    	map(
-	            (response) => response.json()
-	        ).
-	        subscribe(
-	    		(data) => {
-	    			alert(data.message);
-	    			this.getProblems();
-	    		}
-	    	);
-	    }
+    onClickDelete() {
+    	if(this.curselectedrowid == 0) {
+    		window.alert('Select row.');
+    	} else {
+    		if(window.confirm('Are you sure you want to delete?')) {
+		    	this.http.get("/problem/delete/"+this.curselectedrowid).
+		    	map(
+		            (response) => response.json()
+		        ).
+		        subscribe(
+		    		(data) => {
+	                    if( data.state == "error") {
+		    			    alert(data.message);
+	                    } else {
+	                        this.quizdatasource.load(null);
+	                    }
+		    			
+		    		}
+		    	);
+		    }
+    	}
     }
 
     getTypes(category: string) {
@@ -358,15 +649,32 @@ export class QuizlistComponent implements OnInit {
     onChangeProbType() {
         this.initProblem();
     }
+
+    onSelectProbCategory(category: string, type: string) {
+        this.editedProblem.category = category
+        this.editedProblem.type = type;
+        this.initProblem();
+
+        //setTimeout( this.create_dropzone(), 1000);
+        
+    }
+
+    getCategoryIconClass(category: string) {
+        if (category == 'Writing')  return "fa-keyboard-o";
+        else if (category == 'Listening') return "fa-headphones";
+        else if (category == 'Reading') return "fa-eye";
+        else if (category == 'Speaking') return "fa-volume-up";
+        return "";
+    }
 /* =============================== WSM ======================================*/
 
 /* =============================== RSA ======================================*/
 	// problem
     validateOption() {
-    	if (this.optionSentence == "")
+    	if (this.strOptionSentence == "")
     		return false;
 
-        if (this.globalService.getIndexFromArray(this.editedProblem.content.select.options, this.optionSentence) >= 0)
+        if (this.globalService.getIndexFromArray(this.editedProblem.content.select.options, this.strOptionSentence) >= 0)
     		return false;
     	
         return true;
@@ -403,27 +711,27 @@ export class QuizlistComponent implements OnInit {
     }
     onAddOption() {
     	if (this.validateOption() == false) {
-    		alert("Can't add empty or equal sentence in list");
+    		//alert("Can't add empty or equal sentence in list");
     		return;
     	}
-    	this.editedProblem.content.select.options.push(this.optionSentence);
+    	this.editedProblem.content.select.options.push(this.strOptionSentence);
     }
     onEditOption() {
         var i = this.globalService.getIndexFromArray(this.editedProblem.content.select.options, this.select_problem_values[0]);
-        if (i >= 0) this.optionSentence = this.editedProblem.content.select.options[i];
-        $('#option_sentence').focus();
+        if (i >= 0) this.strOptionSentence = this.editedProblem.content.select.options[i];
+        this.optionsentence.nativeElement.focus();
     	this.show_editoption = false;
     	this.show_chngoption = true;
         this.dis_deleteoption = true;
     }
     onChangeOption() {
     	if (this.validateOption() == false) {
-    		alert("Can't add empty or equal sentence in list");
+    		//alert("Can't add empty or equal sentence in list");
     		return;
     	}
         var i = this.globalService.getIndexFromArray(this.editedProblem.content.select.options, this.select_problem_values[0]);
         if (i >= 0)
-            this.editedProblem.content.select.options.splice(i, 1, this.optionSentence);
+            this.editedProblem.content.select.options.splice(i, 1, this.strOptionSentence);
         
         this.show_editoption = true;
     	this.show_chngoption = false;
@@ -499,8 +807,10 @@ export class QuizlistComponent implements OnInit {
             return;
 
         if (this.editedProblem.type == 'LCD') {
+
             this._CKEDITOR.instances.ck_editor.insertHtml( "<span style='background-color:#ff0'>" + this.str_blank + "</span>&nbsp;" );
         } else {
+            //this._CKEDITOR.instances.ck_editor.getSelection().selectRanges([this.ck_editor_selrange]);
             this._CKEDITOR.instances.ck_editor.insertHtml( "<p><input type='text' value='" + this.str_blank + "'></p>" );
         }
         this.str_blank = '';
@@ -562,7 +872,7 @@ export class QuizlistComponent implements OnInit {
                 this.solution_selectlist = {};
                 this.solution_selectlist.optionno = [];
                 var str_data = this._CKEDITOR.instances.ck_editor.getData();
-                var reg = /(<select name=\"sel_)([0-9]*)(\">)((<option[a-z,A-Z, ,",=,0-9,_]*>[a-z,A-Z, ,",=,0-9,_]*<\/option>)*)(<\/select>)/;
+                var reg = /(<select name=\"sel_)([0-9]*)(\">)((<option[a-z,A-Z, ,\",=,0-9,_]*>[a-z,A-Z, ,\",=,0-9,_]*<\/option>)*)(<\/select>)/;
                 var found = reg.test(str_data);
                 var chngflag = false;
                 while (found) {
@@ -591,6 +901,7 @@ export class QuizlistComponent implements OnInit {
                     }
                     found = reg.test(str_data);
                 }
+                alert(str_data);
                 this.editedProblem.content.text = str_data;
                 break;
         }
@@ -617,12 +928,12 @@ export class QuizlistComponent implements OnInit {
                 while (found) {
                     var matches = reg.exec(content);
                     var sel_index = this.solution_selectlist.optionno[index].id;
-                    var html = "<select name='sel_" + this.blank_selectlist[sel_index].id + "'";
+                    var html = "<select name=\"sel_" + this.blank_selectlist[sel_index].id + "\"";
                     html = html + ">";
                     for (var j = 0;  j < this.blank_selectlist[sel_index].options.length;  j++) {
-                        html = html + "<option value='" + this.blank_selectlist[sel_index].options[j] + "'";
+                        html = html + "<option value=\"" + this.blank_selectlist[sel_index].options[j] + "\"";
                         if (j == this.solution_selectlist.optionno[index].option)
-                            html = html + " selected='1'";
+                            html = html + " selected=\"1\"";
                         html = html + ">" + this.blank_selectlist[sel_index].options[j] + "</option>";
                     }
                     html = html + "</select>";
@@ -680,37 +991,37 @@ export class QuizlistComponent implements OnInit {
         }
     }
     validateBlank() {
-        if (this.optionSentence == "")
+        if (this.strOptionSentence == "")
             return false;
 
-        if (this.globalService.getIndexFromArray(this.select_blank_options, this.optionSentence) >= 0)
+        if (this.globalService.getIndexFromArray(this.select_blank_options, this.strOptionSentence) >= 0)
             return false;
         
         return true;
     }
     onAddBlank() {
         if (this.validateBlank() == false) {
-            alert("Can't add empty or equal word in list");
+            //alert("Can't add empty or equal word in list");
             return;
         }
-        this.select_blank_options.push(this.optionSentence);
+        this.select_blank_options.push(this.strOptionSentence);
     }
     onEditBlank() {
         var i = this.globalService.getIndexFromArray(this.select_blank_options, this.select_blank_values[0]);
-        if (i >= 0) this.optionSentence = this.select_blank_options[i];
-        $('#option_sentence').focus();
+        if (i >= 0) this.strOptionSentence = this.select_blank_options[i];
+        this.optionsentence.nativeElement.focus();
         this.show_editoption = false;
         this.show_chngoption = true;
         this.dis_deleteoption = true;
     }
     onChangeBlank() {
         if (this.validateBlank() == false) {
-            alert("Can't add empty or equal word in list");
+            //alert("Can't add empty or equal word in list");
             return;
         }
         var i = this.globalService.getIndexFromArray(this.select_blank_options, this.select_blank_values[0]);
         if (i >= 0)
-            this.select_blank_options.splice(i, 1, this.optionSentence);
+            this.select_blank_options.splice(i, 1, this.strOptionSentence);
         
         this.show_editoption = true;
         this.show_chngoption = false;
@@ -762,7 +1073,7 @@ export class QuizlistComponent implements OnInit {
         if (this.select_blank_options.length == 0)
             return;
 
-        var blank_select = { id: "", select_value: "", options: [""] };
+        var blank_select = { id: 0, select_value: "", options: [""] };
         if (this.select_blank_values.length == 1)
             blank_select.select_value = this.select_blank_values[0];
         else
@@ -781,7 +1092,7 @@ export class QuizlistComponent implements OnInit {
         this.blank_selectlist.push(blank_select);
         this.select_blank_options = [];
         this.select_blank_values = [];
-        this.optionSentence = "";
+        this.strOptionSentence = "";
     }
 
     onAddSelect(i: number) {

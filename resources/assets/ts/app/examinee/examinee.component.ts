@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -6,8 +8,10 @@ import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import 'rxjs/add/operator/map';
 import { routerTransition } from '../router.animations';
 import { GlobalService } from '../shared/services/global.service';
+import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
 import { Problem } from '../model/problem';
 import { Answer } from '../model/answer';
+import { Testevent } from '../model/testevent';
 import {EditorComponent} from './editor/editor.component';
 import {ProblemComponent} from './problem/problem.component';
 
@@ -20,7 +24,16 @@ import {ProblemComponent} from './problem/problem.component';
 })
 export class ExamineeComponent implements OnInit {
 	httpdata: any[];
+
 	quiz_id: number;	
+	testevent_id: number;
+	curtestevent_info: Testevent;
+	quiz_list: any;
+	quiz_number: number;
+	mark: number;
+	arrchecknumber: any[];
+	curtotalpoint: number;
+	stdtotalpoint: number;
 	currentProblem: Problem;
 	currentAnswer: Answer;
 	currentlimittime: number;	
@@ -35,8 +48,11 @@ export class ExamineeComponent implements OnInit {
 	arr_types: any[];
 	editordata: Answer;
 	problemdata: Problem;
+
 	timerflag: boolean = false;
-	listvisible: boolean = false;
+	listvisible: boolean = false;	
+	selfexam: boolean = false;
+	testvisible: boolean = false;
 
 	radio_answer_val: string;
 	check_answer_val: any[];
@@ -48,6 +64,7 @@ export class ExamineeComponent implements OnInit {
 	order_right_options: any[];
 
 	audio_flag: boolean;
+	audio_autoplay: boolean;
 
 	recorder: any;
 	mediastream: any;
@@ -64,12 +81,24 @@ export class ExamineeComponent implements OnInit {
 
 	progressvalue: number;
 
+	@ViewChild('htmldata') htmldata: ElementRef;
+	@ViewChild('choicepanel') choicepanel: ElementRef;
+	@ViewChild('html_answerdata') html_answerdata: ElementRef;
+
+	examineegridsettings: any;
+    examineedatasource: ServerDataSource;
+    curselectedrowid: number; //examineeid/testeventid
+    curevaluatestatus: number; 
+
+    viewexamflag: boolean = false;
+	
 	constructor(private http: Http, private route: ActivatedRoute,
   private router: Router, private globalService: GlobalService) { 
-		this.quiz_id = 0;
-		this.previousbutton = true;
+		this.quiz_id = 0;		
+		this.curtestevent_info = new Testevent;
+		this.previousbutton = false;
 		this.endbutton = false;
-		this.nextbutton = true;
+		this.nextbutton = false;
 		this.answertext = false;
 		this.solutiontextvisible = false;
 		this.markvisible = false;
@@ -80,20 +109,347 @@ export class ExamineeComponent implements OnInit {
 		this.currentAnswer.answer = this.globalService.getSolutionObject(this.currentProblem.type);	
 
 		this.audio_flag = false;
+		this.audio_autoplay = false; 
+
+		this.arrchecknumber = [];
+		this.curtotalpoint = 0;
+		this.stdtotalpoint = 0;
 	}
 
 	
 
 	ngOnInit() {		
+		this.testevent_id = this.route.snapshot.params['testid'];
 		this.quiz_id = this.route.snapshot.params['id'];
-		if(this.quiz_id!=null) {
+		if(this.testevent_id!=null) {
+			this.selfexam = false;
+			this.listvisible = false;
+			this.testvisible = true;
 			this.timerflag = true;
-			this.getProblem(this.quiz_id);			
+			this.getTestevent(this.testevent_id);									
+		} else if(this.quiz_id!=null) {
+			this.selfexam = true;
+			this.listvisible = false;
+			this.testvisible = false;
+			this.timerflag = true;
+			this.getProblem(this.quiz_id);									
 		} else {
 			this.listvisible = true;
-			this.getAnswers();	
+			this.testvisible = false;
+			this.selfexam = false;
+
+			this.examineegridsettings = {
+	            mode: 'inline',
+	            selectMode: 'single',
+	            hideHeader: false,
+	            hideSubHeader: true,
+	            actions: {
+	                columnTitle: 'Actions',
+	                add: false,
+	                edit: false,
+	                'delete': false,                
+	                position: 'left'
+	            },            
+	            filter: {
+	                inputClass: '',
+	            },
+	            edit: {
+	                inputClass: '',
+	                editButtonContent: 'Edit',
+	                saveButtonContent: 'Update',
+	                cancelButtonContent: 'Cancel',
+	                confirmSave: false,
+	            },
+	            add: {
+	                inputClass: '',
+	                addButtonContent: 'Add New',
+	                createButtonContent: 'Create',
+	                cancelButtonContent: 'Cancel',
+	                confirmCreate: false,
+	            },
+	            delete: {
+	                deleteButtonContent: 'Delete',
+	                confirmDelete: false,
+	            },
+	            attr: {
+	                id: 'examineegrid',
+	                class: 'table table-bordered table-hover table-striped',
+	            },
+	            noDataMessage: 'No data found',            
+	            pager: {
+	                display: true,
+	                perPage: 15,
+	            },
+	            columns: {
+	                start_at: {
+	                	title: 'StartTime',
+	                },
+	                email: {
+	                	title: 'User',
+	                },
+	                testname: {
+	                	title: "TestName",
+	                },
+	                testclass: {
+	                	title: "Class",
+	                },
+	                testdegree: {
+	                	title: "Degree",
+	                }, 
+	                count: {
+	                	title: "QuizCount",
+	                },
+	                limit_time: {
+	                	title: "LimitTime(min)",
+	                },
+	                totalmarks: {
+	                	title: "StdMarks",
+	                },
+	                test_status: {
+	                	title: "Test Status",	
+	                },
+	                evaluate_status: {
+	                	title: "Evaluate Status",	
+	                },
+	                checker_email: {
+	                	title: "Evaluator",	
+	                },
+	                marks: {
+	                	title: "Marks",	
+	                }
+	            }
+	        };
+
+	        this.examineedatasource = new ServerDataSource(this.http, { totalKey: "total", dataKey: "data", endPoint: '/test/gettesteventlist' });
+
 		}		
 	}
+
+
+	onExamineeRowSelect(event: any) {
+        if(this.curselectedrowid == event.data.id) {
+            this.curselectedrowid = 0;            
+        } else {
+            this.curselectedrowid = event.data.id;
+            this.curevaluatestatus = event.data.evaluate_status;
+        }
+    }
+
+    deleteExam() {
+    	if( this.curselectedrowid == 0 ) {
+            window.alert("Select test row.");
+        } else if(this.curevaluatestatus != 0) {
+        	window.alert("Can't Delete the row.");
+        } else {
+            if (window.confirm('Are you sure you want to delete?')) {
+            	this.http.get("/test/eventdelete/"+this.curselectedrowid).
+                map(
+                    (response) => response.json()
+                ).
+                subscribe(
+                    (data) => {
+                        if(data.state == "error"){
+                            alert(data.message); 
+                        } else {
+                            this.examineedatasource.refresh();
+                            this.curselectedrowid = 0;                            
+                        }
+                    }
+                );
+            }
+        }
+    }
+
+    viewExam() {
+    	if( this.curselectedrowid == 0 ) {
+            window.alert("Select test row.");
+        } else if(this.curevaluatestatus == 0) {
+        	window.alert("Can't View the exam.");
+        } else {
+        	//this.visibility = true;
+        	this.viewexamflag = true;
+        	this.selfexam = false;
+			this.listvisible = false;
+			this.testvisible = true;
+			this.timerflag = false;
+			this.getTestevent(this.curselectedrowid);		
+        }
+    }
+
+	getTestevent(eid: number) {
+		this.http.get("/test/gettesteventrow/"+eid).
+        map(
+            (response) => response.json()
+        ).
+        subscribe(
+            (data) => {
+            	this.curtestevent_info = data[0];
+            	this.quiz_list = this.curtestevent_info.problem_list;
+
+            	if(this.testvisible && this.timerflag) {
+					this.currentlimittime = Number(this.curtestevent_info.limit_time*60).valueOf();	
+					this.ctimer = setInterval(()=> {
+						this.currentlimittime--; 
+						if(this.currentlimittime<=0) 
+							this.endExamine(); 						
+					}, 1000 );	
+					this.markvisible = false;					
+				}
+
+            	for( var pn=0; pn<this.curtestevent_info.count; pn++) {
+            		if(this.quiz_list[pn+1] == null) {
+	            		continue;
+	            	} else {
+	            		this.quiz_number = pn+1;
+	            		this.quiz_id = this.quiz_list[this.quiz_number];
+	            		break;
+	            	}
+            	}
+
+            	if(this.quiz_number == 1) {
+            		this.previousbutton = false;            		
+            	} else {
+					this.previousbutton = true;
+				}
+
+				if(this.quiz_number < this.curtestevent_info.count) {
+            		this.nextbutton = true;            		
+            	} else {
+					this.nextbutton = false;
+				}				
+
+            	if(this.quiz_id != 0) {
+            		this.getProblem(this.quiz_id);
+            	}
+            	
+            }
+        );
+	}
+
+	evaluateTest() {		
+		this.mark = Math.round( this.curtestevent_info.totalmarks / this.stdtotalpoint * this.curtotalpoint );
+		if(isNaN(this.mark)) {
+			this.mark = 0;
+		}
+		this.curtestevent_info.marks = this.mark;
+	}
+
+	endExamine() {
+		if(this.selfexam) {
+ 			clearInterval(this.ctimer);
+			this.endbutton = true;		
+			this.answertext = true;	
+			this.solutiontextvisible = false;
+			this.markvisible = true;
+			this.audio_autoplay = false; 
+			
+			if(this.audio_flag) {
+				stopRecording();
+			}
+			//this.onSave();	
+			this.evaluateExamine();		
+		} else {
+			if (window.confirm('Are you sure you want to terminate test?')) {
+				clearInterval(this.ctimer);
+				this.endbutton = true;		
+				this.answertext = true;	
+				this.solutiontextvisible = false;				
+				this.markvisible = true;
+				this.audio_autoplay = false; 
+				
+				if(this.audio_flag) {
+					stopRecording();
+				}
+				this.onSave(true);	
+
+				//
+				this.http.post("/test/updatetesteventmarks/"+this.testevent_id, this.curtestevent_info).
+		        map(
+		            (response) => response.json()
+		        ).
+		        subscribe(
+		            (data) => {
+		            	if(data.state == "error") {
+		            		alert(data.message);
+		            	}		            	
+		            }
+		        );
+
+			} else if(window.confirm('Are you sure you want to exite now?')) {
+				clearInterval(this.ctimer);				
+				if(this.audio_flag) {
+					stopRecording();
+				}
+				this.onSave();	
+				// go dashboard
+			}
+		}
+	}
+
+	prevExamine() {
+		if(!this.endbutton && !this.viewexamflag)
+			this.onSave();	
+
+    	if(this.quiz_number>1)
+			this.quiz_number--;
+		else
+			this.quiz_number = 1;
+
+		if(this.quiz_number == 1)
+			this.previousbutton = false;
+		else
+			this.previousbutton = true;
+
+		if(this.quiz_number < this.curtestevent_info.count) {
+    		this.nextbutton = true;            		
+    	} else {
+			this.nextbutton = false;
+		}
+
+		this.quiz_id = this.quiz_list[this.quiz_number];
+		this.getProblem(this.quiz_id);			
+	}
+
+	nextExamine() {
+		if(!this.endbutton && !this.viewexamflag)
+			this.onSave();	
+
+		this.quiz_number++;
+		if(this.quiz_number > this.curtestevent_info.count) {
+			this.quiz_number = this.curtestevent_info.count;
+		}
+
+		if(this.quiz_number < this.curtestevent_info.count) {
+			this.nextbutton = true;	
+		} else {
+			this.nextbutton = false;	
+		}
+
+		if(this.quiz_number > 1) {
+			this.previousbutton = true;
+		} else {
+			this.previousbutton = false;
+		}
+		
+		this.quiz_id = this.quiz_list[this.quiz_number];
+		this.getProblem(this.quiz_id);			
+	}
+
+    exitExamine() {
+    	clearInterval(this.ctimer);
+		if(this.audio_flag) {
+			stopRecording();
+		}
+			
+    	if(this.selfexam) { 
+    		this.router.navigate(['/quizlist']);
+    	} else if(this.viewexamflag) {
+    		this.router.navigate(['/examinee']);
+    	} else {
+    		this.router.navigate(['/test']);
+    	}
+    	
+    }
 
 	getProblem(qid: number) {
 		this.http.get("/problem/getproblem/"+qid).
@@ -102,47 +458,58 @@ export class ExamineeComponent implements OnInit {
 		).
 		subscribe(
 			(data) => {
-				this.currentProblem = data;
-				this.currentAnswer.answer = this.globalService.getSolutionObject(this.currentProblem.type);
-				this.currentAnswer.type = data.type;
-				this.currentlimittime = Number(data.limit_time).valueOf();	
-				this.currentAnswer.quiz_id = data.id;	
+				if(typeof data.id == "number") {
+					this.currentProblem = data;
+					this.http.get("/answer/getanswer/"+this.testevent_id+"/"+data.id).
+					map(
+						(response) => response.json()
+					).
+					subscribe(
+						(ansdata) => {
+							if(typeof ansdata.id == "number") {
+								this.currentAnswer = ansdata;									
+							} else {
+								this.currentAnswer.answer = this.globalService.getSolutionObject(this.currentProblem.type);
+								if(this.testvisible) {
+									this.currentAnswer.testevent_id = this.testevent_id;					
+								} else {
+									this.currentAnswer.testevent_id = 0;					
+								}
+								this.currentAnswer.quiz_id = data.id;	
+								this.currentAnswer.evaluate_mark = 0;
+							}
+						}
+					);
 
-				this.editordata = this.currentAnswer;
-				this.problemdata = this.currentProblem;
+					this.currentAnswer.type = data.type;									
+					
+					this.editordata = this.currentAnswer;
+					this.problemdata = this.currentProblem;
 
-				if(this.currentProblem.type == 'SRS' || this.currentProblem.type == 'SSA' || this.currentProblem.type == 'LWS' || this.currentProblem.type == 'LTS' || this.currentProblem.type == 'LSA' || this.currentProblem.type == 'LSB') {
-					if(this.currentProblem.content.audio!=null) {
-						this.currentProblem.content.audio = "upload/q2/"+this.currentProblem.type+"/"+this.currentProblem.content.audio;
+					if(this.currentProblem.category=="Speaking") {
+						this.audio_flag = true;					
+						startRecording();		
 					}
-				}
-				if(this.currentProblem.type == 'SPI'|| this.currentProblem.type == 'RSA'  ||  this.currentProblem.type == 'RMA') {
-					if(this.currentProblem.content.picture!=null){
-						this.currentProblem.content.picture = "upload/q2/"+this.currentProblem.type+"/"+this.currentProblem.content.picture;
-					}
-				}
-				if(this.currentProblem.type=='SRS' || this.currentProblem.type=='SAL' || this.currentProblem.type=='SPI' || this.currentProblem.type=='SSA') {
-					if(this.currentProblem.solution.audio!=null) {
-						this.currentProblem.solution.audio = "upload/s0/"+this.currentProblem.type+"/"+this.currentProblem.solution.audio;
-					}
-				}
 
-				if(this.currentProblem.category=="Speaking") {
-					this.audio_flag = true;
-					startRecording();		
+					if(this.selfexam && this.timerflag) {
+						this.currentlimittime = Number(data.limit_time).valueOf();	
+						this.ctimer = setInterval(()=> {
+							this.currentlimittime--; 
+							if(this.currentlimittime<=0) 
+								this.endExamine(); 
+							this.currentAnswer.examine_uptime = this.currentProblem.limit_time - this.currentlimittime;
+							this.progressvalue = Math.round(this.currentAnswer.examine_uptime/this.currentProblem.limit_time*100);
+						}, 1000 );	
+						this.markvisible = false;					
+					}
+					this.setProblemDetails();
+				} else {
+					if(this.selfexam && this.timerflag) {
+						this.currentlimittime = 0;
+					}
+					this.currentAnswer.answer = this.globalService.getSolutionObject(this.currentProblem.type);
+					alert("No Problem!!!");
 				}
-
-				if(this.timerflag) {
-					this.ctimer = setInterval(()=> {
-						this.currentlimittime--; 
-						if(this.currentlimittime<=0) 
-							this.endExamine(); 
-						this.currentAnswer.examine_uptime = this.currentProblem.limit_time - this.currentlimittime;
-						this.progressvalue = Math.round(this.currentAnswer.examine_uptime/this.currentProblem.limit_time*100);
-					}, 1000 );	
-					this.markvisible = false;					
-				}
-				this.setProblemDetails();
 			}
 		)
 	}
@@ -248,60 +615,117 @@ export class ExamineeComponent implements OnInit {
 	}
 
 	createRFBView() {
-		if ($('#html_data').html() == '') {
+		if (this.htmldata == null) return;
+		var htmldata_obj = this.htmldata.nativeElement;
+		var choicepanel_obj = this.choicepanel.nativeElement;
+
+		if ( htmldata_obj.innerHTML == "") {
+			
 			this.rfb_probhtml = this.rfb_content;
-			$('#html_data').html(this.rfb_probhtml);
+
+			htmldata_obj.innerHTML = this.rfb_probhtml;
 			this.rfb_answerhtml = "<div class='row'>";
 			for (var i = 0;  i < this.rfb_options.length;  i++) {
-				this.rfb_answerhtml += "<div class='col-lg-2 word' style='text-align: center; border: 1px solid #ccc; background-color: #fff; padding: 10px; margin: 20px 50px; cursor: move;'>" + this.rfb_options[i] + "</div>";
+				this.rfb_answerhtml += "<div class='col-2 word' style='text-align: center; border: 1px solid #ccc; background-color: #fff; padding: 10px; margin: 20px 50px; cursor: move;'>" + this.rfb_options[i] + "</div>";
 			}
 			this.rfb_answerhtml += "</div>";
-			$('#choice_panel').html(this.rfb_answerhtml);
+			
+			choicepanel_obj.setAttribute("style", "margin-top: 50px; background-color: #D1E3F8; ");
+			choicepanel_obj.innerHTML = this.rfb_answerhtml;
 
 			var left = 0, top = 0;
 			var startX = 0, startY = 0;
-			var drag_obj = null;
-			var target_obj = null;
-			$('div.word').on('mousedown', function(e) {
-				if (drag_obj != null)
-					return;
-
-				e.preventDefault();
-				left = 0;
-				top = 0;
-				startX = e.pageX;
-				startY = e.pageY;
-				drag_obj = this;
-			});
-			$('div.word').on('mousemove', function(e) {
-				if (drag_obj != this)
-					return;
-				e.preventDefault();
-                var diffX = e.pageX - startX;
-                var diffY = e.pageY - startY;
-                left = diffX;
-                top = diffY;
-                $(this).css('left', left);
-                $(this).css('top', top);
- 				console.log($(e.target).closest('input'));
-			});
-			$('div.word').on('mouseup', function(e) {
-				if (drag_obj != this)
-					return;
-				$(this).css('left', 0);
-                $(this).css('top', 0);
-                drag_obj = null;
-			});
+			var drag_obj:Element = null;
+			var container = choicepanel_obj.getElementsByTagName('div');
+			var words = container[0].getElementsByTagName('div');
+			var inputs = htmldata_obj.getElementsByTagName('input');
+			for (var k = 0;  k < inputs.length;  k++) {
+				inputs[k].addEventListener('change',
+					function(e:any) {
+						// $('#choicepanel').find('div.word');
+						var inputs = htmldata_obj.getElementsByTagName('input');
+						for (var i = 0;  i < words.length;  i++) {
+							var flag = 0;
+							for (var j = 0;  j < inputs.length;  j++) {
+								if (inputs[j].value == words[i].innerHTML) {
+									flag = 1;
+								}
+							}
+							if (flag == 1) {
+								words[i].style.visibility = "hidden";
+							} else {
+								words[i].style.visibility = "visible";
+							}
+						}
+					}
+				);
+			}
+			
+			for (var i = 0;  i < words.length;  i++) {
+				words[i].addEventListener('mousedown',
+					function(e:any) {
+						if (drag_obj != null)
+							return;
+						
+						e.preventDefault();
+						left = 0;
+						top = 0;
+						startX = e.pageX;
+						startY = e.pageY;
+						drag_obj = this;
+						this.style.left = left;
+		                this.style.top = top;
+		                //alert('down');
+					}
+				);
+				words[i].addEventListener('mousemove',
+					function(e:any) {
+						if (drag_obj != this)
+							return;
+						e.preventDefault();
+		                var diffX = e.pageX - startX;
+		                var diffY = e.pageY - startY;
+		                left = diffX;
+		                top = diffY;
+		                this.style.left = left + "px";
+		                this.style.top = top + "px";
+					}
+				);
+				words[i].addEventListener('mouseup',
+					function(e:any) {
+						if (drag_obj != this)
+							return;
+						this.style.visibility = 'hidden';
+		 				var point_obj = document.elementFromPoint(e.pageX - document.body.scrollLeft, e.pageY - (window.pageYOffset || document.documentElement.scrollTop));
+		 				this.style.visibility = 'visible';
+		 				var target_obj = point_obj.closest('input');
+		 				if (target_obj != null) {
+		 					if (target_obj.tagName == "INPUT") {
+		 						target_obj.value=this.innerHTML;
+								this.style.visibility = 'hidden';
+								//$('#html_data input').trigger('change');
+		 					}
+		 				}
+						this.style.left = 0;
+		                this.style.top = 0;
+		                drag_obj = null;
+					}
+				);
+			}
 		}
 	}
 
 	createRFBSolutionView() {
-		if ($('#html_answerdata').html() == '') {
+		if (this.htmldata == null  ||  this.html_answerdata == null)	return;
+		var htmldata_obj = this.htmldata.nativeElement;
+		var html_answerdata_obj = this.html_answerdata.nativeElement;
+
+		if (html_answerdata_obj.innerHTML == "") {
 			this.rfb_selected_options = [];
-            var str_data = $('#html_data').html();
-            var inputs = $('#html_data').find('input');
+            var str_data = htmldata_obj.innerHTML;
+            var inputs = htmldata_obj.getElementsByTagName('input');
             for (var i = 0;  i < inputs.length;  i++) {
-            	this.rfb_selected_options.push($(inputs[i]).val());
+            	this.rfb_selected_options.push(inputs[i].value);
             }
             this.rfb_content = this.currentProblem.content.text;
             var reg = /\{\{\}\}/;
@@ -317,7 +741,7 @@ export class ExamineeComponent implements OnInit {
                 found = reg.test(this.rfb_content);
                 index++;
             }
-            $('#html_data').html(this.rfb_content);
+            htmldata_obj.innerHTML = this.rfb_content;
 
 			this.rfb_solutionhtml = this.currentProblem.content.text;
 			var reg = /\{\{\}\}/;
@@ -328,24 +752,31 @@ export class ExamineeComponent implements OnInit {
                 this.rfb_solutionhtml = this.rfb_solutionhtml.replace(reg, "<input type=\"text\" value=\"" + this.currentProblem.content.select.options[this.currentProblem.solution.optionno[index++]] + "\" disabled>");
                 found = reg.test(this.rfb_solutionhtml);
             }
-            $('#html_answerdata').html(this.rfb_solutionhtml);
+            html_answerdata_obj.innerHTML = this.rfb_solutionhtml;
 		}
 	}
 
 	createRANView() {
-		if ($('#html_data').html() == '') {
+		if (this.htmldata == null)	return;
+		var htmldata_obj = this.htmldata.nativeElement;
+		if (htmldata_obj.innerHTML == "") {
 			this.rfb_probhtml = this.rfb_content;
-			$('#html_data').html(this.rfb_probhtml);
+			htmldata_obj.innerHTML = this.rfb_probhtml;
 		}
 	}
 
 	createRANSolutionView() {
-		if ($('#html_answerdata').html() == '') {
+		if (this.htmldata == null  ||  this.html_answerdata == null)	return;
+		var htmldata_obj = this.htmldata.nativeElement;
+		var html_answerdata_obj = this.html_answerdata.nativeElement;
+
+		if (html_answerdata_obj.innerHTML == "") {
+			alert("examinee");
 			this.rfb_selected_options = [];
-            var str_data = $('#html_data').html();
-            var selects = $('#html_data').find('select');
+            var str_data = htmldata_obj.innerHTML;
+            var selects = htmldata_obj.getElementsByTagName('select');
             for (var i = 0;  i < selects.length;  i++) {
-            	this.rfb_selected_options.push($(selects[i]).val());
+            	this.rfb_selected_options.push(selects[i].value);
             }
             this.rfb_content = this.currentProblem.content.text;
             var reg = /\{\{\}\}/;
@@ -361,7 +792,7 @@ export class ExamineeComponent implements OnInit {
                 found = reg.test(this.rfb_content);
                 index++;
             }
-            $('#html_data').html(this.rfb_content);
+            htmldata_obj.innerHTML = this.rfb_content;
 
 			this.rfb_solutionhtml = this.currentProblem.content.text;
 			var reg = /\{\{\}\}/;
@@ -372,24 +803,30 @@ export class ExamineeComponent implements OnInit {
                 this.rfb_solutionhtml = this.rfb_solutionhtml.replace(reg, "<input type=\"text\" value=\"" + this.currentProblem.content.selectlist[this.currentProblem.solution.optionno[index].id].options[this.currentProblem.solution.optionno[index++].option] + "\" disabled>");
                 found = reg.test(this.rfb_solutionhtml);
             }
-            $('#html_answerdata').html(this.rfb_solutionhtml);
+            html_answerdata_obj.innerHTML = this.rfb_solutionhtml;
 		}
 	}
 
 	createLTWView() {
-		if ($('#html_data').html() == '') {
+		if (this.htmldata == null)	return;
+		var htmldata_obj = this.htmldata.nativeElement;
+		if (htmldata_obj.innerHTML == "") {
 			this.rfb_probhtml = this.rfb_content;
-			$('#html_data').html(this.rfb_probhtml);
+			htmldata_obj.innerHTML = this.rfb_probhtml;
 		}
 	}
 
 	createLTWSolutionView() {
-		if ($('#html_answerdata').html() == '') {
+		if (this.htmldata == null  ||  this.html_answerdata == null)	return;
+		var htmldata_obj = this.htmldata.nativeElement;
+		var html_answerdata_obj = this.html_answerdata.nativeElement;
+
+		if (html_answerdata_obj.innerHTML == "") {
 			this.rfb_selected_options = [];
-            var str_data = $('#html_data').html();
-            var inputs = $('#html_data').find('input');
+            var str_data = htmldata_obj.innerHTML;
+            var inputs = htmldata_obj.getElementsByTagName('input');
             for (var i = 0;  i < inputs.length;  i++) {
-            	this.rfb_selected_options.push($(inputs[i]).val());
+            	this.rfb_selected_options.push(inputs[i].value);
             }
             this.rfb_content = this.currentProblem.content.text;
             var reg = /\{\{\}\}/;
@@ -405,7 +842,7 @@ export class ExamineeComponent implements OnInit {
                 found = reg.test(this.rfb_content);
                 index++;
             }
-            $('#html_data').html(this.rfb_content);
+            htmldata_obj.innerHTML = this.rfb_content;
 
 			this.rfb_solutionhtml = this.currentProblem.content.text;
 			var reg = /\{\{\}\}/;
@@ -416,33 +853,100 @@ export class ExamineeComponent implements OnInit {
                 this.rfb_solutionhtml = this.rfb_solutionhtml.replace(reg, "<input type=\"text\" value=\"" + this.currentProblem.content.select.options[index++] + "\" disabled>");
                 found = reg.test(this.rfb_solutionhtml);
             }
-            $('#html_answerdata').html(this.rfb_solutionhtml);
+            html_answerdata_obj.innerHTML = this.rfb_solutionhtml;
 		}
 	}
 
-	createLCDView() {
-		if ($('#html_data').html() == '') {
-			this.rfb_probhtml = this.rfb_content;
-			$('#html_data').html(this.rfb_probhtml);
+	isMember(element: any, classname: any) {
+        var classes = element.className;  // Get the list of classes
+        if (!classes) return false;             // No classes defined
+        if (classes == classname) return true;  // Exact match
 
-			$('#html_data span').on('click',(function(){
-				if ($(this).hasClass('LCD'))
-					$(this).toggleClass('Clicked');
-			}));
+        var whitespace = /\s+/;
+        if (!whitespace.test(classes)) return false;
+
+        var c = classes.split(whitespace);  // Split with whitespace delimiter
+        for(var i = 0; i < c.length; i++) { // Loop through classes
+            if (c[i] == classname) return true;  // and check for matches
+        }
+
+        return false;  // None of the classes matched
+    }
+
+    getElements(classname: any, tagname: any, root: any) {
+	    if (!root) root = document;
+	    else if (typeof root == "string") root = document.getElementById(root);
+		
+		if (!tagname) tagname = "15-";
+
+	    var all = root.getElementsByTagName(tagname);
+
+	    if (!classname) return all;
+
+	    var elements = [];  // Start with an empty array
+	    for(var i = 0; i < all.length; i++) {
+	        var element = all[i];
+	        if (this.isMember(element, classname)) // isMember() is defined below
+	            elements.push(element);       // Add class members to our array
+	    }
+
+	    return elements;
+	}
+
+	createLCDView() {
+		if (this.htmldata == null)	return;
+		var htmldata_obj = this.htmldata.nativeElement;
+		if (htmldata_obj.innerHTML == "") {
+			this.rfb_probhtml = this.rfb_content;
+			htmldata_obj.innerHTML = this.rfb_probhtml;
+			var spans = htmldata_obj.getElementsByTagName('span');
+			for (var i = 0;  i < spans.length;  i++) {
+				spans[i].addEventListener('click',
+					function(e:any) {
+						var classes = this.className;  // Get the list of classes
+				        if (!classes) return;             // No classes defined
+				        if (classes == "LCD") {
+				        	this.className += " Clicked";
+				        	return;  // Exact match
+				        }
+
+				        var flag1 = false, flag2 = false;
+				        if (this.className.search("\\b" + "LCD" + "\\b") != -1) {
+				        	flag1 = true;
+				        }
+				        if (this.className.search("\\b" + "Clicked" + "\\b") != -1) {
+				        	flag2 = true;
+				        }
+				        
+				        if (flag1 == true) {
+				        	if (flag2 == true)
+				        		this.className = this.className.replace(new RegExp("\\b"+ "Clicked"+"\\b\\s*", "g"), "");
+				        	else
+				        		this.className += " Clicked";
+				        }
+					}
+				);
+			}
 		}
 	}
 
 	createLCDSolutionView() {
-		if ($('#html_answerdata').html() == '') {
-			$('#html_data span.LCD').removeClass('LCD');
-			var spans = $('#html_data span');
+		if (this.htmldata == null  ||  this.html_answerdata == null)	return;
+		var htmldata_obj = this.htmldata.nativeElement;
+		var html_answerdata_obj = this.html_answerdata.nativeElement;
+
+		if (html_answerdata_obj.innerHTML == "") {
+			var LCD_spans = this.getElements('LCD', 'span', htmldata_obj);
+			for (var i = 0;  i < LCD_spans.length;  i++)
+				LCD_spans[i].className = LCD_spans[i].className.replace(new RegExp("\\b"+ "LCD"+"\\b\\s*", "g"), "");
+			var spans = htmldata_obj.getElementsByTagName('span');
 			for (var i = 0;  i < spans.length;  i++) {
-				if ($(spans[i]).attr('class') == '')
-					$(spans[i]).removeAttr('class');
+				if (spans[i].className == '')
+					spans[i].removeAttribute('class');
 			}
 
 			var answer_words = [];
-			var str_data = $('#html_data').html();
+			var str_data = htmldata_obj.innerHTML;
 			var reg = /(<span[ class=\"Clicked\"]*>)([a-z, ,|]*)(<\/span>)/;
             var found = reg.test(str_data);
             while (found) {
@@ -455,7 +959,7 @@ export class ExamineeComponent implements OnInit {
             for (var i = 0;  i < answer_words.length;  i++) {
             	this.rfb_content += answer_words[i] + " ";
             }
-            $('#html_data').html(this.rfb_content);
+            htmldata_obj.innerHTML = this.rfb_content;
 
             var solution_words = [];
             this.rfb_solutionhtml = this.currentProblem.content.text;
@@ -478,20 +982,17 @@ export class ExamineeComponent implements OnInit {
             for (var i = 0;  i < solution_words.length;  i++) {
             	this.rfb_solutionhtml += solution_words[i] + " ";
             }
-            $('#html_answerdata').html(this.rfb_solutionhtml);
+            html_answerdata_obj.innerHTML = this.rfb_solutionhtml;
 
+            var spans = htmldata_obj.getElementsByTagName('span');
             for (var i = 0;  i < solution_words.length;  i++) {
             	if (answer_words[i] != solution_words[i]) {
-            		$($('#html_data').find('span')[i]).addClass('Wrong');
+            		spans[i].className = spans[i].className + " Wrong";
             	} else if (solution_words[i].indexOf('Clicked') >= 0){
-            		$($('#html_data').find('span')[i]).addClass('Correct');
+            		spans[i].className = spans[i].className + " Correct";
             	}
             }
 		}
-	}
-
-	dragWord() {	
-		alert('aaaa');
 	}
 
 	getAnswers() {
@@ -507,80 +1008,67 @@ export class ExamineeComponent implements OnInit {
 	}
 
 
-	endExamine() {
-		clearInterval(this.ctimer);
-		this.endbutton = true;
-		this.nextbutton = false;
-		if(this.quiz_id > 1)
-			this.previousbutton = false;		
-		this.answertext = true;	
-		//this.solutiontextvisible = true;
-		this.evaluateExamine();
-		this.markvisible = true;
-		
-		if(this.audio_flag) {
-			stopRecording();
-			this.audio_flag = false;
-		}
-		//this.onSave();	
-	}
+	
 
 	evaluateExamine() {
-		//alert("50");
-		this.currentAnswer.evaluate_mark = 50;
+		// evaluation examinee
+		var eval_point = Math.round(Math.random() * Number(this.currentProblem.points).valueOf());
+		
+		if(!this.selfexam) {
+			if(this.arrchecknumber.indexOf(this.quiz_number) > -1) {
+				this.curtotalpoint += Number(eval_point).valueOf() - this.currentAnswer.evaluate_mark;			
+			} else {
+				this.arrchecknumber.push(this.quiz_number);
+				this.curtotalpoint += Number(eval_point).valueOf();
+				this.stdtotalpoint += Number(this.currentProblem.points).valueOf();
+			}
+		}
+		
+		this.currentAnswer.evaluate_mark = eval_point;
 	}
 
-	onSave() {
-		this.http.post("/answer/insert", this.currentAnswer).
-    	map(
-            (response) => response.json()
-        ).
-        subscribe(
-    		(data) => {
-    			alert(data.message);
-    		}
-    	);
+	onSave(endFlag: boolean = false) {
+		if(typeof this.currentAnswer.quiz_id == "number") {
+			//this.evaluateExamine();		
+			if(endFlag){
+				//this.evaluateTest();
+			}
+
+			this.http.post("/answer/insert", this.currentAnswer).
+	    	map(
+	            (response) => response.json()
+	        ).
+	        subscribe(
+	    		(data) => {
+	    			if(data.state == "error") {
+	    				alert(data.message);	
+	    			}    			
+	    		}
+	    	);
+		}		
     }
 
     onClickDelete(id: number) {
-    	if(confirm("Delete really?")) {
+    	if(window.confirm('Are you sure you want to delete?')) {
 	    	this.http.get("/answer/delete/"+id).
 	    	map(
 	            (response) => response.json()
 	        ).
 	        subscribe(
 	    		(data) => {
-	    			alert(data.message);
+	    			if(data.state == "error") {
+	    				alert(data.message);
+	    			}
 	    			this.getAnswers();
 	    		}
 	    	);
 	    }
     }
 
+    showViewExamineAnswerForm( ans: Answer) {
 
-    prevExamine() {
-    	if(this.quiz_id>1)
-			this.quiz_id--;
+    }
 
-		this.previousbutton = true;
-		this.endbutton = false;
-		this.nextbutton = true;
-		this.answertext = false;
-		this.solutiontextvisible = false;
-		this.markvisible = false;
-		this.getProblem(this.quiz_id);			
-	}
-
-	nextExamine() {
-		this.quiz_id++;
-		this.previousbutton = true;
-		this.endbutton = false;
-		this.nextbutton = true;
-		this.answertext = false;
-		this.solutiontextvisible = false;
-		this.markvisible = false;
-		this.getProblem(this.quiz_id);			
-	}
 
     getTypes(category: string) {
     	return this.globalService.problemTypes[category];
