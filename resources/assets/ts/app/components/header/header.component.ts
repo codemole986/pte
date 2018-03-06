@@ -4,6 +4,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import 'rxjs/add/operator/map';
 
+import { AuthService } from './../../shared';
+
 declare var $:any;
 
 @Component({
@@ -126,9 +128,17 @@ export class HeaderComponent implements OnInit {
 export class HeaderOverviewComponent extends HeaderComponent implements OnInit { 
 	@Input() default: string;
 
-	constructor(private http1: Http, private translate1: TranslateService, public router1: Router) {	
+	constructor(private http1: Http, private translate1: TranslateService, public router1: Router, private authService: AuthService) {	
 		super(http1, translate1, router1);
-	}	
+	}
+
+    onLogin() {
+        this.authService.login();
+    }
+
+    onSignUp() {
+        this.authService.signUp();
+    }
 }
 
 @Component({
