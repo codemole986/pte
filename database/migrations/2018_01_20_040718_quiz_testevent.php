@@ -22,10 +22,11 @@ class QuizTestevent extends Migration
             $table->unsignedTinyInteger('test_status', 0);       
             $table->timestamp('end_at')->nullable();
             $table->unsignedTinyInteger('evaluate_status', 0);  
-            $table->timestamp('evalallow_at');
-            $table->timestamp('evalstart_at');
-            $table->timestamp('evalend_at');
-            $table->integer('evaluator_id')->index();
+            $table->timestamp('evalallow_at')->nullable();
+            $table->timestamp('evalstart_at')->nullable();
+            $table->timestamp('evalend_at')->nullable();
+            //$table->integer('evaluator_id')->index();
+            $table->integer('evaluator_id')->nullable();
             $table->unsignedInteger('marks', 0);   
             $table->timestamps();
         });        

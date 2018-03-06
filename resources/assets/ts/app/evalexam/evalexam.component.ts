@@ -13,6 +13,11 @@ import { Problem } from '../model/problem';
 import { Answer } from '../model/answer';
 import { Testevent } from '../model/testevent';
 import { EvalstatusRenderComponent } from './evalstatus-render.component';
+import { TranslateService } from '@ngx-translate/core';
+
+declare var $:any;
+declare var bootbox: any;
+declare var Metronic: any;
 
 @Component({
   	selector: 'app-evalexam',
@@ -54,9 +59,10 @@ export class EvalexamComponent implements OnInit {
     curevalstatus: number; //evaluate_status
 
     evaluate_flag : boolean = false;
+    active_menu: string = "overview";
 	
 	constructor(private http: Http, private route: ActivatedRoute,
-  private router: Router, private globalService: GlobalService) { 
+  private router: Router, private globalService: GlobalService, private translate: TranslateService) { 
 		this.quiz_id = 0;		
 		this.curtestevent_info = new Testevent;
 		this.previousbutton = false;
@@ -73,9 +79,18 @@ export class EvalexamComponent implements OnInit {
 		this.arrchecknumber = [];
 		this.curtotalpoint = 0;
 		this.stdtotalpoint = 0;
+
+		
 	}
 
 	ngOnInit() {		
+		switch(window.sessionStorage.getItem('permission')) {
+    		case 'A' : this.active_menu = "manage"; break;
+			case 'B' : this.active_menu = "teacher"; break;
+			case 'D' : this.active_menu = "student"; break;
+			default : this.active_menu = "overview";
+    	}
+    	
 		//this.testevent_id = this.route.snapshot.params['testid'];
 		if(this.testevent_id!=null) {
 			this.listvisible = false;
@@ -120,7 +135,7 @@ export class EvalexamComponent implements OnInit {
             },
             attr: {
                 id: 'examineegrid',
-                class: 'table table-bordered table-hover table-striped',
+                class: 'table table-bordered table-hover',
             },
             noDataMessage: 'No data found',            
             pager: {
@@ -168,6 +183,8 @@ export class EvalexamComponent implements OnInit {
 
         this.evaldatasource = new ServerDataSource(this.http, { totalKey: "total", dataKey: "data", endPoint: '/test/gettesteventlist' });
 
+        this.curselectedrowid = 0;  
+        Metronic.init();
 	}
 
 	getTypes(category: string) {
@@ -187,7 +204,7 @@ export class EvalexamComponent implements OnInit {
     }
 
 	onEvalRowSelect(event: any) {
-        if(this.curselectedrowid == event.data.id) {
+        if(!event.isSelected){      
             this.curselectedrowid = 0;  
             this.testevent_id = null;          
         } else {
@@ -199,30 +216,38 @@ export class EvalexamComponent implements OnInit {
 
     evaluateExam() {
     	if(this.curselectedrowid == 0) {
-    		window.alert("Select row.");
-    		//this.evaluate_flag = false;
+    		this.translate.stream("Select row.").subscribe((res: any) => {
+                Metronic.showWarnMsg(res);
+            });
     		return false;
     	} else if(this.curevalstatus == 3) {
-    		if (window.confirm('Are you sure you want to re-evaluste this examinee?')) {
-    			// modify status with 2
-    			this.http.get("/test/update2evalstatus/"+this.curselectedrowid).
-		        map(
-		            (response) => response.json()
-		        ).
-		        subscribe(
-		            (data) => {
-		            	if(data.state == "success") {
-		            		this.listvisible = false;
-							this.evalvisible = true;
-							this.getTestevent(this.curselectedrowid);			
-    					} else {
-    						window.alert("status update error. Retry!");
-    					}
-    				}
-    			);
-    		} else {
-    			return false;
-    		}
+    		var that = this;
+    		this.translate.stream("Are you sure you want to re-evaluate this examinee?").subscribe((res: any) => {
+                bootbox.confirm(res, function(result: any) {
+	    			if (result) {
+		    			// modify status with 2
+		    			that.http.get("/test/update2evalstatus/"+that.curselectedrowid).
+				        map(
+				            (response) => response.json()
+				        ).
+				        subscribe(
+				            (data) => {
+				            	if(data.state == "success") {
+				            		that.listvisible = false;
+									that.evalvisible = true;
+									that.getTestevent(that.curselectedrowid);			
+		    					} else {
+		    						this.translate.stream("status update error. Retry!").subscribe((res: any) => {
+						                Metronic.showErrMsg(res);
+						            });
+		    					}
+		    				}
+		    			);
+		    		} else {
+		    			return false;
+		    		}
+	    		});
+            });
     	} else if(this.curevalstatus == 1) {
     		// modify status with 2
     		this.http.get("/test/update2evalstatus/"+this.curselectedrowid).
@@ -236,7 +261,9 @@ export class EvalexamComponent implements OnInit {
 						this.evalvisible = true;
 						this.getTestevent(this.curselectedrowid);		
 					} else {
-						window.alert("status update error. Retry!");
+						this.translate.stream("status update error. Retry!").subscribe((res: any) => {
+			                Metronic.showErrMsg(res);
+			            });
 					}
 				}
 			);
@@ -325,7 +352,9 @@ export class EvalexamComponent implements OnInit {
 				} else {
 					this.currentAnswer.answer = this.globalService.getSolutionObject(this.currentProblem.type);
 					this.old_eval_marks = 0;
-					alert("No Problem!!!");
+					this.translate.stream("No Problem!!!").subscribe((res: any) => {
+		                Metronic.showWarnMsg(res);
+		            });
 				}
 			}
 		)
@@ -334,6 +363,7 @@ export class EvalexamComponent implements OnInit {
 	onClickList(){
 		this.listvisible = true;
 		this.evalvisible = false;
+		this.curselectedrowid = 0;
 	}
 
 	prevExamine() {
@@ -412,7 +442,7 @@ export class EvalexamComponent implements OnInit {
 	        subscribe(
 	    		(data) => {
 	    			if(data.state == "error") {
-	    				alert(data.message);	
+	    				Metronic.showErrMsg(data.message);	
 	    			}    			
 	    		}
 	    	);
@@ -433,14 +463,14 @@ export class EvalexamComponent implements OnInit {
 		this.onSaveQuizMarks(true);	
 
 		//
-		this.http.post("/test/updatetesteventmarks/"+this.testevent_id, this.curtestevent_info).
+		this.http.post("/test/updatetesteventevalmarks/"+this.testevent_id, this.curtestevent_info).
         map(
             (response) => response.json()
         ).
         subscribe(
             (data) => {
             	if(data.state == "error") {
-            		alert(data.message);
+            		Metronic.showErrMsg(data.message);
             	}		            	
             }
         );

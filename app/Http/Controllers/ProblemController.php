@@ -9,51 +9,154 @@ use Validator;
 
 class ProblemController extends Controller
 {
+	function getsimpleproblems(Request $request) {
+		$category = isset($request->category)?$request->category:'Writing';
+		$cond = isset($request->cond)?$request->cond:'All';
+
+		$fieldnames = array('id','category', 'type', 'title', 'limit_time', 'points', 'created_at');
+		try {
+			if($cond == 'All') {
+				$problems = DB::table('quiz_problems')	
+						->where('category', $category)				
+						->latest()
+						->take(5)
+						->get($fieldnames);
+			} else {
+				$userinfo = $request->session()->get('userinfo');
+				$problems = DB::table('quiz_problems')	
+						->where('category', $category)
+						->where('uid', $userinfo->id)				
+						->latest()
+						->take(5)
+						->get($fieldnames);
+			}
+		} catch (Exception $e) {
+            $problems = array();
+		}
+		
+		
+		$out_data["data"] = $problems;
+		return response()->json($out_data, 200);			
+	}
+
 	function getproblems(Request $request) {
-		$page_num = $request->_page;
-    	$limit_count = $request->_limit;
+		$offset = isset($request->start) ? intval($request->start) : 0;
+    	$limit_count = isset($request->length)?intval($request->length):15;
+    	$draw = isset($request->draw) ?intval($request->draw) : 0;
+
+    	$quizcategory = isset($request->category) ?$request->category : "";
+    	$quiztype = isset($request->type) ?$request->type : "";
+
+    	$page_num = $offset / $limit_count+1;
 		$userinfo = $request->session()->get('userinfo');
 		if($userinfo!=null) {
 			$fieldnames = array('quiz_problems.*', 'users.email');
 			if($userinfo->permission == 'A') {
-				$problems = DB::table('quiz_problems')
+				$strquery = DB::table('quiz_problems')
 						->addSelect($fieldnames)
-						->leftJoin('users', array('quiz_problems.uid'=>'users.id'))					
-						->orderBy('quiz_problems.created_at', 'desc')
-						->paginate($limit_count, ['*'], 'page', $page_num);
+						->leftJoin('users', array('quiz_problems.uid'=>'users.id'));
+				if(!empty($quizcategory)){
+					$strquery->where("category", $quizcategory);
+				}
+				if(!empty($quiztype)) {
+		    		$strquery->where("quiz_problems.type", $quiztype);
+		    	}					
+				$problems = $strquery->orderBy('quiz_problems.created_at', 'desc')
+						->paginate($limit_count, ['*'], 'page', $page_num);	
+						
 			} else if($userinfo->permission == 'B') {
-				$problems = DB::table('quiz_problems')
+				$strquery = DB::table('quiz_problems')
 						->addSelect($fieldnames)
 						->leftJoin('users', array('quiz_problems.uid'=>'users.id'))
-						->where('quiz_problems.uid',$userinfo->id)
-						->orderBy('quiz_problems.created_at', 'desc')
+						->where('quiz_problems.uid',$userinfo->id);
+				if(!empty($quizcategory)){
+					$strquery->where("category", $quizcategory);
+				}
+				if(!empty($quiztype)) {
+		    		$strquery->where("quiz_problems.type", $quiztype);
+		    	}					
+				$problems = $strquery->orderBy('quiz_problems.created_at', 'desc')
 						->paginate($limit_count, ['*'], 'page', $page_num);	
 			} else {
-				$problems = DB::table('quiz_problems')
+				$strquery = DB::table('quiz_problems')
 						->addSelect($fieldnames)
-						->leftJoin('users', array('quiz_problems.uid'=>'users.id'))
-						//->where('quiz_problems.uid',$userinfo->id)
-						->orderBy('quiz_problems.created_at', 'desc')
+						->leftJoin('users', array('quiz_problems.uid'=>'users.id'));						
+				if(!empty($quizcategory)){
+					$strquery->where("category", $quizcategory);
+				}
+				if(!empty($quiztype)) {
+		    		$strquery->where("quiz_problems.type", $quiztype);
+		    	}						
+				$problems = $strquery->orderBy('quiz_problems.created_at', 'desc')
 						->paginate($limit_count, ['*'], 'page', $page_num);	
 			}
 			
 
-			/*$problems = DB::select("SELECT quiz_problems.*, users.email AS maker FROM quiz_problems LEFT JOIN users ON quiz_problems.uid=users.id ORDER BY created_at DESC");*/
-
 			foreach ($problems as $key => $problem) {
 				$problems[$key]->content = json_decode($problem->content);
-				$problems[$key]->solution = json_decode($problem->solution);
-				if($problem->uid == 0) {
-					$problems[$key]->email = "admin@quiz.com";
-				}
-				//$problems[$key]->examine = "";
+				$problems[$key]->solution = json_decode($problem->solution);				
 			}
-			return response()->json($problems, 200);	
+
+			$records["data"] = $problems->items();
+			$records["draw"] = $draw;
+			$records["recordsTotal"] = $problems->total();
+  			$records["recordsFiltered"] = $problems->total();
+			return response()->json($records, 200);
+
 		} else {
 			return redirect('/login');
 		}
 		
 	}
+
+	function getproblemswithtype(Request $request) {
+		$offset = isset($request->start) ? intval($request->start) : 0;
+    	$limit_count = isset($request->length)?intval($request->length):15;
+    	$qtype = isset($request->type)?$request->type:"LWS";
+    	$draw = isset($request->draw) ?intval($request->draw) : 0;
+    	$search = isset($request->search)?$request->search:array("value"=>"");
+
+    	$page_num = $offset / $limit_count + 1;
+		$userinfo = $request->session()->get('userinfo');
+		if($userinfo!=null) {
+			$problems = DB::table('quiz_problems');
+			if($userinfo->permission == 'A' || $userinfo->permission == 'B') {
+				$str_query = DB::table('quiz_problems')
+						->addSelect(array('id', 'title', 'limit_time', 'status'))
+						->where("type", $qtype);
+				if(!empty($search)){
+					$str_query->where("title", 'like', "%".$search["value"]."%");
+				}
+				$problems = $str_query->orderBy('created_at', 'desc')
+						->paginate($limit_count, ['*'], 'page', $page_num);	
+			} else {
+				$str_query = DB::table('quiz_problems')
+						->addSelect(array('id', 'title', 'limit_time'))						
+						->where(array("type"=>$qtype, 'status'=>1));
+				if(!empty($search)){
+					$str_query->where("title", 'like', "%".$search["value"]."%");
+				}
+
+				$problems = $str_query->orderBy('created_at', 'desc')
+						->paginate($limit_count, ['*'], 'page', $page_num);	
+			} 
+
+			foreach ($problems as $key => $problem) {
+				$problems[$key]->no = $offset+$key+1;				
+			}
+
+			//return $problems->items();
+			$records["data"] = $problems->items();
+			$records["draw"] = $request->draw;
+			$records["recordsTotal"] = $problems->total();
+  			$records["recordsFiltered"] = $problems->total();
+			return response()->json($records, 200);
+		} else {
+			return redirect('/login');
+		}
+		
+	}
+
 
 	function getproblem($pn) {	
 		$start = $pn - 1;	
@@ -63,20 +166,74 @@ class ProblemController extends Controller
 			$problem[0]->solution = json_decode($problem[0]->solution);
 			return response()->json($problem[0], 200);
 		} else {
-			return response()->json(null, 200);
+			abort(404);
 		}
 		
-		/*$fp = fopen("1.txt", "aw+");
-		fwrite($fp, $id);
-		fwrite($fp, "\n".$problem[0]->category);
-		fclose($fp);*/
-		
+	}
+
+	
+	function getfullproblem($qid) {	
+		$quiz_info = DB::table('quiz_problems')
+					->where('id', $qid)
+					->get();
+
+		if(count($quiz_info) > 0) {
+			$quiz_info[0]->content = json_decode($quiz_info[0]->content);			
+			$quiz_info[0]->solution = json_decode($quiz_info[0]->solution);
+
+			$next_quiz_id = DB::table('quiz_problems')
+					//->where(array('type'=>$quiz_info[0]->type, 'degree'=>$quiz_info[0]->degree))
+					->where('type', $quiz_info[0]->type)
+					->where('id', '>', $qid)
+					->min('id');
+			$result["nextqid"] = $next_quiz_id;
+
+			$prev_quiz_id = DB::table('quiz_problems')
+					->where('type', $quiz_info[0]->type)
+					->where('id', '<', $qid)
+					->max('id');
+			$result["prevqid"] = $prev_quiz_id;
+
+			$result["problem"] = $quiz_info[0];
+			return response()->json($result, 200);
+		} else {
+			return response()->json(null, 200);
+		}		
+	}
+
+	function getfirstproblem($type) {	
+		$quiz_info = DB::table('quiz_problems')
+					->where('type', $type)
+					->get();
+
+		if(count($quiz_info) > 0) {
+			$quiz_info[0]->content = json_decode($quiz_info[0]->content);			
+			$quiz_info[0]->solution = json_decode($quiz_info[0]->solution);
+
+			$next_quiz_id = DB::table('quiz_problems')
+					//->where(array('type'=>$quiz_info[0]->type, 'degree'=>$quiz_info[0]->degree))
+					->where('type', $quiz_info[0]->type)
+					->where('id', '>', $quiz_info[0]->id)
+					->min('id');
+			$result["nextqid"] = $next_quiz_id;
+
+			$prev_quiz_id = DB::table('quiz_problems')
+					->where('type', $quiz_info[0]->type)
+					->where('id', '<', $quiz_info[0]->id)
+					->max('id');
+			$result["prevqid"] = $prev_quiz_id;
+
+			$result["problem"] = $quiz_info[0];
+			return response()->json($result, 200);
+		} else {
+			return response()->json(null, 200);
+		}		
 	}
 
 	function getnextproblemid($qid) {
 		$quiz_info = DB::table('quiz_problems')
 					->where('id', $qid)
-					->get(array("type", "degree"));
+					->get(array("type"));
 
 		
 		$next_quiz_id = DB::table('quiz_problems')
@@ -98,7 +255,7 @@ class ProblemController extends Controller
 	function getprevproblemid($qid) {
 		$quiz_info = DB::table('quiz_problems')
 					->where('id', $qid)
-					->get(array("type", "degree"));
+					->get(array("type"));
 
 		
 		$prev_quiz_id = DB::table('quiz_problems')
@@ -118,7 +275,7 @@ class ProblemController extends Controller
 
 	function getproblemcount( $type="", $degree="" ) {	
 		$rowcount= DB::table('quiz_problems')
-					->where(array('type'=>$type, 'degree'=>$degree))
+					->where(array('type'=>$type))
 					->count();
 
 		return $rowcount;
@@ -137,10 +294,12 @@ class ProblemController extends Controller
 		fwrite($fp, "\n".$problem_data["content"]);
 		fwrite($fp, "\n".$problem_data["solution"]);
 		fclose($fp);*/
+		//if(isset($problem_data["degree"]))
+		unset($problem_data["degree"]);
 		$rules = array(
 			'category'=> 'required',
 			'type'=> 'required',
-			'degree'=> 'required',
+			//'degree'=> 'required',
 			'title'=> 'required',
 			'guide'=> 'required',
 			'limit_time'=> 'required',
@@ -178,10 +337,14 @@ class ProblemController extends Controller
 		$problem_data["evaluate_mode"] = "Auto";
 		$problem_data["content"] = json_encode($problem_data["content"]);
 		$problem_data["solution"] = json_encode($problem_data["solution"]);
+
+		//if(isset($problem_data["degree"]))
+		unset($problem_data["degree"]);
+
 		$rules = array(
 			'category'=> 'required',
 			'type'=> 'required',
-			'degree'=> 'required',
+			//'degree'=> 'required',
 			'title'=> 'required',
 			'guide'=> 'required',
 			'limit_time'=> 'required',
@@ -213,14 +376,22 @@ class ProblemController extends Controller
 	}
 
 	function delete($id){
-		if(DB::table('quiz_problems')
-			->where('id', $id)
-        	->delete()) {
-			$out_data["state"] = "success";
-			$out_data["message"] = "delete success.";
-		} else {
+		$answer_rowcount = DB::table('quiz_answer')
+				->where('quiz_id', $id)
+				->count();
+		if($answer_rowcount > 0) {
 			$out_data["state"] = "error";				
-			$out_data["message"] = "delete fail.";
+			$out_data["message"] = "Can't delete user because he has answer or check history.";			
+		} else {
+			if(DB::table('quiz_problems')
+				->where('id', $id)
+	        	->delete()) {
+				$out_data["state"] = "success";
+				$out_data["message"] = "delete success.";
+			} else {
+				$out_data["state"] = "error";				
+				$out_data["message"] = "delete fail.";
+			}	
 		}
 			
 		return response()->json($out_data, 200);
@@ -282,9 +453,19 @@ class ProblemController extends Controller
 			       	$this->RecursiveMkdir($upload_dir);
 			   	}	
 			   	
-			   	$file = $request->file('file');
-			   	$file->move($upload_dir, $file->getClientOriginalName());
-	    		$count++;				
+			   	if (count($request->file('file')) == 1) {
+			   		$file = $request->file('file');
+			   		$file->move($upload_dir, $file->getClientOriginalName());
+					$count++;
+			   	} else {
+			   		foreach ($request->file('file') as $file) {
+						$file->move($upload_dir, $file->getClientOriginalName());
+						$count++;
+					}
+			   	}
+			   	//$file = $request->file('file');
+			   	//$file->move($upload_dir, $file->getClientOriginalName());
+	    		//$count++;				
 			}	
 			$answer = array( 'status' => 'Success', 'filecount'=>$count);    
 		} else {

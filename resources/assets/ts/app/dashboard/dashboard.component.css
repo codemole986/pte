@@ -1,4 +1,4 @@
-.main-container {
+/*.main-container {
     margin-top: 56px;
     
     padding: 15px;
@@ -44,8 +44,67 @@
 .btn-circle {
     border-radius: 15px !important;
 }
+.btn-arrow-link {
+    vertical-align: middle;
+    display: inline-block;
+    font-size: 13px;
+}
+.pull-right {
+    float: right!important;
+}
+.btn-arrow-link a {
+    text-shadow: none;
+    color: #5b9bd1;
+}
+.btn-arrow-link > i {
+    font-size: 14px;
+    line-height: 14px;
+    vertical-align: top;
+    margin: 2px 3px 2px 3px;
+    color: #999;
+}
+.btn.green-stripe {
+    border-left: 3px solid #26a69a;
+}
+.btn.default {
+    color: #333333;
+    background-color: #E5E5E5;
+}
+.btn + .btn {
+    margin-left: 5px;
+}
+.util-btn-margin-bottom-5 .btn {
+    margin-bottom: 5px !important;
+}
+.btn {
+    border-width: 0;
+    padding: 7px 14px;
+    font-size: 14px;
+    outline: none !important;
+    background-image: none !important;
+    filter: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    text-shadow: none;
+}
+
 @media screen and (max-width: 992px) {
     .main-container {
         margin-left: 0px !important;
     }
+}*/
+
+.carousel-inner>.item>a>img, .carousel-inner>.item>img, .img-responsive, .thumbnail a>img, .thumbnail>img {
+    width: 100%;
+}
+
+.portlet > .portlet-title {
+    border-bottom: 2px solid #bfb;
+}
+
+div.dataTables_scrollHeadInner,
+div.dataTables_scrollHeadInner table,
+div.dataTables_scrollBody table {
+    width: 100% !important;
 }

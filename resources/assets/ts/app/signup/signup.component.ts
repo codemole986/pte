@@ -6,6 +6,11 @@ import 'rxjs/add/operator/map';
 import { User } from '../model/user';
 import { GlobalService } from '../shared/services/global.service';
 import { routerTransition } from '../router.animations';
+import { TranslateService } from '@ngx-translate/core';
+
+declare var $:any;
+declare var bootbox: any;
+declare var Metronic: any;
 
 @Component({
     selector: 'app-signup',
@@ -19,45 +24,32 @@ export class SignupComponent implements OnInit {
     httpdata="";
     class: any[];
     user: User;
+
+    verifyflag: boolean = false;
+    username: string = "";
+    code: string = "";
+    view_flag: boolean = false;
     
-    constructor(private http: Http, private router: Router, private globalService: GlobalService) { 
+    constructor(private http: Http, private router: Router, private globalService: GlobalService, private translate: TranslateService) { 
         this.user = new User;
     }
 
     ngOnInit() {
         this.class = this.globalService.classnames;
         this.user.class = "";
+
+        Metronic.init();
+        this.view_flag = false;
     }
 
     onClickSubmit(data: User) {
         
-        if(data.name==null) {
-    		return false;
-    	}
-
-    	if(data.email==null) {
+        if(data.password!=data.confirmpassword) {
+            this.translate.stream("Diff Your Password and Confirm Password.").subscribe((res: any) => {
+                Metronic.showErrMsg(res);
+            });
     		return;
     	}
-
-    	if(data.password==null) {
-    		alert("Input Your Password.");
-    		return;
-    	}
-
-    	if(data.confirmpassword==null) {
-    		alert("Input Your Repeat Password.");
-    		return;
-    	}
-
-    	if(data.password!=data.confirmpassword) {
-    		alert("Diff Your Password and Repeat Password.");
-    		return;
-    	}
-
-        if(data.class=="") {
-            alert("Select User Class");
-            return;
-        }
 
         this.http.post("/user/register", data).
 			map(
@@ -65,13 +57,41 @@ export class SignupComponent implements OnInit {
 			).
 			subscribe(
 				(data) => {				
-					if(data.state == "fail") {
-                        alert(data.message);
+					if(data.state == "error") {
+                        Metronic.showErrMsg(data.message);
 					} else {
 						// redirect login
-						this.router.navigate(['/login']);
+						//this.router.navigate(['/login']);
+                        this.verifyflag = true;
+                        this.username = data.name;
+                        this.code = data.code;
 					}
 				}
-			)
+			);
+    }
+
+    onClickVerify(code: string) {
+        this.http.get("/user/verifycode/"+code).
+            map(
+                (response) => response.json()
+            ).
+            subscribe(
+                (data) => {             
+                    if(data.state == "error") {
+                        Metronic.showErrMsg(data.message);
+                    } else {
+                        // redirect login
+                        $('body').removeClass('login');
+                        this.router.navigate(['/login']);
+                    }
+                }
+            )
+    }
+
+    onViewReady() {
+        if (this.view_flag)
+            return;
+        $('body').addClass('login');
+        this.view_flag = true;
     }
 }

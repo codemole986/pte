@@ -16,4 +16,15 @@ return [
     'failed' => 'These credentials do not match our records.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
+    // Validators
+    'userNameTaken'    => 'Username is taken',
+    'userNameRequired' => 'Username is required',
+    'fNameRequired'    => 'First Name is required',
+    'lNameRequired'    => 'Last Name is required',
+    'emailRequired'    => 'Email is required',
+    'emailInvalid'     => 'Email is invalid',
+    'passwordRequired' => 'Password is required',
+    'PasswordMin'      => 'Password needs to have at least 6 characters',
+    'PasswordMax'      => 'Password maximum length is 20 characters',
+    'roleRequired'     => 'User role is required.',
 ];

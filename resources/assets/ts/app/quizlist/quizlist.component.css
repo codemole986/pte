@@ -1,12 +1,40 @@
 .cke_top, .cke_bottom {
 	display: none !important;
 }
+@media (min-width: 768px) {
+.right-btn {
+	margin-top: 5px;
+    padding-left: 0px;
+}
+}
+td select.form-control {
+	height: auto;
+    padding: 4px 12px;
+}
+.form-wizard .steps > li.done > a.step .number {
+	background-color: #dfba49;
+    color: #fff;
+}
+.form-wizard .steps > li > a.step > .number {
+	width: 40px;
+	height: 40px;
+}
+.portlet-body .search_bar {
+	float: right;
+	padding-left: 15px;
+	padding-right: 15px;
+}
+div.search_bar label {
+	margin-right: 15px;
+	letter-spacing: 1px;
+	float: left;
+	font-weight: bold;
+	font-size: 12px;
+}
+div.search_bar label input {
+	width: 100px;
+}
+
 /*.cke_reset_all.cke_1.cke_editor_ck_editor_dialog {
 	display: none !important;
 }*/
-ul.navbar-nav {
-	flex-direction: row !important;
-}
-li.nav-item.dropdown {
-	margin-left: 15px;
-} 

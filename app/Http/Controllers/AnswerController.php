@@ -23,36 +23,102 @@ class AnswerController extends Controller
 		return response()->json($answers, 200);
 	}
 
+	function getsimpleexerciseanswers(Request $request) {
+		$userinfo = $request->session()->get('userinfo');
+		$category = isset($request->category)?$request->category:'Writing';
+		$answers = array();
+		if($userinfo!=null) {
+			$fieldnames = array('quiz_answer.id', 'quiz_answer.created_at', 'quiz_answer.uid', 'quiz_problems.category', 'quiz_problems.type', 'quiz_problems.degree', 'quiz_problems.title', 'quiz_problems.limit_time', 'quiz_problems.points', 'users.email');
+			if($userinfo->permission == 'D') {
+				$answers = DB::table('quiz_answer')
+							->addSelect($fieldnames)
+							->leftJoin('quiz_problems', array('quiz_answer.quiz_id'=>'quiz_problems.id'))					
+							->leftJoin('users', array('quiz_answer.uid'=>'users.id'))	
+							->where('quiz_answer.testevent_id',0)				
+							->where('quiz_answer.uid', $userinfo->id)				
+							->where('quiz_problems.category', $category)				
+							->latest()
+							->take(5)
+							->get();
+			} else {
+				$answers = DB::table('quiz_answer')
+							->addSelect($fieldnames)
+							->leftJoin('quiz_problems', array('quiz_answer.quiz_id'=>'quiz_problems.id'))					
+							->leftJoin('users', array('quiz_answer.uid'=>'users.id'))	
+							->where('quiz_answer.testevent_id',0)
+							->where('quiz_problems.category', $category)						
+							->latest()
+							->take(5)
+							->get();
+			}
+		}
+
+		$out_data["data"] = $answers;
+		return response()->json($out_data, 200);
+	}
+
+
 	function getexerciseanswers(Request $request) {
-		$page_num = isset($request->_page)?$request->_page:0;
-    	$limit_count = isset($request->_limit)?$request->_limit:15;
+		$offset = isset($request->start) ? intval($request->start) : 0;
+		$limit_count = isset($request->length) ? intval($request->length) : 10;	
+		$draw = isset($request->draw) ?intval($request->draw) : 0;
+
+    	$quizcategory = isset($request->category)? $request->category : "";
+    	$quiztype = isset($request->type)? $request->type : "";
+
+    	$page_num = $offset / $limit_count+1;
 		$userinfo = $request->session()->get('userinfo');
 		if($userinfo!=null) {
-			$fieldnames = array('quiz_answer.*', 'quiz_problems.category', 'quiz_problems.type', 'quiz_problems.degree', 'quiz_problems.title', 'users.email');
+			$fieldnames = array('quiz_answer.*', 'quiz_problems.category', 'quiz_problems.type', 'quiz_problems.degree', 'quiz_problems.title', 'quiz_problems.limit_time', 'quiz_problems.points', 'users.email');
 			if($userinfo->permission == 'A' || $userinfo->permission == 'B') {
-				$answers = DB::table('quiz_answer')
+				$strquery = DB::table('quiz_answer')
 						->addSelect($fieldnames)
 						->leftJoin('quiz_problems', array('quiz_answer.quiz_id'=>'quiz_problems.id'))					
 						->leftJoin('users', array('quiz_answer.uid'=>'users.id'))	
-						->where('quiz_answer.testevent_id',0)				
-						->orderBy('quiz_answer.created_at', 'desc')
+						->where('quiz_answer.testevent_id',0);
+
+    			$answer_totalcount = $strquery->count();
+
+    			if(!empty($quizcategory)) {
+		    		$strquery->where("quiz_problems.category", $quizcategory);
+		    	}
+		    	if(!empty($quiztype)) {
+		    		$strquery->where("quiz_problems.type", $quiztype);
+		    	}
+
+		    	$answer_filteredcount = $strquery->count();
+
+				$answers = $strquery->orderBy('quiz_answer.created_at', 'desc')
 						->paginate($limit_count, ['*'], 'page', $page_num);
+
 			} else if($userinfo->permission == 'D') {
-				$answers = DB::table('quiz_answer')
+				$strquery = DB::table('quiz_answer')
 						->addSelect($fieldnames)
 						->leftJoin('quiz_problems', array('quiz_answer.quiz_id'=>'quiz_problems.id'))					
-						->leftJoin('users', array('quiz_answer.uid'=>'users.id'))
+						->leftJoin('users', array('quiz_answer.uid'=>'users.id'))	
 						->where('quiz_answer.testevent_id',0)
-						->where('quiz_answer.uid',$userinfo->id)
-						->orderBy('quiz_answer.created_at', 'desc')
-						->paginate($limit_count, ['*'], 'page', $page_num);	
+						->where('quiz_answer.uid',$userinfo->id);
+
+    			$answer_totalcount = $strquery->count();
+
+    			if(!empty($quizcategory)) {
+		    		$strquery->where("quiz_problems.category", $quizcategory);
+		    	}
+		    	if(!empty($quiztype)) {
+		    		$strquery->where("quiz_problems.type", $quiztype);
+		    	}
+
+		    	$answer_filteredcount = $strquery->count();
+
+				$answers = $strquery->orderBy('quiz_answer.created_at', 'desc')
+						->paginate($limit_count, ['*'], 'page', $page_num);
 			} 
 
-			foreach ($answers as $key => $answer) {
-				if($answer->uid == 0) {
-					$answers[$key]->email = "admin@quiz.com";
-				}				
-			}
+			$out_data["draw"] = $draw;
+			$out_data["recordsTotal"] = $answer_totalcount;
+			$out_data["recordsFiltered"] = $answer_filteredcount;
+			$out_data["data"] = $answers->items();
+			return response()->json($out_data);
 		}
 		return response()->json($answers, 200);
 	}
@@ -96,7 +162,14 @@ class AnswerController extends Controller
 		$dup_cond = array("testevent_id"=>$answer_data["testevent_id"], "quiz_id"=>$answer_data["quiz_id"], "uid"=>$answer_data["uid"]);
 		$out_data = array();	
 		if ($validator->passes()) {
-			if(DB::table('quiz_answer')->updateOrInsert($dup_cond, $answer_data)) {
+			/*if(DB::table('quiz_answer')->updateOrInsert($dup_cond, $answer_data)) {
+				$out_data["state"] = "success";
+				$out_data["message"] = "Insert success.";
+			} else {
+				$out_data["state"] = "error";				
+				$out_data["message"] = "Insert fail.";
+			}*/
+			if(DB::table('quiz_answer')->insert($answer_data)) {
 				$out_data["state"] = "success";
 				$out_data["message"] = "Insert success.";
 			} else {

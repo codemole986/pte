@@ -1,122 +1,14 @@
-<app-header></app-header>
-<section class="main-container">
-    <div [@routerTransition]>
-        <h2 class="text-muted">{{ 'Dashboard' | translate }}  <small>{{ 'Statistics Overview' | translate }} </small></h2>
-        
-        <!-- <div class="row">
-            <div class="col-md-12">
-                <ngb-carousel>
-                    <ng-template ngbSlide *ngFor="let slider of sliders">
-                        <img class="img-fluid mx-auto d-block" [src]="slider.imagePath" alt="Random first slide" width="100%">
-                        <div class="carousel-caption">
-                            <h3>{{slider.label}}</h3>
-                            <p>{{slider.text}}</p>
-                        </div>
-                    </ng-template>
-                </ngb-carousel>
-            </div>
-        </div>
-        <hr /> -->
-        <!-- START widget-->
-        <!-- <div class="row">
-            <div class="col-md-12">
-                <div  class="card card-default mb-3">
-                    <div class="card-header">
-                        <i class="fa fa-comments fa-fw"></i> Tab lists
-                    </div>                    
-                    <div class="card-body">
-                        <ngb-accordion>
-                            <ngb-panel>
-                                <ng-template ngbPanelTitle > hkgkhggh  </ng-template>
-                                <ng-template ngbPanelContent > 
-                                    <div> 
-                                        <h2>dkfjaskjf </h2>                                         
-                                    </div>
-                                </ng-template>
-                            </ngb-panel>
-                            <ngb-panel>
-                                <ng-template ngbPanelTitle > khggh  </ng-template>
-                                <ng-template ngbPanelContent > 
-                                    <div> 
-                                        <h2>dkfjasdfasfskjf </h2>                                        
-                                    </div>
-                                </ng-template>
-                            </ngb-panel>
-                        </ngb-accordion>                        
-                    </div>
-                </div>
-            </div>
-        </div> -->
-        <!-- END widget-->
-
-        <!-- START widget-->
-        <div class="row">
-            <div class="col-md-6">
-                <div  class="card card-default mb-3">
-                    <div class="card-header">
-                        <i class="fa fa-bar-chart-o fa-fw"></i>
-                        <span class="caption-subject font-green-sharp bold uppercase">Quiz</span>                        
-                        <span class="caption-helper">monthly stats...</span>
-                    </div>                    
-                    <div class="card-body">
-                        <chart [type]="charttype" [data]="chartdata" [options]="chartoptions" style="height:300px;"></chart>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div  class="card card-default mb-3">
-                    <div class="card-header">
-                        <i class="fa fa-bar-chart-o fa-fw"></i>
-                        <span class="caption-subject font-red-sunglo bold uppercase">Marks</span>
-                        <span class="caption-helper">monthly stats...</span>
-                    </div>                    
-                    <div class="card-body">
-                        <chart [type]="charttype" [data]="chartdata2" [options]="chartoptions" style="height:300px;"></chart>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- END widget-->
-        
-        <div class="row">
-            <div class="col-md-6">
-                <!-- START widget-->
-                <nb-card class="card card-default mb-3">
-                    <nb-card-header class="card-header">
-                        <div class="row" >
-                            <span class="caption-subject font-blue-steel bold uppercase" style="margin: 4px 10px 0px 15px;">Test list</span>
-                            <p class="ng-tns-c14-20 col text-right" style="margin-bottom: 0px !important;">
-                                <button class="btn btn-sm btn-primary" type="button" (click)="showTestForm()"><i class="fa fa-cubes fa-fw"></i> go Testing</button>
-                            </p>
-                        </div>
-                    </nb-card-header>
-                    <nb-card-body class="card-body">
-                        <ng2-smart-table [settings]="testgridsettings" [source]="testdatasource" (userRowSelect)="onTestRowSelect($event)"></ng2-smart-table>            
-                    </nb-card-body>
-                </nb-card>
-                <!-- END widget-->
-            </div>
-
-            <div class="col-md-6">
-                <!-- START widget-->
-                <nb-card class="card card-default mb-3">
-                    <nb-card-header class="card-header">
-                        <div class="row" >
-                            <span class="caption-subject font-purple-intense bold uppercase" style="margin: 4px 10px 0px 15px;">Examinee List</span>
-                            <p class="ng-tns-c14-20 col text-right" style="margin-bottom: 0px !important;">
-                                <button class="btn green-haze btn-circle btn-sm" type="button" [routerLink]="['/examinee']"> More </button>
-                            </p>
-                        </div>
-                    </nb-card-header>
-                    <nb-card-body class="card-body">
-                        <ng2-smart-table [settings]="examgridsettings" [source]="examdatasource"></ng2-smart-table>            
-                    </nb-card-body>
-                </nb-card>
-                <!-- END widget-->
-            </div>
-        </div>
-        
-        
+<div>
+    <div class="open-card-BG" *ngIf="active_dashboard=='overview'">
+         <app-overview-component></app-overview-component>
     </div>
-</section>
+    <div class="open-card-BG" *ngIf="active_dashboard=='student'">
+         <app-student-component></app-student-component>
+    </div>
+    <div class="open-card-BG" *ngIf="active_dashboard=='teacher'">
+         <app-teacher-component></app-teacher-component>
+    </div>
+    <div class="open-card-BG" *ngIf="active_dashboard=='manage'">
+         <app-manage-component></app-manage-component>
+    </div>
+</div>

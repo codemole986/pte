@@ -1,26 +1,37 @@
-<app-header></app-header>
+<div *ngIf="active_menu=='overview'">
+     <app-header-overview [default]="'test'"></app-header-overview>
+</div>
+<div *ngIf="active_menu=='student'">
+     <app-header-student [default]="'test'"></app-header-student>         
+</div>
+<div *ngIf="active_menu=='teacher'">
+     <app-header-teacher [default]="'test'"></app-header-teacher>         
+</div>
+<div *ngIf="active_menu=='manage'">
+     <app-header-manage [default]="'test'"></app-header-manage>         
+</div>
 <section class="main-container">
-    <div [@routerTransition]>
+    <div>
         <div *ngIf="listtestflag">
             <h3 class="page-title">
-                Test Manage <small> <a [routerLink]="['/']" style="text-decoration: none;"><i class="fa fa-home"></i> Home </a> <i class="fa fa-angle-right"></i> Manage <i class="fa fa-angle-right"></i><a href="javascript:void(0)" style="text-decoration: none;"> Test </a></small></h3>        
+                {{ 'Test Manage' | translate }} <small> <a [routerLink]="['/']" style="text-decoration: none;"><i class="fa fa-home"></i> {{ 'Home' | translate }} </a> <i class="fa fa-angle-right"></i> {{ 'Manage' | translate }} <i class="fa fa-angle-right"></i><a href="javascript:void(0)" style="text-decoration: none;"> {{ 'Test' | translate }} </a></small></h3>        
             <hr/> 
             <div class="row">
                 <div class="col-lg-12">
                     <nb-card class="card card-default mb-3">
                         <nb-card-header class="card-header">
                             <div class="caption">
-                                <i class="fa fa-table fa-fw"></i> Test List 
+                                <i class="fa fa-table fa-fw"></i> {{ 'TEST LIST' | translate }}
                             </div>
                             <div class="actions">
                                 <a href="javascript:;" class="btn btn-default btn-sm" (click)="goTestingRoom()">
-                                    <i class="fa fa-cubes fa-fw"></i> go Testing </a>   
+                                    <i class="fa fa-cubes fa-fw"></i> {{ 'go Testing' | translate }} </a>   
                                 <a *ngIf="actionflag" href="javascript:;" class="btn btn-default btn-sm" (click)="newConfigTestForm()">
-                                    <i class="fa fa-plus fa-fw"></i> Add </a>   
+                                    <i class="fa fa-plus fa-fw"></i> {{ 'Add' | translate }} </a>   
                                 <a *ngIf="actionflag" href="javascript:;" class="btn btn-default btn-sm" (click)="chgConfigTestForm()">
-                                    <i class="fa fa-edit fa-fw"></i> Edit </a>
+                                    <i class="fa fa-edit fa-fw"></i> {{ 'Edit' | translate }} </a>
                                 <a *ngIf="actionflag" href="javascript:;" class="btn btn-default btn-sm" (click)="deleteTest()">
-                                    <i class="fa fa-trash-o fa-fw"></i> Delete </a>                             
+                                    <i class="fa fa-trash-o fa-fw"></i> {{ 'Delete' | translate }} </a>                             
                             </div>                                  
                         </nb-card-header>
 
@@ -32,13 +43,13 @@
             </div>
         </div>
         <form *ngIf="newtestconfigflag" novalidate #testconfigForm="ngForm">
-            <h3 class="page-title">Test Config <small> <a [routerLink]="['/']" style="text-decoration: none;"><i class="fa fa-home"></i> Home </a><i class="fa fa-angle-right"></i> Manage <i class="fa fa-angle-right"></i><a href="javascript:void(0)" (click)="onClickList()" style="text-decoration: none;"> Test </a><i class="fa fa-angle-right"></i><a href="javascript:void(0)" style="text-decoration: none;"> Add/Edit </a></small></h3>                    
+            <h3 class="page-title">{{ 'Test Config' | translate }} <small> <a [routerLink]="['/']" style="text-decoration: none;"><i class="fa fa-home"></i> {{ 'Home' | translate }} </a><i class="fa fa-angle-right"></i> {{ 'Manage' | translate }} <i class="fa fa-angle-right"></i><a href="javascript:void(0)" (click)="onClickList()" style="text-decoration: none;"> {{ 'Test' | translate }} </a><i class="fa fa-angle-right"></i><a href="javascript:void(0)" style="text-decoration: none;"> {{ 'Add/Edit' | translate }} </a></small></h3>                    
             <hr/> 
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card card-default mb-3">
                         <div class="card-header">
-                            <i class="fa fa-cog fa-fw"></i> Config of Test 
+                            <i class="fa fa-cog fa-fw"></i> {{ 'Config of Test' | translate }} 
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -73,7 +84,7 @@
                                     </small>
                                 </div>                            
                                 <div class="col-sm-3 mb-3">
-                                    <input type="number" min="0" name="limit_time" class="form-control needfull" placeholder=" * Limit Time" title="Limit Time" [(ngModel)]="curselectedTest.limit_time" required reverse="true" #limit_time="ngModel">
+                                    <input type="number" min="0" name="limit_time" class="form-control needfull" placeholder=" * Limit Time (min)" title="Limit Time" [(ngModel)]="curselectedTest.limit_time" required reverse="true" #limit_time="ngModel">
                                     <small [hidden]="limit_time.valid || (limit_time.pristine && savefalg )" class="text-danger">
                                         Limit_time field is required.
                                     </small>
@@ -82,13 +93,13 @@
                                     <input type="number" name="count" class="form-control" placeholder="QuizCount" title="QuizCount" [(ngModel)]="curselectedTest.count" disabled="disabled">
                                 </div>
                                 <div class="col-sm-2 mb-3">
-                                    <label><div class="checker"><span><input type="checkbox" name="status" class="form-control needfull" placeholder="" title="" [(ngModel)]="curselectedTest.status"></span></div> Public </label>
+                                    <label><div class="checker"><span><input type="checkbox" name="status" class="form-control needfull" placeholder="" title="" [(ngModel)]="curselectedTest.status"></span></div> {{ 'Public' | translate }} </label>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-sm-12 mb-3">
                                     <fieldset class="form-group my-6">
-                                        <legend>Quiz Config</legend>
+                                        <legend>{{ 'Quiz Config' | translate }}</legend>
                                         <ng2-smart-table [settings]="quizsettings" [source]="quizdatasource" (createConfirm)="onCreateConfirm($event)" (editConfirm)="onSaveConfirm($event)" (deleteConfirm)="onDeleteConfirm($event)" ></ng2-smart-table> 
                                     </fieldset>
                                 </div>  
@@ -100,8 +111,8 @@
             <div class="row">
                 <div class="col text-right">
                     <p class="ng-tns-c14-20 my-2">
-                        <button class="btn btn-sm btn-primary" type="button" (click)="onClickList()"><i class="fa fa-table fa-fw"></i> List</button>
-                        <button class="btn btn-sm btn-primary" type="button" (click)="onClickSave()"><i class="fa fa-save fa-fw"></i> Save</button>
+                        <button class="btn btn-sm btn-primary" type="button" (click)="onClickList()"><i class="fa fa-table fa-fw"></i> {{ 'List' | translate }}</button>
+                        <button class="btn btn-sm btn-primary" type="button" (click)="onClickSave()"><i class="fa fa-save fa-fw"></i> {{ 'Save' | translate }}</button>
                     </p>                
                 </div>
             </div>

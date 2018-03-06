@@ -1,5 +1,5 @@
 /*$topnav-background-color: #31bbe9;*/
-.navbar {
+/*.navbar {
     background-color: #31bbe9;
 }
 .navbar .navbar-brand {
@@ -35,4 +35,16 @@
 .messages .media-body .last {
     font-size: 12px;
     margin: 0;
+}*/
+.page-header .page-header-top .page-logo .logo-default {
+    margin: 22px 0 0 0;
+}
+#header_lang_bar .dropdown-menu > li > a {
+    color: #ccc;
+}
+#header_lang_bar .dropdown-menu > li > a:hover {
+    color: #555;
+}
+.page-header .page-header-menu .hor-menu .navbar-nav > li .dropdown-menu li > a > i {
+    color: #6fd7a7;
 }

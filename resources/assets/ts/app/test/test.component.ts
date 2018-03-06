@@ -10,6 +10,10 @@ import { Test } from '../model/test';
 import { Testevent } from '../model/testevent';
 import { StatusRenderComponent } from './status-render.component';
 import { TypeRenderComponent } from './type-render.component';
+import { TranslateService } from '@ngx-translate/core';
+
+declare var bootbox: any;
+declare var Metronic: any;
 
 @Component({
 	selector: 'app-test',
@@ -58,11 +62,20 @@ export class TestComponent implements OnInit {
     curevent_id: number;
     curtestevent_info: Testevent;
 
-	constructor(private http: Http, private router: Router, private globalService: GlobalService) { 
+    active_menu: string = "overview";
+
+	constructor(private http: Http, private router: Router, private globalService: GlobalService, private translate: TranslateService) { 
 
     }
 
 	ngOnInit() {
+        switch(window.sessionStorage.getItem('permission')) {
+            case 'A' : this.active_menu = "manage"; break;
+            case 'B' : this.active_menu = "teacher"; break;
+            case 'D' : this.active_menu = "student"; break;
+            default : this.active_menu = "overview";
+        }
+        
         this.newtestconfigflag = false;
         this.listtestflag = true;
 
@@ -107,7 +120,7 @@ export class TestComponent implements OnInit {
             },
             attr: {
                 id: 'testgrid',
-                class: 'table table-bordered table-hover table-striped',
+                class: 'table table-bordered table-hover',
             },
             noDataMessage: 'No data found',            
             pager: {
@@ -205,7 +218,7 @@ export class TestComponent implements OnInit {
             },
             attr: {
                 id: 'quizgrid',
-                class: 'table table-bordered table-hover table-striped',
+                class: 'table table-bordered table-hover',
             },
             noDataMessage: 'No data found',            
             pager: {
@@ -283,11 +296,15 @@ export class TestComponent implements OnInit {
                 }
             }
         };
+
+        Metronic.init();
 	}
 
     goTestingRoom() {
         if( this.curselectedrowid == 0 ) {
-            window.alert("Select test row.");
+            this.translate.stream("Select test row.").subscribe((res: any) => {
+                Metronic.showWarnMsg(res);
+            });
         } else {
             /* continue/new confirm */
             
@@ -301,38 +318,40 @@ export class TestComponent implements OnInit {
                     if(data.length > 0 ) {
                         // if exist testevent_info
                         //      confirm(continue/new)
-                        this.curtestevent_info = data[0]; 
-                        if(window.confirm("Continue Test?")) {
-                            // if yes(continue)
-                            //      go old_testevent
-                            this.router.navigate(['/examinee', this.curtestevent_info.id]);
-                        } else {
-                            // if no(new)
-                            //      update status in old_testevent
-                            this.http.get("/test/updateteststatus/"+this.curtestevent_info.id).
-                            map(
-                                (response) => response.json()
-                            ).
-                            subscribe(
-                                (data) => {
-                                    if(data.state == "success") {
-                                        //      new testevent generate
-                                        this.http.get("/test/generatetestevent/"+this.curselectedrowid).
-                                        map(
-                                            (response) => response.json()
-                                        ).
-                                        subscribe(
-                                            (data) => {
-                                                this.curevent_id = data;
-                                                this.router.navigate(['/examinee', this.curevent_id]);                                                
-                                            }
-                                        );
-                                    } else {
-                                        alert("old testevent update error. Retry!")
-                                    }                                    
+                        this.curtestevent_info = data[0];
+                        var that = this;
+                        this.translate.stream("Continue Test?").subscribe((res: any) => {
+                            bootbox.confirm(res, function(result: any) {
+                                if (result) {
+                                    that.router.navigate(['/examinee', that.curtestevent_info.id]);
+                                } else {
+                                    that.http.get("/test/updateteststatus/"+that.curtestevent_info.id).
+                                    map(
+                                        (response) => response.json()
+                                    ).
+                                    subscribe(
+                                        (data) => {
+                                            if(data.state == "success") {
+                                                //      new testevent generate
+                                                that.http.get("/test/generatetestevent/"+that.curselectedrowid).
+                                                map(
+                                                    (response) => response.json()
+                                                ).
+                                                subscribe(
+                                                    (data) => {
+                                                        that.curevent_id = data;
+                                                        that.router.navigate(['/examinee', that.curevent_id]);                                                
+                                                    }
+                                                );
+                                            } else {
+                                                alert("old testevent update error. Retry!")
+                                            }                                    
+                                        }
+                                    );
                                 }
-                            );
-                        }
+                            });
+                        });
+                        
                     } else {                    
                         this.http.get("/test/generatetestevent/"+this.curselectedrowid).
                         map(
@@ -363,7 +382,9 @@ export class TestComponent implements OnInit {
 
     chgConfigTestForm() {
         if( this.curselectedrowid == 0 ) {
-            window.alert("Select test row.");
+            this.translate.stream("Select test row.").subscribe((res: any) => {
+                Metronic.showWarnMsg(res);
+            });
         } else {
             this.newtestconfigflag = true;            
             this.listtestflag = false;
@@ -372,27 +393,34 @@ export class TestComponent implements OnInit {
 
     deleteTest() {
         if( this.curselectedrowid == 0 ) {
-            window.alert("Select test row.");
+            this.translate.stream("Select test row.").subscribe((res: any) => {
+                Metronic.showWarnMsg(res);
+            });
         } else {
-            if (window.confirm('Are you sure you want to delete?')) {
-                this.http.get("/test/delete/"+this.curselectedrowid).
-                map(
-                    (response) => response.json()
-                ).
-                subscribe(
-                    (data) => {
-                        if(data.state == "error"){
-                            alert(data.message); 
-                        } else {
-                            this.testdatasource.refresh();
-                            this.curselectedrowid = 0;
-                            this.curselectedTest = new Test;   
-                            this.curselectedTest.testclass = "";
-                            this.curselectedTest.testdegree = "";
-                        }
+            var that = this;
+            this.translate.stream("Are you sure you want to delete?").subscribe((res: any) => {
+                bootbox.confirm(res, function(result: any) {
+                    if (result) {
+                        that.http.get("/test/delete/"+that.curselectedrowid).
+                        map(
+                            (response) => response.json()
+                        ).
+                        subscribe(
+                            (data) => {
+                                if(data.state == "error"){
+                                    alert(data.message); 
+                                } else {
+                                    that.testdatasource.refresh();
+                                    that.curselectedrowid = 0;
+                                    that.curselectedTest = new Test;   
+                                    that.curselectedTest.testclass = "";
+                                    that.curselectedTest.testdegree = "";
+                                }
+                            }
+                        );
                     }
-                );
-            }
+                });
+            });
         }        
     }
 
@@ -407,7 +435,7 @@ export class TestComponent implements OnInit {
     }
 
     onTestRowSelect(event: any) {
-        if(this.curselectedrowid == event.data.id) {
+        if(!event.isSelected){      
             this.curselectedrowid = 0;
             this.curselectedTest = new Test;
             this.curselectedTest.testclass = "";
@@ -447,7 +475,9 @@ export class TestComponent implements OnInit {
         }
 
         if(this.quizdatasource.count() <= 0 ) {
-            window.alert("Add QuizConfig info.")
+            this.translate.stream("Add QuizConfig info.").subscribe((res: any) => {
+                Metronic.showWarnMsg(res);
+            });
             return;
         }
 
@@ -475,11 +505,17 @@ export class TestComponent implements OnInit {
 
     onCreateConfirm(event: any) {
         if(event.newData.type == "") {
-            window.alert("Select QuizType field.");
+            this.translate.stream("Select QuizType field.").subscribe((res: any) => {
+                Metronic.showWarnMsg(res);
+            });
         } else if(event.newData.degree == "") {
-            window.alert("Select QuizDegree field.");
+            this.translate.stream("Select QuizDegree field.").subscribe((res: any) => {
+                Metronic.showWarnMsg(res);
+            });
         } else if( isNaN(event.newData.count) || event.newData.count <= 0) {
-            window.alert("Select QuizCount field with Integer.");
+            this.translate.stream("Select QuizCount field with Integer.").subscribe((res: any) => {
+                Metronic.showWarnMsg(res);
+            });
         } else { //if (window.confirm('Are you sure you want to create?'))
             event.confirm.resolve(event.newData); 
             if(isNaN(this.curselectedTest.count)) {
@@ -491,22 +527,26 @@ export class TestComponent implements OnInit {
 
     onSaveConfirm(event: any) {
         if( isNaN(event.newData.count) || event.newData.count <= 0) {
-            window.alert("Select QuizCount field with Integer.");
+            this.translate.stream("Select QuizCount field with Integer.").subscribe((res: any) => {
+                Metronic.showWarnMsg(res);
+            });
         } else { //if (window.confirm('Are you sure you want to save?'))            
             event.confirm.resolve(event.newData); 
             this.curselectedTest.count += Number(event.newData.count).valueOf() - Number(event.data.count).valueOf();                                          
-        } 
-        /*else {
-            event.confirm.reject();
-        }*/
+        }
     }
 
     onDeleteConfirm(event: any) {
-        if (window.confirm('Are you sure you want to delete?')) {
-            event.confirm.resolve();            
-            this.curselectedTest.count -= Number(event.data.count).valueOf();                                          
-        } else {
-            event.confirm.reject();
-        }
+        var that = this;
+        this.translate.stream("Are you sure you want to delete?").subscribe((res: any) => {
+            bootbox.confirm(res, function(result: any) {
+                if (result) {
+                    event.confirm.resolve();            
+                    that.curselectedTest.count -= Number(event.data.count).valueOf()
+                } else {
+                    event.confirm.reject();
+                }
+            });
+        });
     }    
 }

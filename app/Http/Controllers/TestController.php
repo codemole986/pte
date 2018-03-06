@@ -153,15 +153,25 @@ class TestController extends Controller
 			# code...
 			for($n=0; $n<$preset->count; $n++) {
 				$problem_num++;
-				$problem_rowcount= DB::table('quiz_problems')
+				$problem_rowcount = DB::table('quiz_problems')
 					->where(array('type'=>$preset->type, 'degree'=>$preset->degree))
 					->count();
 
-				$problem_id = DB::table('quiz_problems')
-					->where(array('type'=>$preset->type, 'degree'=>$preset->degree))
-					->limit(1)
-					->offset(rand(0, $problem_rowcount - 1))
-					->get(array("id"));
+				if($preset->count <= $problem_rowcount ) {
+					do {
+						$problem_id = DB::table('quiz_problems')
+							->where(array('type'=>$preset->type, 'degree'=>$preset->degree))
+							->limit(1)
+							->offset(rand(0, $problem_rowcount - 1))
+							->get(array("id"));
+					} while(in_array($problem_id[0]->id, array_values($problem_list)));
+				} else {
+					$problem_id = DB::table('quiz_problems')
+						->where(array('type'=>$preset->type, 'degree'=>$preset->degree))
+						->limit(1)
+						->offset(rand(0, $problem_rowcount - 1))
+						->get(array("id"));
+				}
 
 				if( count($problem_id) > 0) {
 					$problem_list[$problem_num] = $problem_id[0]->id;		
@@ -309,8 +319,24 @@ class TestController extends Controller
 	function updatetesteventmarks(Request $request, $id) {
 		$testevent_info = $request->all();
 		$testevent_data["marks"] = $testevent_info["marks"];
-		$testevent_data["evaluate_status"] = $testevent_info["evaluate_status"];
 		$testevent_data["test_status"] = 1;
+		$testevent_data["end_at"] = date("Y-m-d H:i:s");
+		if(DB::table('quiz_testevent')
+			->where('id', $id)
+	        ->update($testevent_data)) {
+			$out_data["state"] = "success";
+			$out_data["message"] = "update success.";
+		} else {
+			$out_data["state"] = "error";				
+			$out_data["message"] = "update fail.";
+		}
+		return response()->json($out_data, 200);
+	}
+
+	function updatetesteventevalmarks(Request $request, $id) {
+		$testevent_info = $request->all();
+		$testevent_data["marks"] = $testevent_info["marks"];
+		$testevent_data["evaluate_status"] = $testevent_info["evaluate_status"];
 		$testevent_data["evalend_at"] = date("Y-m-d H:i:s");
 		if(DB::table('quiz_testevent')
 			->where('id', $id)

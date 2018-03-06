@@ -7,15 +7,21 @@ import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { TeacherComponent } from './dashboard/dashboard.component';
+import { OverviewComponent } from './dashboard/dashboard.component';
+import { DashStudentComponent } from './dashboard/dashboard.component';
+import { DashManageComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
 import { QuizlistComponent } from './quizlist/quizlist.component';
+import { QuizeditComponent } from './quizedit/quizedit.component';
 import { TestComponent } from './test/test.component';
 import { StatusRenderComponent } from './test/status-render.component';
 import { TypeRenderComponent } from './test/type-render.component';
 import { ManageComponent } from './manage/manage.component';
 import { PermissionRenderComponent } from './manage/permission-render.component';
 import { ExerciseComponent } from './exercise/exercise.component';
+import { ExerciselistComponent } from './exerciselist/exerciselist.component';
 import { ExamineeComponent } from './examinee/examinee.component';
 import { EvalexamComponent } from './evalexam/evalexam.component';
 import { EvalstatusRenderComponent } from './evalexam/evalstatus-render.component';
@@ -23,14 +29,21 @@ import { EditorComponent } from './examinee/editor/editor.component';
 import { ProblemComponent } from './examinee/problem/problem.component';
 import { ConverttimestampPipe } from './examinee/examinee.converttimestamp';
 import { FileUploadDirective } from './dashboard/file-upload.directive';
+import { NumberprintPipe } from './dashboard/numberprint';
 
 import {
-    HeaderComponent,
-    SidebarComponent
+    HeaderComponent, HeaderTeacherComponent, HeaderOverviewComponent, HeaderStudentComponent, HeaderManageComponent, 
+    FooterComponent
 } from './components';
-// import { NotificationComponent } from './dashboard/components/notification/notification.component';
 
-import { NgbModule, NgbCarouselModule, NgbAlertModule, NgbDropdownModule, NgbProgressbarModule, NgbPaginationModule, NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
+import {
+    AboutusComponent,
+    ContactusComponent,
+    InboxComponent,
+    ProfileComponent
+} from './pages';
+
+import { NgbModule, NgbCarouselModule, NgbModalModule, NgbAlertModule, NgbDropdownModule, NgbProgressbarModule, NgbPaginationModule, NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -52,10 +65,7 @@ import {
 import { AuthGuard } from './shared';
 
 
-// AoT requires an exported function for factories
 export function createTranslateLoader(http: HttpClient) {
-    // for development
-    // return new TranslateHttpLoader(http, '/start-angular/QuizProject/master/dist/assets/i18n/', '.json');
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
@@ -65,13 +75,28 @@ export function createTranslateLoader(http: HttpClient) {
         ManageComponent,
         PermissionRenderComponent,
         HeaderComponent,
-        SignupComponent,
+        HeaderTeacherComponent,
+        HeaderOverviewComponent, 
+        HeaderStudentComponent, 
+        HeaderManageComponent, 
+        FooterComponent,
+        AboutusComponent,
+        ContactusComponent,
+        InboxComponent,
+        ProfileComponent,
         DashboardComponent,
+        TeacherComponent,
+        OverviewComponent,
+        DashStudentComponent,
+        DashManageComponent,
         FileUploadDirective,
+        NumberprintPipe,
         LoginComponent,
         SignupComponent,        
         QuizlistComponent,
+        QuizeditComponent,
         ExerciseComponent,
+        ExerciselistComponent,
         TestComponent,
         StatusRenderComponent,
         TypeRenderComponent,        
@@ -81,7 +106,7 @@ export function createTranslateLoader(http: HttpClient) {
         EditorComponent,
         ProblemComponent,
         ConverttimestampPipe,
-        TimelineComponent,
+        TimelineComponent,        
         NotificationComponent,
         ChatComponent      
     ],    
@@ -95,8 +120,10 @@ export function createTranslateLoader(http: HttpClient) {
         ChartModule,   
         Ng2SmartTableModule,        
         NbCardModule,
-        NgbModule.forRoot(),
+        NgbModule.forRoot(),        
         NgbDropdownModule.forRoot(),
+        NgbModalModule.forRoot(),
+        NgbAlertModule.forRoot(),
         NgbProgressbarModule.forRoot(),
         NgbPaginationModule.forRoot(),
         NgbCarouselModule.forRoot(),
@@ -114,7 +141,6 @@ export function createTranslateLoader(http: HttpClient) {
             {
                 path: '',
                 component: DashboardComponent,
-                canActivate: [AuthGuard]
             },
             {
                 path: 'manage',
@@ -135,20 +161,35 @@ export function createTranslateLoader(http: HttpClient) {
                 canActivate: [AuthGuard]
             },            
             {
+                path: 'quizedit/:add/:category/:type',
+                component: QuizeditComponent,
+                canActivate: [AuthGuard]
+            },
+            {
+                path: 'quizedit/:edit/:id',
+                component: QuizeditComponent,
+                canActivate: [AuthGuard]
+            },
+            {
                 path: 'quizlist',
                 component: QuizlistComponent,
                 canActivate: [AuthGuard]
             },
+            {
+                path: 'exerciselist',
+                component: ExerciselistComponent,
+                canActivate: [AuthGuard]
+            }, 
             {
                 path: 'exercise',
                 component: ExerciseComponent,
                 canActivate: [AuthGuard]
             },  
             {
-                path: 'exercise/:id',
+                path: 'exercise/:type',
                 component: ExerciseComponent,
                 canActivate: [AuthGuard]
-            },          
+            },       
             {
                 path: 'test',
                 component: TestComponent,
@@ -165,7 +206,7 @@ export function createTranslateLoader(http: HttpClient) {
                 canActivate: [AuthGuard]
             },           
             {
-                path: 'problem/:id',
+                path: 'quiz/:id',
                 component: ExamineeComponent,
                 canActivate: [AuthGuard]
             },           
@@ -173,6 +214,22 @@ export function createTranslateLoader(http: HttpClient) {
                 path: 'eval',
                 component: EvalexamComponent,
                 canActivate: [AuthGuard]
+            },
+            {
+                path: 'aboutus',
+                component: AboutusComponent
+            },
+            {
+                path: 'contactus',
+                component: ContactusComponent
+            },
+            {
+                path: 'inbox',
+                component: InboxComponent
+            },
+            {
+                path: 'profile',
+                component: ProfileComponent
             }
         ]) 
 	],

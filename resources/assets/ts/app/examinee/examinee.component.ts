@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 
 import { Router, ActivatedRoute } from '@angular/router';
@@ -14,6 +14,13 @@ import { Answer } from '../model/answer';
 import { Testevent } from '../model/testevent';
 import {EditorComponent} from './editor/editor.component';
 import {ProblemComponent} from './problem/problem.component';
+import { TranslateService } from '@ngx-translate/core';
+
+declare var $:any;
+declare function startRecording(a: any, b: any, c: any, d: any): any;
+declare function stopRecording(): any;
+declare var bootbox: any;
+declare var Metronic: any;
 
 @Component({
   	selector: 'app-examinee',
@@ -60,11 +67,17 @@ export class ExamineeComponent implements OnInit {
 
 	select_left_values: any[];
 	select_right_values: any[];
+	order_options: any[];
 	order_left_options: any[];
 	order_right_options: any[];
 
 	audio_flag: boolean;
 	audio_autoplay: boolean;
+
+	sel_audio_index: number;
+	audio_visible_flag: boolean;
+	record_start_time: number;
+	end_exam_flag: boolean;
 
 	recorder: any;
 	mediastream: any;
@@ -93,9 +106,10 @@ export class ExamineeComponent implements OnInit {
     viewexamflag: boolean = false;
     audiovisibleflag : boolean = false;
     _token : string = window.sessionStorage.getItem('_token');
+    active_menu: string = "overview";
 	
 	constructor(private http: Http, private route: ActivatedRoute,
-  private router: Router, private globalService: GlobalService) { 
+  private router: Router, private globalService: GlobalService, private translate: TranslateService) { 
 		this.quiz_id = 0;		
 		this.curtestevent_info = new Testevent;
 		this.previousbutton = false;
@@ -111,16 +125,27 @@ export class ExamineeComponent implements OnInit {
 		this.currentAnswer.answer = this.globalService.getSolutionObject(this.currentProblem.type);	
 
 		this.audio_flag = false;
-		this.audio_autoplay = false; 
+		this.audio_autoplay = false;
+
+		this.sel_audio_index = -1;
+		this.audio_visible_flag = false;
+		this.record_start_time = 0;
 
 		this.arrchecknumber = [];
 		this.curtotalpoint = 0;
-		this.stdtotalpoint = 0;
+		this.stdtotalpoint = 0;		
 	}
 
 	
 
-	ngOnInit() {		
+	ngOnInit() {	
+		switch(window.sessionStorage.getItem('permission')) {
+    		case 'A' : this.active_menu = "manage"; break;
+			case 'B' : this.active_menu = "teacher"; break;
+			case 'D' : this.active_menu = "student"; break;
+			default : this.active_menu = "overview";
+    	}
+    		
 		this.testevent_id = this.route.snapshot.params['testid'];
 		this.quiz_id = this.route.snapshot.params['id'];
 		if(this.testevent_id!=null) {
@@ -128,12 +153,14 @@ export class ExamineeComponent implements OnInit {
 			this.listvisible = false;
 			this.testvisible = true;
 			this.timerflag = true;
+			clearInterval(this.ctimer);
 			this.getTestevent(this.testevent_id);									
 		} else if(this.quiz_id!=null) {
 			this.selfexam = true;
 			this.listvisible = false;
 			this.testvisible = false;
 			this.timerflag = true;
+			clearInterval(this.ctimer);
 			this.getProblem(this.quiz_id);									
 		} else {
 			this.listvisible = true;
@@ -175,7 +202,7 @@ export class ExamineeComponent implements OnInit {
 	            },
 	            attr: {
 	                id: 'examineegrid',
-	                class: 'table table-bordered table-hover table-striped',
+	                class: 'table table-bordered table-hover',
 	            },
 	            noDataMessage: 'No data found',            
 	            pager: {
@@ -224,12 +251,19 @@ export class ExamineeComponent implements OnInit {
 
 	        this.examineedatasource = new ServerDataSource(this.http, { totalKey: "total", dataKey: "data", endPoint: '/test/gettesteventlist' });
 
-		}		
+		}	
+
+		this.curselectedrowid = 0;	
+		Metronic.init();
 	}
 
-
+	ngOnDestroy() {
+        clearInterval(this.ctimer);
+        console.log("cleared");
+    }
+    
 	onExamineeRowSelect(event: any) {
-        if(this.curselectedrowid == event.data.id) {
+        if(!event.isSelected){      
             this.curselectedrowid = 0;            
         } else {
             this.curselectedrowid = event.data.id;
@@ -239,34 +273,48 @@ export class ExamineeComponent implements OnInit {
 
     deleteExam() {
     	if( this.curselectedrowid == 0 ) {
-            window.alert("Select test row.");
+    		this.translate.stream("Select test row.").subscribe((res: any) => {
+                Metronic.showWarnMsg(res);
+            });
         } else if(this.curevaluatestatus != 0) {
-        	window.alert("Can't Delete the row.");
+        	this.translate.stream("Can't Delete the row.").subscribe((res: any) => {
+                Metronic.showWarnMsg(res);
+            });
         } else {
-            if (window.confirm('Are you sure you want to delete?')) {
-            	this.http.get("/test/eventdelete/"+this.curselectedrowid).
-                map(
-                    (response) => response.json()
-                ).
-                subscribe(
-                    (data) => {
-                        if(data.state == "error"){
-                            alert(data.message); 
-                        } else {
-                            this.examineedatasource.refresh();
-                            this.curselectedrowid = 0;                            
-                        }
-                    }
-                );
-            }
+        	var that = this;
+        	this.translate.stream("Are you sure you want to delete?").subscribe((res: any) => {
+                bootbox.confirm(res, function(result: any){
+	            	if(result) {
+	            		that.http.get("/test/eventdelete/"+that.curselectedrowid).
+		                map(
+		                    (response) => response.json()
+		                ).
+		                subscribe(
+		                    (data) => {
+		                        if(data.state == "error"){
+		                            Metronic.showErrMsg(data.message); 
+		                        } else {
+		                            that.examineedatasource.refresh();
+		                            that.curselectedrowid = 0;                            
+		                        }
+		                    }
+		                );
+	            	}
+	            });
+            });
+            
         }
     }
 
     viewExam() {
     	if( this.curselectedrowid == 0 ) {
-            window.alert("Select test row.");
+    		this.translate.stream("Select test row.").subscribe((res: any) => {
+                Metronic.showWarnMsg(res);
+            });
         } else if(this.curevaluatestatus == 0) {
-        	window.alert("Can't View the exam.");
+        	this.translate.stream("Can't View the exam.").subscribe((res: any) => {
+                Metronic.showWarnMsg(res);
+            });
         } else {
         	//this.visibility = true;
         	this.viewexamflag = true;
@@ -345,48 +393,111 @@ export class ExamineeComponent implements OnInit {
 			this.markvisible = true;
 			this.audio_autoplay = false; 
 			
+			if(this.currentProblem.type == 'SRS' || this.currentProblem.type == 'SSA' || this.currentProblem.type == 'LWS' || this.currentProblem.type == 'LTS' || this.currentProblem.type == 'LSA' || this.currentProblem.type == 'LSB') {
+				$('#quizaudio')[0].pause();
+				$('#quizaudio')[0].currentTime = 0;
+			}
+
 			if(this.audio_flag) {				
 				stopRecording();
-				this.audiovisibleflag = true;	
+				this.audiovisibleflag = true;
 			}
+
+			/*if (this.currentProblem.type == 'LTW') {
+				var htmldata_obj = this.htmldata.nativeElement;
+				var inputs = $(htmldata_obj).find('input');
+				$(inputs).attr("disabled", "");
+			} else if (this.currentProblem.type == 'LCD') {
+				var htmldata_obj = this.htmldata.nativeElement;
+				var LCD_spans = $(htmldata_obj).find("span.LCD");
+				$(LCD_spans).removeClass("LCD");
+			} else if (this.currentProblem.type == 'RFB') {
+				var htmldata_obj = this.htmldata.nativeElement;
+				var choicepanel_obj = this.choicepanel.nativeElement;
+				var inputs = $(htmldata_obj).find('input');
+				$(inputs).attr("disabled", "");
+			} else if (this.currentProblem.type == 'RAN') {
+				var htmldata_obj = this.htmldata.nativeElement;
+				var selects = $(htmldata_obj).find('select');
+				$(selects).attr("disabled", "");
+			}*/
+
 			//this.onSave();	
 			this.evaluateExamine();		
 		} else {
-			if (window.confirm('Are you sure you want to terminate test?')) {
-				clearInterval(this.ctimer);
-				this.endbutton = true;		
-				this.answertext = true;	
-				this.solutiontextvisible = false;				
-				this.markvisible = true;
-				this.audio_autoplay = false; 
-				
-				if(this.audio_flag) {
-					stopRecording();
-				}
-				this.onSave(true);	
+			var that = this;
 
-				//
-				this.http.post("/test/updatetesteventmarks/"+this.testevent_id, this.curtestevent_info).
-		        map(
-		            (response) => response.json()
-		        ).
-		        subscribe(
-		            (data) => {
-		            	if(data.state == "error") {
-		            		alert(data.message);
-		            	}		            	
-		            }
-		        );
+			this.translate.stream("Are you sure you want to terminate test?").subscribe((res: any) => {
+                bootbox.confirm(res, function(result: any){
+					if(result) {
+						clearInterval(that.ctimer);
+						that.endbutton = true;		
+						that.answertext = true;	
+						that.solutiontextvisible = false;				
+						that.markvisible = true;
+						that.audio_autoplay = false; 
+						
+						if(that.currentProblem.type == 'SRS' || that.currentProblem.type == 'SSA' || that.currentProblem.type == 'LWS' || that.currentProblem.type == 'LTS' || that.currentProblem.type == 'LSA' || that.currentProblem.type == 'LSB') {
+							$('#quizaudio')[0].pause();
+							$('#quizaudio')[0].currentTime = 0;
+						}
 
-			} else if(window.confirm('Are you sure you want to exite now?')) {
-				clearInterval(this.ctimer);				
-				if(this.audio_flag) {
-					stopRecording();
-				}
-				this.onSave();	
-				// go dashboard
-			}
+						if(that.audio_flag) {
+							stopRecording();
+						}
+
+						if (that.currentProblem.type == 'LTW') {
+							var htmldata_obj = that.htmldata.nativeElement;
+							var inputs = $(htmldata_obj).find('input');
+							$(inputs).attr("disabled", "");
+						} else if (that.currentProblem.type == 'LCD') {
+							var htmldata_obj = that.htmldata.nativeElement;
+							var LCD_spans = $(htmldata_obj).find("span.LCD");
+							$(LCD_spans).removeClass("LCD");
+						} else if (that.currentProblem.type == 'RFB') {
+							var htmldata_obj = that.htmldata.nativeElement;
+							var choicepanel_obj = that.choicepanel.nativeElement;
+							var inputs = $(htmldata_obj).find('input');
+							$(inputs).attr("disabled", "");
+						} else if (that.currentProblem.type == 'RAN') {
+							var htmldata_obj = that.htmldata.nativeElement;
+							var selects = $(htmldata_obj).find('select');
+							$(selects).attr("disabled", "");
+						}
+
+						that.onSave(true);
+
+						that.http.post("/test/updatetesteventmarks/"+that.testevent_id, that.curtestevent_info).
+				        map(
+				            (response) => response.json()
+				        ).
+				        subscribe(
+				            (data) => {
+				            	if(data.state == "error") {
+				            		Metronic.showErrMsg(data.message);
+				            	}		            	
+				            }
+				        );
+					} else {
+						this.translate.stream("Are you sure you want to exite now?").subscribe((res: any) => {
+							bootbox.confirm(res, function(result: any){
+								if(result) {
+							clearInterval(that.ctimer);				
+							if(that.audio_flag) {
+								stopRecording();
+							}
+							that.onSave();		
+							that.exitExamine();
+						} 
+							});
+						});
+					}
+				});
+			});
 		}
+
+		this.end_exam_flag = true;
+		this.audio_visible_flag = false;
 	}
 
 	prevExamine() {
@@ -492,20 +603,18 @@ export class ExamineeComponent implements OnInit {
 					
 					this.editordata = this.currentAnswer;
 					this.problemdata = this.currentProblem;
+					this.end_exam_flag = false;
 
-					if(this.currentProblem.category=="Speaking") {
-						this.audio_flag = true;					
-						startRecording(this.currentAnswer.testevent_id, this.currentProblem.id, window.sessionStorage.getItem('userid'), this._token );		
-					}
-
+					this.record_start_time = 0;
+					
 					if(this.selfexam && this.timerflag) {
 						this.currentlimittime = Number(data.limit_time).valueOf();	
 						this.ctimer = setInterval(()=> {
 							this.currentlimittime--; 
 							if(this.currentlimittime<=0) 
 								this.endExamine(); 
-							this.currentAnswer.examine_uptime = this.currentProblem.limit_time - this.currentlimittime;
-							this.progressvalue = Math.round(this.currentAnswer.examine_uptime/this.currentProblem.limit_time*100);
+							this.currentAnswer.examine_uptime = this.currentProblem.limit_time - this.currentlimittime - this.record_start_time;
+							this.progressvalue = Math.round(this.currentAnswer.examine_uptime/(this.currentProblem.limit_time - this.record_start_time)*100);
 						}, 1000 );	
 						this.markvisible = false;					
 					}
@@ -515,7 +624,9 @@ export class ExamineeComponent implements OnInit {
 						this.currentlimittime = 0;
 					}
 					this.currentAnswer.answer = this.globalService.getSolutionObject(this.currentProblem.type);
-					alert("No Problem!!!");
+					this.translate.stream("No Problem!!!").subscribe((res: any) => {
+		                Metronic.showWarnMsg(res);
+		            });
 				}
 			}
 		)
@@ -538,15 +649,19 @@ export class ExamineeComponent implements OnInit {
 				}
 				break;
 			case 'RRO':
+				this.order_options = [];
 				this.order_left_options = [];
 				this.order_right_options = [];
 				for (var i = 0;  i < this.currentProblem.content.select.options.length;  i++) {
-					this.order_left_options.push(this.currentProblem.content.select.options[i]);
+					this.order_options.push(this.currentProblem.content.select.options[i]);
 				}
-				this.order_left_options.sort();
-				this.order_left_options.sort(function(a,b) {    
+				this.order_options.sort();
+				this.order_options.sort(function(a,b) {    
 	        		return Math.random() - Math.random();
 	       		});
+	       		for (var i = 0;  i < this.order_options.length;  i++) {
+	       			this.order_left_options.push(this.order_options[i]);
+	       		}
 				break;
 			case 'RFB':
 				this.rfb_content = this.currentProblem.content.text;
@@ -555,7 +670,7 @@ export class ExamineeComponent implements OnInit {
                 var found = reg.test(this.rfb_content);
                 while (found) {
                     var matches = reg.exec(this.rfb_content);
-                    this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" name=\"inputs\" value=\"\">");
+                    this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" name=\"inputs\" value=\"\"><a class=\"btn default eraser\"><i class=\"fa fa-times\"></i></a>");
                     found = reg.test(this.rfb_content);
                 }
                 this.rfb_options = [];
@@ -621,6 +736,28 @@ export class ExamineeComponent implements OnInit {
 		}
 	}
 
+	checkRFBInputs() {
+		var htmldata_obj = this.htmldata.nativeElement;
+		var choicepanel_obj = this.choicepanel.nativeElement;
+		var container = choicepanel_obj.getElementsByTagName('div');
+		var words = container[0].getElementsByTagName('div');
+		var inputs = htmldata_obj.getElementsByTagName('input');
+		for (var i = 0;  i < words.length;  i++) {
+			var flag = 0;
+			var j;
+			for (j = 0;  j < inputs.length;  j++) {
+				if (inputs[j].value == words[i].innerHTML) {
+					flag = 1;
+					break;
+				}
+			}
+			if (flag == 1) {
+				words[i].style.visibility = "hidden";
+			} else {
+				words[i].style.visibility = "visible";
+			}
+		}
+	}
 	createRFBView() {
 		if (this.htmldata == null) return;
 		var htmldata_obj = this.htmldata.nativeElement;
@@ -629,11 +766,12 @@ export class ExamineeComponent implements OnInit {
 		if ( htmldata_obj.innerHTML == "") {
 			
 			this.rfb_probhtml = this.rfb_content;
-
+			this.rfb_probhtml = this.rfb_probhtml.replace("<p>", "");
+            this.rfb_probhtml = this.rfb_probhtml.replace("</p>", "");
 			htmldata_obj.innerHTML = this.rfb_probhtml;
 			this.rfb_answerhtml = "<div class='row'>";
 			for (var i = 0;  i < this.rfb_options.length;  i++) {
-				this.rfb_answerhtml += "<div class='col-2 word' style='text-align: center; border: 1px solid #ccc; background-color: #fff; padding: 10px; margin: 20px 50px; cursor: move;'>" + this.rfb_options[i] + "</div>";
+				this.rfb_answerhtml += "<div class='col-md-2 col-sm-3 col-xs-10 word'>" + this.rfb_options[i] + "</div>";
 			}
 			this.rfb_answerhtml += "</div>";
 			
@@ -646,26 +784,33 @@ export class ExamineeComponent implements OnInit {
 			var container = choicepanel_obj.getElementsByTagName('div');
 			var words = container[0].getElementsByTagName('div');
 			var inputs = htmldata_obj.getElementsByTagName('input');
+			var erasers = $(htmldata_obj).find('a.eraser');
+			var that = this;
 			for (var k = 0;  k < inputs.length;  k++) {
-				inputs[k].addEventListener('change',
+				inputs[k].addEventListener('keydown',
 					function(e:any) {
-						// $('#choicepanel').find('div.word');
-						var inputs = htmldata_obj.getElementsByTagName('input');
-						for (var i = 0;  i < words.length;  i++) {
-							var flag = 0;
-							for (var j = 0;  j < inputs.length;  j++) {
-								if (inputs[j].value == words[i].innerHTML) {
-									flag = 1;
-								}
-							}
-							if (flag == 1) {
-								words[i].style.visibility = "hidden";
-							} else {
-								words[i].style.visibility = "visible";
-							}
-						}
+						var input = e.target;
+						setTimeout(function(){
+				                input.value = '';
+				                that.checkRFBInputs();
+				            },
+				        10);
 					}
 				);
+				erasers[k].addEventListener('click', function(e:any) {
+					var eraser = e.target;
+					if ($(eraser).context.tagName == "I") {
+						eraser = $(eraser).parent('a.eraser')[0];
+					}
+					var i;
+					for (i = 0;  i < erasers.length;  i++) {
+						if (eraser == erasers[i])
+							break;
+					}
+					var input = $(eraser).siblings('input')[i];
+					$(input).val('');
+					that.checkRFBInputs();
+				});
 			}
 			
 			for (var i = 0;  i < words.length;  i++) {
@@ -673,6 +818,8 @@ export class ExamineeComponent implements OnInit {
 					function(e:any) {
 						if (drag_obj != null)
 							return;
+						if (this.markvisible)
+							$(this).unbind(e);
 						
 						e.preventDefault();
 						left = 0;
@@ -682,13 +829,15 @@ export class ExamineeComponent implements OnInit {
 						drag_obj = this;
 						this.style.left = left;
 		                this.style.top = top;
-		                //alert('down');
 					}
 				);
 				words[i].addEventListener('mousemove',
 					function(e:any) {
 						if (drag_obj != this)
 							return;
+						if (this.markvisible)
+							$(this).unbind(e);
+
 						e.preventDefault();
 		                var diffX = e.pageX - startX;
 		                var diffY = e.pageY - startY;
@@ -702,14 +851,20 @@ export class ExamineeComponent implements OnInit {
 					function(e:any) {
 						if (drag_obj != this)
 							return;
+						if (this.markvisible)
+							$(this).unbind(e);
+
 						this.style.visibility = 'hidden';
 		 				var point_obj = document.elementFromPoint(e.pageX - document.body.scrollLeft, e.pageY - (window.pageYOffset || document.documentElement.scrollTop));
 		 				this.style.visibility = 'visible';
 		 				var target_obj = point_obj.closest('input');
 		 				if (target_obj != null) {
 		 					if (target_obj.tagName == "INPUT") {
-		 						target_obj.value=this.innerHTML;
-								this.style.visibility = 'hidden';
+		 						if ($(target_obj).attr("disabled") != "disabled") {
+			 						$(target_obj).val(this.innerHTML);
+			 						that.checkRFBInputs();
+									this.style.visibility = 'hidden';
+								}
 								//$('#html_data input').trigger('change');
 		 					}
 		 				}
@@ -741,9 +896,9 @@ export class ExamineeComponent implements OnInit {
             while (found) {
                 var matches = reg.exec(this.rfb_content);
                 if (this.rfb_selected_options[index] == this.currentProblem.content.select.options[this.currentProblem.solution.optionno[index]]) {
-                	this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\" style=\"color: #f00;\" disabled>");
+                	this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\" style=\"color: #f00;\">");	 /*disabled*/
                 } else {
-					this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\" disabled>");
+					this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\">");	 /*disabled*/
                 }
                 found = reg.test(this.rfb_content);
                 index++;
@@ -768,6 +923,8 @@ export class ExamineeComponent implements OnInit {
 		var htmldata_obj = this.htmldata.nativeElement;
 		if (htmldata_obj.innerHTML == "") {
 			this.rfb_probhtml = this.rfb_content;
+			this.rfb_probhtml = this.rfb_probhtml.replace("<p>", "");
+            this.rfb_probhtml = this.rfb_probhtml.replace("</p>", "");
 			htmldata_obj.innerHTML = this.rfb_probhtml;
 		}
 	}
@@ -778,29 +935,19 @@ export class ExamineeComponent implements OnInit {
 		var html_answerdata_obj = this.html_answerdata.nativeElement;
 
 		if (html_answerdata_obj.innerHTML == "") {
-			alert("examinee");
 			this.rfb_selected_options = [];
             var str_data = htmldata_obj.innerHTML;
             var selects = htmldata_obj.getElementsByTagName('select');
             for (var i = 0;  i < selects.length;  i++) {
             	this.rfb_selected_options.push(selects[i].value);
             }
-            this.rfb_content = this.currentProblem.content.text;
-            var reg = /\{\{\}\}/;
-            var index = 0;
-            var found = reg.test(this.rfb_content);
-            while (found) {
-                var matches = reg.exec(this.rfb_content);
-                if (this.rfb_selected_options[index] == this.currentProblem.content.selectlist[this.currentProblem.solution.optionno[index].id].options[this.currentProblem.solution.optionno[index].option]) {
-                	this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\" style=\"color: #f00;\" disabled>");
-                } else {
-					this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\" disabled>");
-                }
-                found = reg.test(this.rfb_content);
-                index++;
+            
+            for (var i = 0;  i < selects.length;  i++) {
+            	if ($(selects[i]).val() == this.currentProblem.content.selectlist[this.currentProblem.solution.optionno[i].id].options[this.currentProblem.solution.optionno[i].option]) {
+            		$(selects[i]).css("color", "#f00");
+            	}
             }
-            htmldata_obj.innerHTML = this.rfb_content;
-
+            
 			this.rfb_solutionhtml = this.currentProblem.content.text;
 			var reg = /\{\{\}\}/;
             var index = 0;
@@ -819,6 +966,8 @@ export class ExamineeComponent implements OnInit {
 		var htmldata_obj = this.htmldata.nativeElement;
 		if (htmldata_obj.innerHTML == "") {
 			this.rfb_probhtml = this.rfb_content;
+			this.rfb_probhtml = this.rfb_probhtml.replace("<p>", "");
+            this.rfb_probhtml = this.rfb_probhtml.replace("</p>", "");
 			htmldata_obj.innerHTML = this.rfb_probhtml;
 		}
 	}
@@ -842,9 +991,9 @@ export class ExamineeComponent implements OnInit {
             while (found) {
                 var matches = reg.exec(this.rfb_content);
                 if (this.rfb_selected_options[index] == this.currentProblem.content.select.options[index]) {
-                	this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\" style=\"color: #f00;\" disabled>");
+                	this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\" style=\"color: #f00;\">");  /*disabled*/
                 } else {
-					this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\" disabled>");
+					this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\">");  /*disabled*/
                 }
                 found = reg.test(this.rfb_content);
                 index++;
@@ -905,32 +1054,16 @@ export class ExamineeComponent implements OnInit {
 		var htmldata_obj = this.htmldata.nativeElement;
 		if (htmldata_obj.innerHTML == "") {
 			this.rfb_probhtml = this.rfb_content;
+			this.rfb_probhtml = this.rfb_probhtml.replace("<p>", "");
+            this.rfb_probhtml = this.rfb_probhtml.replace("</p>", "");
 			htmldata_obj.innerHTML = this.rfb_probhtml;
 			var spans = htmldata_obj.getElementsByTagName('span');
 			for (var i = 0;  i < spans.length;  i++) {
 				spans[i].addEventListener('click',
 					function(e:any) {
-						var classes = this.className;  // Get the list of classes
-				        if (!classes) return;             // No classes defined
-				        if (classes == "LCD") {
-				        	this.className += " Clicked";
-				        	return;  // Exact match
-				        }
-
-				        var flag1 = false, flag2 = false;
-				        if (this.className.search("\\b" + "LCD" + "\\b") != -1) {
-				        	flag1 = true;
-				        }
-				        if (this.className.search("\\b" + "Clicked" + "\\b") != -1) {
-				        	flag2 = true;
-				        }
-				        
-				        if (flag1 == true) {
-				        	if (flag2 == true)
-				        		this.className = this.className.replace(new RegExp("\\b"+ "Clicked"+"\\b\\s*", "g"), "");
-				        	else
-				        		this.className += " Clicked";
-				        }
+						if ($(this).hasClass("LCD")) {
+							$(this).toggleClass("Clicked");
+						}
 					}
 				);
 			}
@@ -943,15 +1076,15 @@ export class ExamineeComponent implements OnInit {
 		var html_answerdata_obj = this.html_answerdata.nativeElement;
 
 		if (html_answerdata_obj.innerHTML == "") {
-			var LCD_spans = this.getElements('LCD', 'span', htmldata_obj);
+			var LCD_spans = $(htmldata_obj).find("span.LCD");
 			for (var i = 0;  i < LCD_spans.length;  i++)
-				LCD_spans[i].className = LCD_spans[i].className.replace(new RegExp("\\b"+ "LCD"+"\\b\\s*", "g"), "");
-			var spans = htmldata_obj.getElementsByTagName('span');
+				$(LCD_spans).removeClass("LCD");
+			var spans = $(htmldata_obj).find("span");
 			for (var i = 0;  i < spans.length;  i++) {
-				if (spans[i].className == '')
-					spans[i].removeAttribute('class');
+				if ($(spans[i]).attr("class") == "")
+					$(spans[i]).removeAttr("class");
 			}
-
+			
 			var answer_words = [];
 			var str_data = htmldata_obj.innerHTML;
 			var reg = /(<span[ class=\"Clicked\"]*>)([a-z, ,|]*)(<\/span>)/;
@@ -994,9 +1127,9 @@ export class ExamineeComponent implements OnInit {
             var spans = htmldata_obj.getElementsByTagName('span');
             for (var i = 0;  i < solution_words.length;  i++) {
             	if (answer_words[i] != solution_words[i]) {
-            		spans[i].className = spans[i].className + " Wrong";
+            		$(spans[i]).addClass("Wrong");
             	} else if (solution_words[i].indexOf('Clicked') >= 0){
-            		spans[i].className = spans[i].className + " Correct";
+            		$(spans[i]).addClass("Correct");
             	}
             }
 		}
@@ -1035,6 +1168,7 @@ export class ExamineeComponent implements OnInit {
 	}
 
 	onSave(endFlag: boolean = false) {
+		console.log("examinee insert");
 		if(typeof this.currentAnswer.quiz_id == "number") {
 			//this.evaluateExamine();		
 			if(endFlag){
@@ -1048,7 +1182,7 @@ export class ExamineeComponent implements OnInit {
 	        subscribe(
 	    		(data) => {
 	    			if(data.state == "error") {
-	    				alert(data.message);	
+	    				Metronic.showErrMsg(data.message);	
 	    			}    			
 	    		}
 	    	);
@@ -1056,27 +1190,28 @@ export class ExamineeComponent implements OnInit {
     }
 
     onClickDelete(id: number) {
-    	if(window.confirm('Are you sure you want to delete?')) {
-	    	this.http.get("/answer/delete/"+id).
-	    	map(
-	            (response) => response.json()
-	        ).
-	        subscribe(
-	    		(data) => {
-	    			if(data.state == "error") {
-	    				alert(data.message);
-	    			}
-	    			this.getAnswers();
+    	var that = this;
+    	this.translate.stream("Are you sure you want to delete?").subscribe((res: any) => {
+	    	bootbox.confirm(res, function(result: any){
+	    		if(result) {
+	    			that.http.get("/answer/delete/"+id).
+			    	map(
+			            (response) => response.json()
+			        ).
+			        subscribe(
+			    		(data) => {
+			    			if(data.state == "error") {
+			    				Metronic.showErrMsg(data.message);
+			    			}
+			    			that.getAnswers();
+			    		}
+			    	);
 	    		}
-	    	);
-	    }
+	    	});
+	    });
     }
 
-    showViewExamineAnswerForm( ans: Answer) {
-
-    }
-
-
+    
     getTypes(category: string) {
     	return this.globalService.problemTypes[category];
     }
@@ -1175,4 +1310,62 @@ export class ExamineeComponent implements OnInit {
             options[i + 1] = tmp;
         }
 	}
+
+	onSelLecture(i: number) {
+		this.sel_audio_index = -1;
+		var that = this;
+		var index = i;
+		setTimeout(function(){
+                that.sel_audio_index = index;
+            },
+        10);
+        this.audio_visible_flag = true;
+	}
+
+	startAnswerRecording() {
+		this.audio_flag = true;
+		startRecording(this.currentAnswer.testevent_id, this.currentProblem.id, window.sessionStorage.getItem('userid'), this._token );
+		this.record_start_time = this.currentProblem.limit_time - this.currentlimittime;
+		this.progressvalue = 0;
+		this.audio_visible_flag = false;
+	}
+
+	updateOutput() {
+        var lis_problem = $('#rro_list_problem ol.dd-list li.dd-item');
+        this.order_left_options = [];
+        for (var i = 0;  i < lis_problem.length;  i++) {
+            this.order_left_options.push($(lis_problem[i]).find('div.dd-handle').html().trim());
+        }
+
+        var lis_answer = $('#rro_list_answer ol.dd-list li.dd-item');
+        this.order_right_options = [];
+        for (var i = 0;  i < lis_answer.length;  i++) {
+            this.order_right_options.push($(lis_answer[i]).find('div.dd-handle').html().trim());
+        }
+    }
+
+    nestable_flag: boolean = false;
+
+    createRRONestable() {
+        if (this.nestable_flag)
+            return;
+        var that = this;
+        $('#rro_list_problem').nestable({
+            group: 1
+        }).on('change', function(e: any) {
+            that.updateOutput();
+        });
+
+        // activate Nestable for list 2
+        $('#rro_list_answer').nestable({
+            group: 1
+        }).on('change',function(e: any) {
+            that.updateOutput();
+        });
+        $('#rro_list').nestable().on('change', function(e: any) {
+            that.updateOutput();
+        });
+        
+        this.nestable_flag = true;
+    }
 }

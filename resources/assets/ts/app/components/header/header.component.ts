@@ -1,24 +1,32 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Component, OnInit, Input, } from '@angular/core';
+import { Router, NavigationEnd, ResolveEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { Http, Response, Headers, RequestOptions } from "@angular/http";
+import 'rxjs/add/operator/map';
+
+declare var $:any;
 
 @Component({
     selector: 'app-header',
-    template: require('./header.component.html'),
+    template: require('./header.component_overview.html'),
     styles: [`${require('./header.component.css')}`]
 })
 export class HeaderComponent implements OnInit {
+
     pushRightClass: string = 'push-right';
 
-    quizmanageable: boolean;
-    examineemanageable: boolean;
-    evalmanageable: boolean;
-    usermanageable: boolean;
-    testmanageable: boolean; 
-    exercisemanageable: boolean;
+    menu_home: boolean;
+    menu_aboutus: boolean;
+    menu_contactus: boolean;
+    user_name: string;
+    user_id: string;
+    user_photo: string;
 
-    constructor(private translate: TranslateService, public router: Router) {
+    _defaultmenu: string;
+    
+    langflag: string;
 
+    constructor(private http: Http, public translate: TranslateService, public router: Router) {
         this.translate.addLangs(['en', 'zh']);
         this.translate.setDefaultLang('en');
         //const browserLang = this.translate.getBrowserLang();
@@ -30,37 +38,6 @@ export class HeaderComponent implements OnInit {
             this.translate.use(browserLang.match(/en|zh/) ? browserLang : 'en');
         }
         
-        
-        this.usermanageable = false;
-        this.quizmanageable = false;
-        this.examineemanageable = false; 
-        this.evalmanageable = false; 
-        this.testmanageable = false; 
-        this.exercisemanageable = false;
-
-
-        if(window.sessionStorage.getItem('permission')=='A') {
-            this.usermanageable = true;
-            this.quizmanageable = true;
-            this.exercisemanageable = true;
-            this.testmanageable = true; 
-            this.examineemanageable = true;
-            this.evalmanageable = true;
-        } else if(window.sessionStorage.getItem('permission').indexOf('B')>-1 ) {
-            this.quizmanageable = true;
-            this.exercisemanageable = true;
-            this.testmanageable = true; 
-            this.examineemanageable = true;
-            this.evalmanageable = true;            
-        } else if(window.sessionStorage.getItem('permission').indexOf('C')>-1 ) {
-            this.evalmanageable = true;            
-        } else if(window.sessionStorage.getItem('permission').indexOf('D')>-1 ) {
-            this.quizmanageable = true;
-            this.exercisemanageable = true;
-            this.examineemanageable = true;
-            this.testmanageable = true; 
-        } 
-
         this.router.events.subscribe(val => {
             if (
                 val instanceof NavigationEnd &&
@@ -69,11 +46,26 @@ export class HeaderComponent implements OnInit {
             ) {
                 this.toggleSidebar();
             }
+
+            if (val instanceof ResolveEnd) {
+                $('.menu-dropdown.mega-menu-dropdown.mega-menu-full.open .dropdown-toggle.hover-initialized').attr('aria-expanded', 'false');
+                $('.menu-dropdown.mega-menu-dropdown.mega-menu-full.open').removeClass('open');
+            }
         });
     }
 
     ngOnInit() {
-
+        var language = localStorage.getItem('useLang');
+        if (language == 'en')
+            this.langflag = 'en';
+        else if (language == 'zh')
+            this.langflag = 'cn';
+        else
+            this.langflag = 'en';
+        
+        this.user_name =  window.sessionStorage.getItem('username');
+        this.user_id =  window.sessionStorage.getItem('userid');
+        this.user_photo =  window.sessionStorage.getItem('userphoto');
     }
 
     
@@ -94,12 +86,87 @@ export class HeaderComponent implements OnInit {
     }
 
     onLoggedout() {
-        window.sessionStorage.removeItem('isLoggedin');
+        this.http.get("/user/logout").
+        map(
+            (response) => response.json()
+        ).
+        subscribe(
+            (data) => {
+                console.log("log out");
+                window.sessionStorage.removeItem('isLoggedin');
+                window.sessionStorage.removeItem('permission');
+                this.router.navigate(['/login']);
+            }
+        );
+
+        
     }
 
-    changeLang(language: string) {        
+    changeLang(language: string) {
         this.translate.use(language);
         localStorage.setItem('useLang', language);
-        //
+        if (language == 'en')
+            this.langflag = 'en';
+        else if (language == 'zh')
+            this.langflag = 'cn';
+        else
+            this.langflag = 'en';
+    }
+
+    changeMenu() {
+
     }
 }
+
+@Component({
+    selector: 'app-header-overview',
+    template: require('./header.component_overview.html'),
+    styles: [`${require('./header.component.css')}`],    
+})
+export class HeaderOverviewComponent extends HeaderComponent implements OnInit { 
+	@Input() default: string;
+
+	constructor(private http1: Http, private translate1: TranslateService, public router1: Router) {	
+		super(http1, translate1, router1);
+	}	
+}
+
+@Component({
+    selector: 'app-header-student',
+    template: require('./header.component_student.html'),
+    styles: [`${require('./header.component.css')}`],    
+})
+export class HeaderStudentComponent extends HeaderComponent implements OnInit { 
+	@Input() default: string;
+
+	constructor(private http1: Http, private translate1: TranslateService, public router1: Router) {	
+		super(http1, translate1, router1); 
+	}	
+}
+
+@Component({
+    selector: 'app-header-teacher',
+    template: require('./header.component_teacher.html'),
+    styles: [`${require('./header.component.css')}`],    
+})
+export class HeaderTeacherComponent extends HeaderComponent implements OnInit { 
+	@Input() default: string;
+
+	constructor(private http1: Http, private translate1: TranslateService, public router1: Router) {	
+		super(http1, translate1, router1); 
+	}	
+}
+
+@Component({
+    selector: 'app-header-manage',
+    template: require('./header.component_manage.html'),
+    styles: [`${require('./header.component.css')}`],    
+})
+export class HeaderManageComponent extends HeaderComponent implements OnInit { 
+	@Input() default: string;
+	
+	constructor(private http1: Http, private translate1: TranslateService, public router1: Router) {	
+		super(http1, translate1, router1); 
+	}	
+}
+
