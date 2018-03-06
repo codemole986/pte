@@ -1,0 +1,30 @@
+.page-prefooter h2 {
+	color: #44b644;
+}
+.page-footer .navbar-nav {
+	float: right;
+}
+.page-footer .navbar-nav li {
+	padding: 0 5px;
+    margin: 0;
+    list-style: none;
+}
+.page-footer .navbar-nav li a {
+	color: #eee;
+}
+.page-prefooter address i {
+	width: 16px;
+	text-align: center;
+}
+.page-prefooter .subscribe-form .btn {
+	background-color: #329877;
+}
+.page-prefooter h2 {
+	font-size: 17px;
+}
+.page-prefooter address {
+	line-height: 24px;
+}
+.page-prefooter p {
+	line-height: 24px;
+}

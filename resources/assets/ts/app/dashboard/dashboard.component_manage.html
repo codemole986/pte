@@ -1,0 +1,429 @@
+<app-header-manage [default]="'home'"></app-header-manage>
+<div class="page-head">
+	<div class="container">
+		<!-- BEGIN PAGE TITLE -->
+		<div class="page-title">
+			<h1>{{ 'Dashboard' | translate }} <small>{{ 'Statistics Overview' | translate }} </small></h1>
+		</div>
+		<!-- END PAGE TITLE -->
+	</div>
+</div>
+<div class="page-content">
+	<div class="container">
+		<!-- BEGIN PAGE BREADCRUMB -->
+		<ul class="page-breadcrumb breadcrumb">
+			<li>
+				<a href="#" [routerLink]="['/']">{{ 'Home' | translate }}</a>
+			</li>
+			<li class="active">
+				{{ 'Dashboard' | translate }}
+			</li>
+		</ul>
+		<!-- END PAGE BREADCRUMB -->
+		<!-- Promo block BEGIN -->
+		<div class="row" style="margin-bottom: 20px;">
+			<div class="col-md-12">
+	            <div id="myCarousel" class="carousel image-carousel slide">
+					<div class="carousel-inner">
+						<div class="active item">
+							<img src="/assets/images/slider1.jpg" class="img-responsive" alt="">
+							<div class="carousel-caption">
+								<h4>
+								<a href="page_news_item.html">
+								First Thumbnail label </a>
+								</h4>
+								<p>
+									 Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+								</p>
+							</div>
+						</div>
+						<div class="item">
+							<img src="/assets/images/slider2.jpg" class="img-responsive" alt="">
+							<div class="carousel-caption">
+								<h4>
+								<a href="page_news_item.html">
+								Second Thumbnail label </a>
+								</h4>
+								<p>
+									 Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+								</p>
+							</div>
+						</div>
+						<div class="item">
+							<img src="/assets/images/slider3.jpg" class="img-responsive" alt="">
+							<div class="carousel-caption">
+								<h4>
+								<a href="page_news_item.html">
+								Third Thumbnail label </a>
+								</h4>
+								<p>
+									 Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+								</p>
+							</div>
+						</div>
+					</div>
+					<!-- Carousel nav -->
+					<a class="carousel-control left" href="#myCarousel" data-slide="prev">
+					<i class="m-icon-big-swapleft m-icon-white"></i>
+					</a>
+					<a class="carousel-control right" href="#myCarousel" data-slide="next">
+					<i class="m-icon-big-swapright m-icon-white"></i>
+					</a>
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel" data-slide-to="0" class="active">
+						</li>
+						<li data-target="#myCarousel" data-slide-to="1">
+						</li>
+						<li data-target="#myCarousel" data-slide-to="2">
+						</li>
+					</ol>
+				</div>
+	        </div>
+	    </div>
+		<!-- Promo block END -->
+		<div class="row margin-top-10">
+			<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+				<a class="dashboard-stat dashboard-stat-light blue-madison" href="javascript:;">
+				<div class="visual">
+					<i class="fa fa-group fa-icon-medium"></i>
+				</div>
+				<div class="details">
+					<div class="number">
+						{{totalstudentcount | numberprint }}
+					</div>
+					<div class="desc">
+						{{ 'Total Students' | translate }}
+					</div>
+				</div>
+				</a>
+			</div>
+			<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+				<a class="dashboard-stat dashboard-stat-light red-intense" href="javascript:;">
+				<div class="visual">
+					<i class="fa fa-graduation-cap fa-icon-medium"></i>
+				</div>
+				<div class="details">
+					<div class="number">
+						{{totalteachercount | numberprint }}
+					</div>
+					<div class="desc">
+						{{ 'Total Teachers' | translate }}
+					</div>
+				</div>
+				</a>
+			</div>
+			<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+				<a class="dashboard-stat dashboard-stat-light blue" href="javascript:;">
+				<div class="visual">
+					<i class="fa fa-star fa-icon-medium"></i>
+				</div>
+				<div class="details">
+					<div class="number">
+						{{uploadedproblemcount | numberprint }}
+					</div>
+					<div class="desc">
+						{{ 'Uploaded Problems' | translate }}
+					</div>
+				</div>
+				</a>
+			</div>
+			<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+				<a class="dashboard-stat dashboard-stat-light green-haze" href="javascript:;">
+				<div class="visual">
+					<i class="fa fa-flag fa-icon-medium"></i>
+				</div>
+				<div class="details">
+					<div class="number">
+						{{answercount}}
+					</div>
+					<div class="desc">
+						{{ 'Total Answers' | translate }}
+					</div>
+				</div>
+				</a>
+			</div>
+			
+		</div>
+		<div class="row">
+			<!-- <div class="col-md-12 col-sm-12">
+				<div class="portlet light">
+					<div class="portlet-title">
+						<div class="caption">
+							<i class="fa fa-cogs font-green-sharp"></i>
+							<span class="caption-subject font-green-sharp bold uppercase">Web Traffic</span>
+						</div>
+						<div class="tools">
+							<a href="javascript:;" class="collapse">
+							</a>
+						</div>
+					</div>
+					<div class="portlet-body">
+						<div id="chart_2" class="chart">
+						</div>
+					</div>
+				</div>
+			</div> -->
+			<div class="col-md-12 col-sm-12">
+				<!-- BEGIN PORTLET-->
+				<div class="portlet light ">
+					<div class="portlet-title">
+						<div class="caption caption-md">
+							<i class="icon-bar-chart theme-font hide"></i>
+							<span class="caption-subject theme-font bold uppercase">Our Services</span>
+						</div>
+						<div class="tools">
+							<a href="javascript:;" class="collapse">
+							</a>
+						</div>
+					</div>
+					<div class="portlet-body">
+						<div class="row service-box margin-bottom-40">
+					        <div class="col-md-3 col-sm-3">
+					            <div class="service-box-heading">
+					            	<em><i class="fa fa-keyboard-o blue"></i></em>
+					            	<span>{{ 'Writing' | translate }}</span>
+					            </div>
+					            <p>Lorem ipsum dolor sit amet, dolore eiusmod quis tempor incididunt ut et dolore Ut veniam unde nostrudlaboris. Sed unde omnis iste natus error sit voluptatem.</p>
+					        </div>
+					        <div class="col-md-3 col-sm-3">
+					            <div class="service-box-heading">
+					            	<em><i class="fa fa-headphones green"></i></em>
+					            	<span>{{ 'Listening' | translate }}</span>
+					            </div>
+					            <p>Lorem ipsum dolor sit amet, dolore eiusmod quis tempor incididunt ut et dolore Ut veniam unde nostrudlaboris. Sed unde omnis iste natus error sit voluptatem.</p>
+					        </div>
+					        <div class="col-md-3 col-sm-3">
+					            <div class="service-box-heading">
+					            	<em><i class="fa fa-eye blue"></i></em>
+					            	<span>{{ 'Reading' | translate }}</span>
+					            </div>
+					            <p>Lorem ipsum dolor sit amet, dolore eiusmod quis tempor incididunt ut et dolore Ut veniam unde nostrudlaboris. Sed unde omnis iste natus error sit voluptatem.</p>
+					        </div>
+					        <div class="col-md-3 col-sm-3">
+					            <div class="service-box-heading">
+					            	<em><i class="fa fa-volume-up green"></i></em>
+					            	<span>{{ 'Speaking' | translate }}</span>
+					            </div>
+					            <p>Lorem ipsum dolor sit amet, dolore eiusmod quis tempor incididunt ut et dolore Ut veniam unde nostrudlaboris. Sed unde omnis iste natus error sit voluptatem.</p>
+					        </div>
+					    </div>
+					</div>
+				</div>
+				<!-- END PORTLET-->
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 col-sm-12">
+				<!-- BEGIN PORTLET-->
+				<div class="portlet light ">
+					<div class="portlet-title">
+						<div class="caption">
+							<span class="caption-subject theme-font bold uppercase">{{ 'Top Members' | translate }}</span>
+						</div>
+					</div>
+					<div class="portlet-body">
+						<div class="tabbable-line">
+							<ul class="nav nav-tabs">
+								<li class="active">
+									<a href="#overview_students" data-toggle="tab" aria-expanded="true">
+									{{ 'Students' | translate }} </a>
+								</li>
+								<li>
+									<a href="#overview_teachers" data-toggle="tab" aria-expanded="false">
+									{{ 'Teachers' | translate }} </a>
+								</li>
+								<!-- <li>
+									<a href="#overview_evaluators" data-toggle="tab" aria-expanded="false">
+									{{ 'Evaluators' | translate }} </a>
+								</li> -->
+							</ul>
+							<div class="tab-content">
+								<div class="tab-pane active" id="overview_students">
+									<div class="table-scrollable table-scrollable-borderless scroller" style="height: 282px;">
+										<table id="topstudentstable" class="table table-hover table-light"></table>
+									</div>
+								</div>
+								<div class="tab-pane" id="overview_teachers">
+									<div class="table-scrollable table-scrollable-borderless scroller" style="height: 282px;">
+										<table id="topteachertable" class="table table-hover table-light"></table>
+									</div>
+								</div>
+								<!-- <div class="tab-pane" id="overview_evaluators">
+									<div class="table-scrollable table-scrollable-borderless scroller" style="height: 282px;">
+										<table class="table table-hover table-light">
+										<thead>
+											<tr class="uppercase">
+												<th colspan="2">
+													 {{ 'Member' | translate }}
+												</th>
+												<th>
+													 {{ 'Evaluate Problems' | translate }}
+												</th>
+												<th>
+													 {{ 'Good Feedbacks' | translate }}
+												</th>
+												<th>
+													 {{ 'Rate' | translate }}
+												</th>
+											</tr>
+										</thead>
+										<tr>
+											<td class="fit">
+												<img class="user-pic" src="/assets/layout/img/defuser.png">
+											</td>
+											<td>
+												<a href="javascript:;" class="primary-link">Brain</a>
+											</td>
+											<td>
+												 543
+											</td>
+											<td>
+												 510
+											</td>
+											<td>
+												<span class="bold theme-font">93%</span>
+											</td>
+										</tr>										
+										</table>
+									</div>
+								</div> -->
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- END PORTLET-->
+			</div>
+			<div class="col-md-6 col-sm-12">
+				<!-- BEGIN PORTLET-->
+				<div class="portlet light ">
+					<div class="portlet-title">
+						<div class="caption">
+							<span class="caption-subject theme-font bold uppercase">{{ 'Quiz List' | translate }}</span>
+						</div>
+					</div>
+					<div class="portlet-body">
+						<div class="tabbable-line">
+							<ul class="nav nav-tabs">
+								<li class="active">
+									<a href="#type_writing" data-toggle="tab" aria-expanded="true">
+									<i class="fa fa-keyboard-o"></i> {{ 'Writing' | translate }} </a>
+								</li>
+								<li>
+									<a href="#type_listening" data-toggle="tab" aria-expanded="false">
+									<i class="fa fa-headphones"></i> {{ 'Listening' | translate }} </a>
+								</li>
+								<li>
+									<a href="#type_reading" data-toggle="tab" aria-expanded="false">
+									<i class="fa fa-eye"></i> {{ 'Reading' | translate }} </a>
+								</li>
+								<li>
+									<a href="#type_speaking" data-toggle="tab" aria-expanded="false">
+									<i class="fa fa-volume-up"></i> {{ 'Speaking' | translate }} </a>
+								</li>
+							</ul>
+							<div class="tab-content">
+								<div class="tab-pane active" id="type_writing">
+									<div class="table-scrollable table-scrollable-borderless scroller" style="height: 282px;">
+										<table id="writingquiztable" class="table table-hover table-light"></table>
+									</div>
+								</div>
+								<div class="tab-pane" id="type_listening">
+									<div class="table-scrollable table-scrollable-borderless scroller" style="height: 282px;">
+										<table id="listeningquiztable" class="table table-hover table-light"></table>
+									</div>
+								</div>
+								<div class="tab-pane" id="type_reading">
+									<div class="table-scrollable table-scrollable-borderless scroller" style="height: 282px;">
+										<table id="readingquiztable" class="table table-hover table-light"></table>
+									</div>
+								</div>
+								<div class="tab-pane" id="type_speaking">
+									<div class="table-scrollable table-scrollable-borderless scroller" style="height: 282px;">
+										<table id="speakingquiztable" class="table table-hover table-light"></table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- END PORTLET-->
+			</div>
+		</div>
+	</div>
+</div>
+<!-- <script type="text/javascript" src="{{asset('global/plugins/datatables/media/js/jquery.dataTables.min.js')}}"></script> -->
+<script>
+    jQuery(document).ready(function() {    
+        
+    	alert("dfadfafd");
+    	/*var topmembergrid = new Datatable();
+        topmembergrid.init({
+            src: $("#topmemberstudentslist"),
+            onSuccess: function (grid) {
+                // execute some code after table records loaded
+            },
+            onError: function (grid) {
+                // execute some code on network or other general error  
+            },
+            loadingMessage: 'Loading...',
+            dataTable: { // here you can define a typical datatable settings from http://datatables.net/usage/options 
+                "processing": true,
+                "serverSide": true,
+                "stateSave": false,
+
+                "ordering": false,
+                "info": true,
+                "searching": true,  
+
+                "ajax": {
+                    "type": "POST",
+                    "async": true,
+                    "url": "/user/getusersimplelist",
+                    "dataType": "json",
+                    "cache": false,
+                },
+                "columnDefs": [ ],
+                "columns": [
+                    { "title": "Member", "data": "name", "class": "left" },                    
+                ],
+
+                "lengthMenu": [
+                    [5, 10, 20, 50, 150, -1],
+                    [5, 10, 20, 50, 150, "All"] // change per page values here
+                ],
+
+                "scrollY": false,
+                "scrollX": false,
+                "scrollCollapse": false,
+                "jQueryUI": true,   
+                
+                "paging": true,
+                "pagingType": "full_numbers",           
+                "pageLength": 15, // default record count per page
+                            
+                "dom": '<"top">t<"bottom">pi<"clear">',                
+                //"order": [[2, 'asc']]
+            }
+        });
+        
+        var table = $('#topmemberstudentslist').DataTable();
+        $('#topmemberstudentslist tbody').on( 'click', 'tr', function () {
+            if ( $(this).hasClass('selected') ) {
+                $(this).removeClass('selected');
+            } else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        } );
+
+        $('#topmemberstudentslist tbody').on( 'dblclick', 'tr', function () {
+            if ( !$(this).hasClass('selected') ) {              
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+            
+            //$('#btnChangeRow').trigger( 'click' );
+        } ); */ 
+    });
+</script>
+<app-footer></app-footer>

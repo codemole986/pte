@@ -1,0 +1,222 @@
+<app-header-student [default]="'home'"></app-header-student>
+<div class="page-head">
+	<div class="container">
+		<!-- BEGIN PAGE TITLE -->
+		<div class="page-title">
+			<h1>{{ 'Dashboard' | translate }} <small>{{ 'Statistics Overview' | translate }} </small></h1>
+		</div>
+		<!-- END PAGE TITLE -->
+	</div>
+</div>
+<div class="page-content">
+	<div class="container">
+		<!-- BEGIN PAGE BREADCRUMB -->
+		<ul class="page-breadcrumb breadcrumb">
+			<li>
+				<a href="#">{{ 'Home' | translate }}</a>
+			</li>
+			<li class="active">
+				{{ 'Dashboard' | translate }}
+			</li>
+		</ul>
+		<!-- END PAGE BREADCRUMB -->
+		<!-- Promo block BEGIN -->
+		<div class="row" style="margin-bottom: 20px;">
+			<div class="col-md-12">
+	            <div id="myCarousel" class="carousel image-carousel slide">
+					<div class="carousel-inner">
+						<div class="active item">
+							<img src="/assets/images/slider1.jpg" class="img-responsive" alt="">
+							<div class="carousel-caption">
+								<h4>
+								<a href="page_news_item.html">
+								First Thumbnail label </a>
+								</h4>
+								<p>
+									 Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+								</p>
+							</div>
+						</div>
+						<div class="item">
+							<img src="/assets/images/slider2.jpg" class="img-responsive" alt="">
+							<div class="carousel-caption">
+								<h4>
+								<a href="page_news_item.html">
+								Second Thumbnail label </a>
+								</h4>
+								<p>
+									 Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+								</p>
+							</div>
+						</div>
+						<div class="item">
+							<img src="/assets/images/slider3.jpg" class="img-responsive" alt="">
+							<div class="carousel-caption">
+								<h4>
+								<a href="page_news_item.html">
+								Third Thumbnail label </a>
+								</h4>
+								<p>
+									 Cras justo odio, dapibus ac facilisis in, egestas eget quam.
+								</p>
+							</div>
+						</div>
+					</div>
+					<!-- Carousel nav -->
+					<a class="carousel-control left" href="#myCarousel" data-slide="prev">
+					<i class="m-icon-big-swapleft m-icon-white"></i>
+					</a>
+					<a class="carousel-control right" href="#myCarousel" data-slide="next">
+					<i class="m-icon-big-swapright m-icon-white"></i>
+					</a>
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel" data-slide-to="0" class="active">
+						</li>
+						<li data-target="#myCarousel" data-slide-to="1">
+						</li>
+						<li data-target="#myCarousel" data-slide-to="2">
+						</li>
+					</ol>
+				</div>
+	        </div>
+	    </div>
+		<!-- Promo block END -->
+		<div class="row margin-top-10">
+			<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+				<a class="dashboard-stat dashboard-stat-light blue" href="javascript:;">
+				<div class="visual">
+					<i class="fa fa-check fa-icon-medium"></i>
+				</div>
+				<div class="details">
+					<div class="number">
+						{{psvisitedcount | numberprint }}
+					</div>
+					<div class="desc">
+						{{ 'My Login Times' | translate }}
+					</div>
+				</div>
+				</a>
+			</div>
+			<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+				<a class="dashboard-stat dashboard-stat-light red-intense" href="javascript:;">
+				<div class="visual">
+					<i class="fa fa-trophy fa-icon-medium"></i>
+				</div>
+				<div class="details">
+					<div class="number">
+						{{psexercisecount | numberprint }}
+					</div>
+					<div class="desc">
+						{{ 'My Exercise Times' | translate }}
+					</div>
+				</div>
+				</a>
+			</div>
+			<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+				<a class="dashboard-stat dashboard-stat-light green-haze" href="javascript:;">
+				<div class="visual">
+					<i class="fa fa-thumbs-up fa-icon-medium"></i>
+				</div>
+				<div class="details">
+					<div class="number">
+						{{psexquizcount}}
+					</div>
+					<div class="desc">
+						{{ 'Exercised Quiz Count' | translate }}
+					</div>
+				</div>
+				</a>
+			</div>
+			<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+				<a class="dashboard-stat dashboard-stat-light blue-madison" href="javascript:;">
+				<div class="visual">
+					<i class="fa fa-bar-chart-o fa-icon-medium"></i>
+				</div>
+				<div class="details">
+					<div class="number">
+						{{psrank | numberprint}}
+					</div>
+					<div class="desc">
+						{{ 'My Ranking' | translate }}
+					</div>
+				</div>
+				</a>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 col-sm-12">
+				<!-- BEGIN PORTLET-->
+				<div class="portlet light ">
+					<div class="portlet-title">
+						<div class="caption">
+							<span class="caption-subject theme-font bold uppercase">{{ 'My History' | translate }}</span>
+						</div>
+					</div>
+					<div class="portlet-body">
+						<div class="tabbable-line">
+							<ul class="nav nav-tabs">
+								<li class="active">
+									<a href="#type_writing" data-toggle="tab" aria-expanded="true">
+									<i class="fa fa-keyboard-o"></i> {{ 'Writing' | translate }} </a>
+								</li>
+								<li>
+									<a href="#type_listening" data-toggle="tab" aria-expanded="false">
+									<i class="fa fa-headphones"></i> {{ 'Listening' | translate }} </a>
+								</li>
+								<li>
+									<a href="#type_reading" data-toggle="tab" aria-expanded="false">
+									<i class="fa fa-eye"></i> {{ 'Reading' | translate }} </a>
+								</li>
+								<li>
+									<a href="#type_speaking" data-toggle="tab" aria-expanded="false">
+									<i class="fa fa-volume-up"></i> {{ 'Speaking' | translate }} </a>
+								</li>
+							</ul>
+							<div class="tab-content">
+								<div class="tab-pane active" id="type_writing">
+									<div class="table-scrollable table-scrollable-borderless scroller" style="height: 282px;">
+										<table id="writinghistorytable" class="table table-hover table-light"></table>
+									</div>
+								</div>
+								<div class="tab-pane" id="type_listening">
+									<div class="table-scrollable table-scrollable-borderless scroller" style="height: 282px;">
+										<table id="listeninghistorytable" class="table table-hover table-light"></table>
+									</div>
+								</div>
+								<div class="tab-pane" id="type_reading">
+									<div class="table-scrollable table-scrollable-borderless scroller" style="height: 282px;">
+										<table id="readinghistorytable" class="table table-hover table-light"></table>
+									</div>
+								</div>
+								<div class="tab-pane" id="type_speaking">
+									<div class="table-scrollable table-scrollable-borderless scroller" style="height: 282px;">
+										<table id="speakinghistorytable" class="table table-hover table-light" style="width: 100%;"></table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- END PORTLET-->
+			</div>
+			<div class="col-md-6 col-sm-12">
+				<!-- BEGIN PORTLET-->
+				<div class="portlet light ">
+					<div class="portlet-title">
+						<div class="caption">
+							<span class="caption-subject theme-font bold uppercase">{{ 'Top Students' | translate }}</span>
+						</div>
+					</div>
+					<div class="portlet-body">
+						<div class="table-scrollable table-scrollable-borderless scroller" style="height: 328px;">
+							<table id="topmemberstudentslist" class="table table-hover table-light">							
+							</table>
+						</div>
+					</div>
+				</div>
+				<!-- END PORTLET-->
+			</div>
+		</div>
+	</div>
+</div>
+<app-footer></app-footer>

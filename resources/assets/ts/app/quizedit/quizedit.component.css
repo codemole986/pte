@@ -1,0 +1,37 @@
+.cke_top, .cke_bottom {
+	display: none !important;
+}
+@media (min-width: 768px) {
+.right-btn {
+	margin-top: 5px;
+    padding-left: 0px;
+}
+}
+td select.form-control {
+	height: auto;
+    padding: 4px 12px;
+}
+.form-wizard .steps > li.done > a.step .number {
+	background-color: #dfba49;
+    color: #fff;
+}
+.form-wizard .steps > li > a.step > .number {
+	width: 40px;
+	height: 40px;
+}
+.dd-handle {
+	word-wrap: break-word;
+	height: auto;
+}
+.dd-empty {
+	min-height: 200px;
+}
+.dd {
+    min-height: 250px;
+    border: 1px solid #eee;
+    margin: 0px;
+    padding: 0 5px;
+}
+/*.cke_reset_all.cke_1.cke_editor_ck_editor_dialog {
+	display: none !important;
+}*/

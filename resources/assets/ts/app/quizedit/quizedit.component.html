@@ -1,0 +1,799 @@
+<div *ngIf="active_menu=='overview'">
+     <app-header-overview [default]="'quizedit'"></app-header-overview>
+</div>
+<div *ngIf="active_menu=='student'">
+     <app-header-student [default]="'quizedit'"></app-header-student>         
+</div>
+<div *ngIf="active_menu=='teacher'">
+     <app-header-teacher [default]="'quizedit'"></app-header-teacher>         
+</div>
+<div *ngIf="active_menu=='manage'">
+     <app-header-manage [default]="'quizedit'"></app-header-manage>         
+</div>
+<div class="page-container">
+    <!-- BEGIN PAGE HEAD -->
+    <div class="page-head">
+        <div class="container">
+            <!-- BEGIN PAGE TITLE -->
+            <div class="page-title">
+                <h1 *ngIf="newproblem">{{ 'Create Quiz' | translate }} <small>{{ 'create quiz' | translate }}</small></h1>
+                <h1 *ngIf="editproblem">{{ 'Edit Quiz' | translate }} <small>{{ 'edit quiz' | translate }}</small></h1>
+            </div>
+            <!-- END PAGE TITLE -->
+        </div>
+    </div>
+    <!-- END PAGE HEAD -->
+    <!-- BEGIN PAGE CONTENT -->
+    <div class="page-content">
+        <div class="container">
+            <!-- BEGIN PAGE BREADCRUMB -->
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <a href="#" [routerLink]="['/']">{{ 'Home' | translate }}</a>
+                </li>
+                <li *ngIf="newproblem">
+                    {{ 'Create Quiz' | translate }}
+                </li>
+                <li *ngIf="newproblem" class="active">
+                    {{ type_name | translate }}
+                </li>
+                <li *ngIf="editproblem" class="active">
+                    {{ 'Edit Quiz' | translate }}
+                </li>
+            </ul>
+
+            <div class="main-container">
+            </div>                 
+        
+            <div *ngIf="newproblem || editproblem" class="row">
+                <div class="col-md-12">
+                    <div class="portlet light" id="form_wizard_1">
+                            <div class="portlet-title">
+                                <div class="caption">
+                                <span class="caption-subject font-green-sharp bold uppercase">
+                                    {{ 'Settings of a Problem' | translate }} - <span class="step-title">{{ 'Step' | translate }} 1 {{ 'of' | translate }} 3 </span>
+                                </span>
+                                </div>
+                            </div>
+                            <div class="portlet-body form">
+                        <form *ngIf="newproblem" id="submit_form" name="submitform" novalidate #problemaddForm="ngForm">
+                                <div class="form-wizard">
+                                <div class="form-body">
+                                    <ul class="nav nav-pills nav-justified steps">
+                                    <li>
+                                        <a href="#tab1" data-toggle="tab" aria-expanded="true" class="step active">
+                                        <span class="number">
+                                        1 </span>
+                                        <span class="desc">
+                                        <i class="fa fa-check"></i> {{ 'Global Setting' | translate }} </span></a>
+                                        </li>
+                                        <li>
+                                        <a href="#tab2" data-toggle="tab" aria-expanded="false" class="step">
+                                        <span class="number">
+                                        2 </span>
+                                        <span class="desc">
+                                        <i class="fa fa-check"></i> {{ 'Content of Problem' | translate }} </span></a>
+                                        </li>
+                                        <li>
+                                        <a href="#tab3" data-toggle="tab" aria-expanded="false" class="step">
+                                        <span class="number">
+                                        3 </span>
+                                        <span class="desc">
+                                        <i class="fa fa-check"></i> {{ 'Solution of Problem' | translate }} </span></a>
+                                        </li>
+                                    </ul>
+                                <div id="bar" class="progress" role="progressbar" style="height: 3px;">
+                                    <div class="progress-bar progress-bar-success">
+                                    </div>
+                                </div>
+                                    <div class="tab-content">
+                                    <div class="alert alert-danger display-none">
+                                        <button class="close" data-dismiss="alert"></button>
+                                        {{ 'You have some form errors. Please check below.' | translate }}
+                                    </div>
+                                    <div class="alert alert-success display-none">
+                                        <button class="close" data-dismiss="alert"></button>
+                                        {{ 'Your form validation is successful!' | translate }}
+                                    </div>
+                                    <div class="tab-pane active" id="tab1">
+                                        <div class="row form-group has-success">
+                                                <div class="col-md-8">
+                                                    <input name="title" id="title" class="form-control needfull" placeholder=" * {{ 'Title' | translate }}" title="Title" [(ngModel)]="editedProblem.title" required autofocus reverse="true" maxlength="255" #title="ngModel">
+                                                <small [hidden]="title.valid || (title.pristine)" class="text-danger">
+                                                    {{ 'Title is required for 1~255 chars.' | translate }}
+                                                    </small>
+                                                </div>
+                                                <!-- <div class="col-md-3">
+                                                    <select name="degree" class="form-control needfull" title="Degree" [(ngModel)]="editedProblem.degree" required reverse="true" #degree="ngModel">
+                                                    <option *ngFor="let d of pdegree" [ngValue]="d.value" ng-selected="d.value==editedProblem.degree">{{d.title}}</option>
+                                                    </select>
+                                                <small [hidden]="degree.valid || (degree.pristine)" class="text-danger">
+                                                    {{ 'Degree is required.' | translate }}
+                                                    </small>
+                                                </div> -->
+                                                <div class="col-md-2">
+                                                    <input type="number" min="0" name="limit_time" class="form-control needfull" placeholder=" * {{ 'LimitTime (s)' | translate }}" title="LimitTime" [(ngModel)]="editedProblem.limit_time" required reverse="true" #limit_time="ngModel">
+                                                <small [hidden]="limit_time.valid || (limit_time.pristine)" class="text-danger">
+                                                    {{ 'LimitTime is required with number (second unit).' | translate }}
+                                                    </small>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <input type="number" min="0" name="points" class="form-control needfull" placeholder="* {{ 'Points' | translate }}" title="Points" [(ngModel)]="editedProblem.points" required reverse="true" #points="ngModel">
+                                                    <small [hidden]="points.valid || (points.pristine && savefalg)" class="text-danger">
+                                                    {{ 'Points is required for number(marks).' | translate }}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        <div class="row form-group has-success">
+                                                <div class="col-md-12">
+                                                <textarea name="guide" class="form-control" placeholder="{{ 'Guide' | translate }}" title="Guide" rows="3" [(ngModel)]="editedProblem.guide"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <div class="tab-pane" id="tab2">
+                                            <div *ngIf="editedProblem.type == 'WSM' || editedProblem.type =='WES' || editedProblem.type =='SAL' || editedProblem.type =='SRL'">
+                                                <textarea name="sentences" class="form-control needfull" placeholder="{{ 'Text' | translate }}" title="Text" rows="5" [(ngModel)]="editedProblem.content.text"></textarea>
+                                            </div>
+                                            <div *ngIf="editedProblem.type =='SRS' || editedProblem.type =='SSA' || editedProblem.type =='LWS' || editedProblem.type =='LSA' || editedProblem.type =='LTW' || editedProblem.type =='LSB' ||  editedProblem.type =='LCD' || editedProblem.type =='LTS'">
+                                                <p>
+                                                    {{ 'Select an Audio' | translate }} (mp3/wav):
+                                                </p>
+                                                <div class="dropzone" id="dzaudiofile"></div>
+                                                <hr/>   
+                                            </div>
+                                            <div *ngIf="editedProblem.type == 'RSA'  ||  editedProblem.type =='RMA' || editedProblem.type =='SPI'">
+                                                <div *ngIf="editedProblem.type == 'RSA'  ||  editedProblem.type =='RMA'">
+                                                    <textarea name="sentences" class="form-control" placeholder="{{ 'Text' | translate }}" title="Text" rows="3" [(ngModel)]="editedProblem.content.text"></textarea>
+                                                </div>
+                                                <hr/>
+                                                <p style="width: 100%;">
+                                                    {{ 'Select a Picture' | translate }} (jpeg/jpg/png): 
+                                                </p>
+                                                <div class="dropzone" id="dzpicturefile"></div>                            
+                                                <hr/>
+                                                <div *ngIf="editedProblem.type == 'RSA'  ||  editedProblem.type =='RMA'">
+                                                    <textarea name="select_guide" class="form-control" placeholder="Guide for multiple-choice" title="Guide for multiple-choice" rows="2" [(ngModel)]="editedProblem.content.select.guide"></textarea>
+                                                    <label style="margin-top: 10px;"> {{ 'List of candidates' | translate }} </label>
+                                                    <select id="select_options" name="list_content_sentences" class="form-control" (change)="onChangeProbSelect()" [(ngModel)]="select_problem_values" multiple style="height: 150px;">
+                                                        <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}">{{op}}</option>
+                                                    </select>
+
+                                                    <div class="row">
+                                                        <div class="col-md-8 col-sm-7 col-xs-12">
+                                                            <input id="option_sentence" name="optionSentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence">
+                                                        </div>
+                                                        <div class="col-md-4 col-sm-5 col-xs-12 right-btn">
+                                                            <button class="btn btn-sm btn-success btn-group" type="button" (click)="onAddOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                            <button id="btnEditOption" class="btn btn-sm btn-success btn-group" type="button" (click)="onEditOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                            <button id="btnChangeOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onChangeOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                            <button id="btnDeleteOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onDeleteOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                                        </div>
+                                                    </div>      
+                                                </div>
+                                            </div>
+                                            <div *ngIf="editedProblem.type == 'LSA' || editedProblem.type == 'LSB'">
+                                                <textarea name="select_guide" class="form-control" name="list_content_sentences" placeholder="Guide for multiple-choice" title="Guide for multiple-choice" rows="2" [(ngModel)]="editedProblem.content.select.guide"></textarea>
+                                                <label style="margin-top: 10px;"> {{ 'List of candidates' | translate }} </label>
+                                                <select id="select_options" name="list_content_sentences" class="form-control" (change)="onChangeProbSelect()" [(ngModel)]="select_problem_values" multiple style="height: 150px;">
+                                                    <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}" >{{op}}</option>
+                                                </select>
+                                                <div class="row">
+                                                    <div class="col-md-8 col-sm-7 col-xs-12">
+                                                        <input id="option_sentence" name="optionSentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence">
+                                                    </div>
+                                                    <div class="col-md-4 col-sm-5 col-xs-12 right-btn">
+                                                        <button class="btn btn-sm btn-success btn-group" type="button" (click)="onAddOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                        <button id="btnEditOption" class="btn btn-sm btn-success btn-group" type="button" (click)="onEditOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                        <button id="btnChangeOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onChangeOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                        <button id="btnDeleteOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onDeleteOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                                    </div>
+                                                </div>  
+                                            </div>
+                                            <div *ngIf="editedProblem.type == 'RRO'">
+                                                <label> {{ 'List of target' | translate }} </label>
+                                                <div class="dd" id="rro_list">
+                                                    <ol class="dd-list">
+                                                        <li *ngFor="let op of editedProblem.content.select.options; let i = index" class="dd-item" data-id="{{i}}">
+                                                            <div class="dd-handle">
+                                                                {{op}}
+                                                            </div>
+                                                        </li>
+                                                    </ol>
+                                                </div>
+                                                {{createRRONestable()}}
+                                                <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeProbSelect()" rows="10" [(ngModel)]="select_problem_values" style="min-height: 150px; width: 100%;" multiple>
+                                                    <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}">{{op}}</option>
+                                                </select>
+                                                <div class="row">
+                                                    <div class="col-md-8 col-sm-7 col-xs-12">
+                                                        <textarea id="optionsentence" name="optionsentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence"></textarea>
+                                                    </div>
+                                                    <div class="col-md-4 col-sm-5 col-xs-12 right-btn">
+                                                        <button class="btn btn-sm btn-success btn-group" type="button" (click)="onAddOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                        <button id="btnEditOption" class="btn btn-sm btn-success btn-group" type="button" (click)="onEditOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                        <button id="btnChangeOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onChangeOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                        <button id="btnDeleteOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onDeleteOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="editedProblem.type == 'SRL'">
+                                                <hr/>
+                                                <label> {{ 'List of lecture' | translate }} </label>
+                                                <table>
+                                                <tr><td style="width: 100%;">
+                                                <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeTitleSelect()" rows="10" [(ngModel)]="select_titles" style="width: 100%; height: 150px;" multiple>
+                                                    <option *ngFor="let op of editedProblem.content.list" value="{{op.title}}">{{op.title}}</option>
+                                                </select>
+                                                </td><td>
+                                                <table>
+                                                <tr><td style="padding: 5px;">
+                                                    <button class="btn btn-sm btn-success" type="button" (click)="onUpTitleOption()"><i class="fa fa-chevron-up fa-fw"></i></button>
+                                                </td></tr>
+                                                <tr><td style="padding: 5px;">
+                                                    <button class="btn btn-sm btn-success" type="button" (click)="onDownTitleOption()"><i class="fa fa-chevron-down fa-fw"></i></button>
+                                                </td></tr>
+                                                </table>
+                                                </td></tr>
+                                                </table>
+                                                <div class="row" style="margin-right: 47px;">
+                                                    <div class="col-md-8 col-sm-7 col-xs-12">
+                                                        <input id="optionsentence" name="optionsentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence">
+                                                    </div>
+                                                    <div class="col-md-4 col-sm-5 col-xs-12 right-btn">
+                                                        <button class="btn btn-sm btn-success btn-group" type="button" (click)="onAddTitleOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                        <button id="btnEditOption" class="btn btn-sm btn-success btn-group" type="button" (click)="onEditTitleOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                        <button id="btnChangeOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onChangeTitleOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                        <button id="btnDeleteOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onDeleteTitleOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                                    </div>
+                                                </div>
+                                                <hr/>
+                                                <div class="dropzone" id="dzaudiofile"></div>
+                                            </div>
+                                            <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LTW'  ||  editedProblem.type == 'LCD'">
+                                                <textarea id="ck_editor" class="form-control" placeholder="{{ 'Sentences' | translate }}" title="Sentences" rows="5"></textarea>
+                                                <div class="row">
+                                                    <div class="col-md-3"></div>
+                                                    <div class="col-md-4 col-sm-8 col-xs-12">
+                                                        <input *ngIf="editedProblem.type == 'RFB'" class="form-control my-2" name="blank" placeholder="{{ 'Blank' | translate }}" title="Blank" [(ngModel)]="str_blank" disabled>
+                                                        <input *ngIf="editedProblem.type == 'LTW'" class="form-control my-2" name="blank" placeholder="{{ 'Blank' | translate }}" title="Blank" (keydown)="onKeydownDiffer($event)" [(ngModel)]="str_blank">
+                                                        <input *ngIf="editedProblem.type == 'LCD'" class="form-control my-2" name="differ" placeholder="{{ 'Differ' | translate }}" title="Differ" (keydown)="onKeydownDiffer($event)" [(ngModel)]="str_blank">
+                                                    </div>
+                                                    <div class="col-md-2 col-sm-4 col-xs-12 right-btn">
+                                                        <button class="btn btn-sm btn-success" type="button" (click)="onBlankClick()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                    </div>
+                                                    <div class="col-md-3"></div>
+                                                </div>
+                                                <div *ngIf="editedProblem.type == 'RFB'" class="row">
+                                                    <div class="col-md-2"></div>
+                                                    <div class="col-md-8 col-sm-12 col-xs-12 margin-top-10">
+                                                        <label> {{ 'List of candidates' | translate }} </label>
+                                                        <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeProbSelect()" [(ngModel)]="select_problem_values" multiple>
+                                                            <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}">{{op}}</option>
+                                                        </select>
+                                                        <div class="row">
+                                                            <div class="col-md-7 col-sm-6 col-xs-12">
+                                                                <input id="optionsentence" name="optionsentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Word" [(ngModel)]="strOptionSentence">
+                                                            </div>
+                                                            <div class="col-md-5 col-sm-6 col-xs-12 right-btn">
+                                                                <button class="btn btn-sm btn-warning" type="button" (click)="onAddOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                                <button id="btnEditOption" class="btn btn-sm btn-warning" type="button" (click)="onEditOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                                <button id="btnChangeOption" type="button" class="btn btn-sm btn-warning" (click)="onChangeOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                                <button id="btnDeleteOption" type="button" class="btn btn-sm btn-warning" (click)="onDeleteOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2"></div>
+                                                </div>
+                                                {{createCkEditor()}}
+                                            </div>
+                                            <div *ngIf="editedProblem.type == 'RAN'">
+                                                <textarea id="ck_editor" class="form-control" placeholder="{{ 'Sentences' | translate }}" title="Sentences" rows="5"></textarea>
+                                                <table width="100%" anign="center" style="margin-top: 5px;"><tr>
+                                                    <td width="55%">
+                                                    <label> {{ 'Property of a select' | translate }} </label>
+                                                        <table>
+                                                        <tr><td style="width: 100%;">
+                                                        <select name="list_sentences" class="form-control" (change)="onChangeBlankSelect()" [(ngModel)]="select_blank_values" style="width: 100%; height: 150px" multiple>
+                                                            <option *ngFor="let op of select_blank_options" value="{{op}}">{{op}}</option>
+                                                        </select>
+                                                        </td><td>
+                                                        <table>
+                                                        <tr><td style="padding: 5px;">
+                                                            <button class="btn btn-sm btn-warning" type="button" (click)="onUpBlank()"><i class="fa fa-chevron-up fa-fw"></i></button>
+                                                        </td></tr>
+                                                        <tr><td style="padding: 5px;">
+                                                            <button class="btn btn-sm btn-warning" type="button" (click)="onDownBlank()"><i class="fa fa-chevron-down fa-fw"></i></button>
+                                                        </td></tr>
+                                                        </table>
+                                                        </td></tr>
+                                                        </table>
+
+                                                        <div class="row" style="margin-right: 47px;">
+                                                        <div class="col-md-5 col-sm-4 col-xs-12">
+                                                                <input name="optionsentence" id="optionsentence" #optionsentence class="form-control mr-2" placeholder="{{ 'Word' | translate }}" title="Word" [(ngModel)]="strOptionSentence">
+                                                            </div>
+                                                        <div class="col-md-7 col-sm-8 right-btn">
+                                                                <button class="btn btn-sm btn-warning" type="button" (click)="onAddBlank()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                                <button class="btn btn-sm btn-warning" type="button" (click)="onEditBlank()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                                <button type="button" class="btn btn-sm btn-warning" (click)="onChangeBlank()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                                <button type="button" class="btn btn-sm btn-warning" (click)="onDeleteBlank()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td width="10%" align="center">
+                                                        <button class="btn btn-sm btn-success" type="button" (click)="onAddSelectToList()"> {{ 'Add' | translate }} <i class="fa fa-chevron-right fa-fw"></i></button>
+                                                    </td>
+                                                    <td width="35%">
+                                                    <label> {{ 'List of candidates' | translate }} </label>
+                                                        <table class="table table-bordered table-hover">
+                                                        <thead>
+                                                        <tr>
+                                                            <th> {{ 'Select' | translate }}</th>
+                                                            <th> {{ 'Action' | translate }}</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tr *ngFor="let blank_select of blank_selectlist; let i = index">
+                                                            <td>
+                                                                <select name="list_sentences{{i}}" class="form-control" (change)="onChangeProbSelect()" [(ngModel)]="blank_select.select_value" style="width: 100%;">
+                                                                    <option *ngFor="let op of blank_select.options" value="{{op}}" selected="blank_select.select_value=={{op}}">{{op}}</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                            <button class="btn btn-sm btn-primary"
+                                                                    (click)="onAddSelect($event, i)">
+                                                                    <i class="fa fa-chevron-up fa-fw"></i> {{ 'Add' | translate }}
+                                                                </button>
+                                                            <button class="btn btn-sm primary"
+                                                                    (click)="onDeleteSelect(i)">
+                                                                    <i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    </td>
+                                                    </tr>
+                                                </table>
+                                                {{createCkEditor()}}
+                                            </div>
+                                        </div>
+                                    <div class="tab-pane" id="tab3">
+                                            <div *ngIf="editedProblem.type == 'WSM' || editedProblem.type == 'WES' || editedProblem.type == 'LWS' || editedProblem.type == 'LTS'">
+                                                <textarea name="solution" class="form-control" placeholder="{{ 'Solution Sentences' | translate }}" title="Solution Sentences" rows="5" [(ngModel)]="editedProblem.solution.text"></textarea>
+                                            </div>
+                                            <div *ngIf="editedProblem.type == 'SAL' || editedProblem.type == 'SRS' || editedProblem.type == 'SPI' || editedProblem.type == 'SSA' || editedProblem.type == 'SRL'">
+                                                <p class="form-group my-2" style="width: 100%;">
+                                                    {{ 'Select an Audio' | translate }} (mp3/wav): 
+                                                </p>
+                                                <div class="dropzone" id="dzsolutionfile" style="width: 100%;"></div>
+                                            </div>
+                                            <div *ngIf="editedProblem.type == 'RSA' || editedProblem.type == 'LSB'">
+                                                <select id="select_solution_singleoptions" name="list_sentences" class="form-control" (change)="onChangeSolutionSelect()" [(ngModel)]="select_solution_value">
+                                                    <option *ngFor="let op of editedProblem.content.select.options" ng-selected="for(var i = 0;  i < select_values.length;  i++){ if(op==select_values[i]) return true;} return false;" value="{{op}}">{{op}}</option>
+                                                </select>
+                                            </div>
+                                            <div *ngIf="editedProblem.type == 'RMA' || editedProblem.type == 'LSA'">
+                                                <select id="select_solution_multipleoptions" name="list_sentences" class="form-control" (change)="onChangeSolutionMultipleSelect()" [(ngModel)]="select_solution_values" multiple>
+                                                    <option *ngFor="let op of editedProblem.content.select.options" ng-selected="for(var i = 0;  i < select_values.length;  i++){ if(op==select_values[i]) return true;} return false;" value="{{op}}">{{op}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <div class="row">
+                                        <div class="col-md-offset-3 col-md-9">
+                                            <a href="javascript:;" class="btn default button-previous">
+                                        <i class="m-icon-swapleft"></i> {{ 'Back' | translate }} </a>
+                                        <button class="btn blue button-next" [disabled]="problemaddForm.invalid">
+                                        {{ 'Next' | translate }} <i class="m-icon-swapright m-icon-white"></i>
+                                        </button>
+                                        <a (click)="onClickSave()" class="btn green button-submit">
+                                        <i class="fa fa-save fa-fw"></i> {{ 'Save' | translate }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                                </form>
+                        <form *ngIf="editproblem" id="submit_form" novalidate #problemeditForm="ngForm">
+                            <div class="form-wizard">
+                            <div class="form-body">
+                                <ul class="nav nav-pills nav-justified steps">
+                                    <li>
+                                        <a href="#tab1" data-toggle="tab" aria-expanded="true" class="step active">
+                                        <span class="number">
+                                        1 </span>
+                                        <span class="desc">
+                                        <i class="fa fa-check"></i> {{ 'Global Setting' | translate }} </span></a>
+                                    </li>
+                                    <li>
+                                        <a href="#tab2" data-toggle="tab" aria-expanded="false" class="step">
+                                        <span class="number">
+                                        2 </span>
+                                        <span class="desc">
+                                        <i class="fa fa-check"></i> {{ 'Content of Problem' | translate }} </span></a>
+                                    </li>
+                                    <li>
+                                        <a href="#tab3" data-toggle="tab" aria-expanded="false" class="step">
+                                        <span class="number">
+                                        3 </span>
+                                        <span class="desc">
+                                        <i class="fa fa-check"></i> {{ 'Solution of Problem' | translate }} </span></a>
+                                    </li>
+                                </ul>
+                                <div id="bar" class="progress" role="progressbar" style="height: 3px;">
+                                    <div class="progress-bar progress-bar-success">
+                            </div>
+                        </div>
+                                <div class="tab-content">
+                                    <div class="alert alert-danger display-none">
+                                        <button class="close" data-dismiss="alert"></button>
+                                        {{ 'You have some form errors. Please check below.' | translate }}
+                                    </div>
+                                    <div class="alert alert-success display-none">
+                                        <button class="close" data-dismiss="alert"></button>
+                                        {{ 'Your form validation is successful!' | translate }}
+                                    </div>
+                                    <div class="tab-pane active" id="tab1">
+                                        <div class="row form-group has-success">
+                                            <div class="col-md-8">
+                                                <input name="title" id="title" class="form-control needfull" placeholder=" * {{ 'Title' | translate }}" title="Title" [(ngModel)]="editedProblem.title" required autofocus reverse="true" maxlength="255" #title="ngModel">
+                                                <small [hidden]="title.valid || (title.pristine)" class="text-danger">
+                                                    {{ 'Title is required for 1~255 chars.' | translate }}
+                                                </small>
+                                            </div>
+                                            <!-- <div class="col-md-3">
+                                                <select name="degree" class="form-control needfull" title="Degree" [(ngModel)]="editedProblem.degree" required reverse="true" #degree="ngModel">
+                                                    <option *ngFor="let d of pdegree" [ngValue]="d.value" ng-selected="d.value==editedProblem.degree">{{d.title}}</option>
+                                                </select>
+                                                <small [hidden]="degree.valid || (degree.pristine)" class="text-danger">
+                                                    {{ 'Degree is required.' | translate }}
+                                                </small>
+                                            </div> -->
+                                            <div class="col-md-2">
+                                        <input type="number" min="0" name="limit_time" class="form-control needfull" placeholder=" * {{ 'LimitTime (s)' | translate }}" title="LimitTime" [(ngModel)]="editedProblem.limit_time" required reverse="true" #limit_time="ngModel">
+                                                <small [hidden]="limit_time.valid || (limit_time.pristine)" class="text-danger">
+                                                    {{ 'LimitTime is required with number (second unit).' | translate }}
+                                                </small>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="number" min="0" name="points" class="form-control needfull" placeholder="* {{ 'Points' | translate }}" title="Points" [(ngModel)]="editedProblem.points" required reverse="true" #points="ngModel">
+                                                <small [hidden]="points.valid || (points.pristine && savefalg)" class="text-danger">
+                                                            {{ 'Points is required for number(marks).' | translate }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="row form-group has-success">
+                                            <div class="col-md-12">
+                                                <textarea name="guide" class="form-control" placeholder="{{ 'Guide' | translate }}" title="Guide" rows="3" [(ngModel)]="editedProblem.guide"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="tab2">
+                                        <div *ngIf="editedProblem.type == 'WSM' || editedProblem.type =='WES' || editedProblem.type =='SAL' || editedProblem.type =='SRL'">
+                                            <textarea name="sentences" class="form-control needfull" placeholder="{{ 'Text' | translate }}" title="Text" rows="5" [(ngModel)]="editedProblem.content.text"></textarea>
+                                        </div>
+                                        <div *ngIf="editedProblem.type =='SRS' || editedProblem.type =='SSA' || editedProblem.type =='LWS' || editedProblem.type =='LSA' || editedProblem.type =='LTW' || editedProblem.type =='LSB' ||  editedProblem.type =='LCD' || editedProblem.type =='LTS'">
+                                            <p>
+                                                {{ 'Select an Audio' | translate }} (mp3/wav):
+                                            </p>                            
+                                            <fieldset class="form-group my-6">
+                                                <div class="row">
+                                                            <div class="col-md-4" style="padding-left: 1em;">
+                                                        <audio controls="false" autoplay="{{audio_autoplay}}" onpause="">
+                                                           <source src="/upload/q2/{{editedProblem.id}}/{{editedProblem.content.audio}}" type="audio/mpeg">
+                                                        </audio>
+                                                        <input type="text" class="form-control" title="already uploaded filename" value="{{editedProblem.content.audio}}" disabled>
+                                                    </div>
+                                                            <div class="col-md-8">                                        
+                                                        <div class="dropzone" id="dzaudiofile"></div>
+                                                    <hr/> 
+                                                    </div>
+                                                </div>
+                                            </fieldset>                            
+                                        </div>                        
+                                        <div *ngIf="editedProblem.type == 'RSA'  ||  editedProblem.type == 'RMA' || editedProblem.type =='SPI'">
+                                            <div *ngIf="editedProblem.type == 'RSA'  ||  editedProblem.type == 'RMA'">
+                                                        <textarea name="sentences" class="form-control" placeholder="{{ 'Text' | translate }}" title="Text" rows="3" [(ngModel)]="editedProblem.content.text"></textarea>
+                                            </div>
+                                                    <hr/>
+                                                    <p style="width: 100%;">
+                                                        {{ 'Select a Picture' | translate }} (jpeg/jpg/png): 
+                                                    </p>
+                                            <fieldset class="form-group my-6">
+                                            	<div class="row">
+                                                            <div class="col-md-4" style="padding-left: 1em;">
+                                                        <img src="/upload/q2/{{editedProblem.id}}/{{editedProblem.content.picture}}" style="max-width: 300px;" />
+                                                        <input type="text" class="form-control" title="already uploaded filename" value="{{editedProblem.content.picture}}" disabled>
+                                                    </div>
+                                                            <div class="col-md-8">
+                                                        <div class="dropzone" id="dzpicturefile"></div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>                                    
+                                            
+                                            <hr/>
+                                            <div *ngIf="editedProblem.type == 'RSA'  ||  editedProblem.type == 'RMA'">
+                                                <textarea name="select_guide" class="form-control" placeholder="Guide for multiple-choice" title="Guide for multiple-choice" rows="2" [(ngModel)]="editedProblem.content.select.guide"></textarea>
+                                                <label style="margin-top: 10px;"> {{ 'List of candidates' | translate }} </label>
+                                                        <select id="select_options" name="list_content_sentences" class="form-control" (change)="onChangeProbSelect()" [(ngModel)]="select_problem_values" multiple style="height: 150px;">
+                                                    <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}">{{op}}</option>
+                                                </select>
+
+                                                        <div class="row">
+                                                            <div class="col-md-8 col-sm-7 col-xs-12">
+                                                                <input id="option_sentence" name="optionSentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence">
+                                                            </div>
+                                                            <div class="col-md-4 col-sm-5 col-xs-12 right-btn">
+                                                                <button class="btn btn-sm btn-success btn-group" type="button" (click)="onAddOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                                <button id="btnEditOption" class="btn btn-sm btn-success btn-group" type="button" (click)="onEditOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                                <button id="btnChangeOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onChangeOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                                <button id="btnDeleteOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onDeleteOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                                            </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="editedProblem.type == 'LSA' || editedProblem.type == 'LSB'">
+                                                    <textarea name="select_guide" class="form-control" name="list_content_sentences" placeholder="Guide for multiple-choice" title="Guide for multiple-choice" rows="2" [(ngModel)]="editedProblem.content.select.guide"></textarea>
+                                            <label style="margin-top: 10px;"> {{ 'List of candidates' | translate }} </label>
+                                                    <select id="select_options" name="list_content_sentences" class="form-control" (change)="onChangeProbSelect()" [(ngModel)]="select_problem_values" multiple style="height: 150px;">
+                                                <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}">{{op}}</option>
+                                            </select>
+                                                    <div class="row">
+                                                        <div class="col-md-8 col-sm-7 col-xs-12">
+                                                            <input id="option_sentence" name="optionSentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence">
+                                                        </div>
+                                                        <div class="col-md-4 col-sm-5 col-xs-12 right-btn">
+                                                            <button class="btn btn-sm btn-success btn-group" type="button" (click)="onAddOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                            <button id="btnEditOption" class="btn btn-sm btn-success btn-group" type="button" (click)="onEditOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                            <button id="btnChangeOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onChangeOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                            <button id="btnDeleteOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onDeleteOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                                        </div>
+                                            </div>
+                                        </div>
+                                <div *ngIf="editedProblem.type == 'RRO'">
+                                    <label> {{ 'List of target' | translate }} </label>
+                                        <table>
+                                        <tr><td style="width: 100%;">
+                                                    <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeProbSelect()" rows="10" [(ngModel)]="select_problem_values" style="height: 150px; width: 100%;" multiple>
+                                            <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}">{{op}}</option>
+                                        </select>
+                                        </td><td>
+                                        <table>
+                                                        <tr><td style="padding: 5px;">
+                                            <button class="btn btn-sm btn-success" type="button" (click)="onUpOption()"><i class="fa fa-chevron-up fa-fw"></i></button>
+                                        </td></tr>
+                                                        <tr><td style="padding: 5px;">
+                                            <button class="btn btn-sm btn-success" type="button" (click)="onDownOption()"><i class="fa fa-chevron-down fa-fw"></i></button>
+                                        </td></tr>
+                                        </table>
+                                        </td></tr>
+                                        </table>
+                                            <div class="row" style="margin-right: 47px;">
+                                                <div class="col-md-8 col-sm-7 col-xs-12">
+                                                    <input id="optionsentence" name="optionsentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence">
+                                                </div>
+                                                <div class="col-md-4 col-sm-5 col-xs-12 right-btn">
+                                                    <button class="btn btn-sm btn-success btn-group" type="button" (click)="onAddOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                    <button id="btnEditOption" class="btn btn-sm btn-success btn-group" type="button" (click)="onEditOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                    <button id="btnChangeOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onChangeOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                    <button id="btnDeleteOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onDeleteOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="editedProblem.type == 'SRL'">
+                                    <hr/>
+                                    <label> {{ 'List of lecture' | translate }} </label>
+                                        <table>
+                                        <tr><td style="width: 100%;">
+                                                    <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeTitleSelect()" rows="10" [(ngModel)]="select_titles" style="width: 100%; height: 150px;" multiple>
+                                            <option *ngFor="let op of editedProblem.content.list" value="{{op.title}}">{{op.title}}</option>
+                                        </select>
+                                        </td><td>
+                                        <table>
+                                                        <tr><td style="padding: 5px;">
+                                            <button class="btn btn-sm btn-success" type="button" (click)="onUpTitleOption()"><i class="fa fa-chevron-up fa-fw"></i></button>
+                                        </td></tr>
+                                                        <tr><td style="padding: 5px;">
+                                            <button class="btn btn-sm btn-success" type="button" (click)="onDownTitleOption()"><i class="fa fa-chevron-down fa-fw"></i></button>
+                                        </td></tr>
+                                        </table>
+                                        </td></tr>
+                                        </table>
+                                            <div class="row" style="margin-right: 47px;">
+                                                <div class="col-md-8 col-sm-7 col-xs-12">
+                                                <input id="optionsentence" name="optionsentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence">
+                                    </div>
+                                                <div class="col-md-4 col-sm-5 col-xs-12 right-btn">
+                                                    <button class="btn btn-sm btn-success btn-group" type="button" (click)="onAddTitleOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                    <button id="btnEditOption" class="btn btn-sm btn-success btn-group" type="button" (click)="onEditTitleOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                    <button id="btnChangeOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onChangeTitleOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                    <button id="btnDeleteOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onDeleteTitleOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                    </div>
+
+                                    <fieldset class="form-group my-6">
+                                        <div class="row">
+                                                        <div class="col-md-4" style="padding-left: 1em;">
+                                                <div *ngFor="let item of editedProblem.content.list">
+                                                    <audio controls="false" autoplay="{{audio_autoplay}}" onpause="">
+                                                       <source src="/upload/q2/{{editedProblem.id}}/{{item.audio}}" type="audio/mpeg">
+                                                    </audio>
+                                                    <input type="text" class="form-control" title="already uploaded filename" value="{{item.audio}}" disabled>
+                                                </div>
+                                            </div>
+                                                        <div class="col-md-8">
+                                                <div class="dropzone" id="dzaudiofile"></div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                    <hr/>
+                                </div>
+                                        </div>
+                                <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LTW'  ||  editedProblem.type == 'LCD'">
+                                    <textarea id="ck_editor" class="form-control" placeholder="{{ 'Sentences' | translate }}" title="Sentences" rows="5"></textarea>
+                                    <div class="row">
+                                                <div class="col-md-3"></div>
+                                                <div class="col-md-4 col-sm-8 col-xs-12">
+                                            <input *ngIf="editedProblem.type == 'RFB'" class="form-control my-2" name="blank" placeholder="{{ 'Blank' | translate }}" title="Blank" [(ngModel)]="str_blank" disabled>
+                                            <input *ngIf="editedProblem.type == 'LTW'" class="form-control my-2" name="blank" placeholder="{{ 'Blank' | translate }}" title="Blank" (keydown)="onKeydownDiffer($event)" [(ngModel)]="str_blank">
+                                            <input *ngIf="editedProblem.type == 'LCD'" class="form-control my-2" name="differ" placeholder="{{ 'Differ' | translate }}" title="Differ" (keydown)="onKeydownDiffer($event)" [(ngModel)]="str_blank">
+                                        </div>
+                                                <div class="col-md-2 col-sm-4 col-xs-12 right-btn">
+                                                    <button class="btn btn-sm btn-success" type="button" (click)="onBlankClick()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                </div>
+                                                <div class="col-md-3"></div>
+                                    </div>
+                                    <div *ngIf="editedProblem.type == 'RFB'" class="row">
+                                                <div class="col-md-2"></div>
+                                                <div class="col-md-8 col-sm-12 col-xs-12 margin-top-10">
+                                            <label> {{ 'List of candidates' | translate }} </label>
+                                            <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeProbSelect()" [(ngModel)]="select_problem_values" multiple>
+                                                <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}">{{op}}</option>
+                                            </select>
+                                                    <div class="row">
+                                                        <div class="col-md-7 col-sm-6 col-xs-12">
+                                                            <input id="optionsentence" name="optionsentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Word" [(ngModel)]="strOptionSentence">
+                                                        </div>
+                                                        <div class="col-md-5 col-sm-6 col-xs-12 right-btn">
+                                                            <button class="btn btn-sm btn-warning" type="button" (click)="onAddOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                            <button id="btnEditOption" class="btn btn-sm btn-warning" type="button" (click)="onEditOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                            <button id="btnChangeOption" type="button" class="btn btn-sm btn-warning" (click)="onChangeOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                            <button id="btnDeleteOption" type="button" class="btn btn-sm btn-warning" (click)="onDeleteOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                                        </div>
+                                            </div>
+                                        </div>
+                                                <div class="col-md-2"></div>
+                                    </div>
+                                    {{createCkEditor()}}
+                                </div>
+                                <div *ngIf="editedProblem.type == 'RAN'">
+                                    <textarea id="ck_editor" class="form-control" placeholder="{{ 'Sentences' | translate }}" title="Sentences" rows="5"></textarea>
+                                            <table width="100%" anign="center" style="margin-top: 5px;">
+                                                <tr>
+                                                <td width="55%">
+                                                    <label> {{ 'Property of a select' | translate }} </label>
+                                                <table>
+                                                <tr><td style="width: 100%;">
+                                                            <select name="list_sentences" class="form-control" (change)="onChangeBlankSelect()" [(ngModel)]="select_blank_values" style="width: 100%; height: 150px" multiple>
+                                                    <option *ngFor="let op of select_blank_options" value="{{op}}">{{op}}</option>
+                                                </select>
+                                                </td><td>
+                                                <table>
+                                                                <tr><td style="padding: 5px;">
+                                                                    <button class="btn btn-sm btn-warning" type="button" (click)="onUpBlank()"><i class="fa fa-chevron-up fa-fw"></i></button>
+                                                </td></tr>
+                                                                <tr><td style="padding: 5px;">
+                                                                    <button class="btn btn-sm btn-warning" type="button" (click)="onDownBlank()"><i class="fa fa-chevron-down fa-fw"></i></button>
+                                                </td></tr>
+                                                </table>
+                                                </td></tr>
+                                                </table>
+
+                                                    <div class="row" style="margin-right: 47px;">
+                                                        <div class="col-md-5 col-sm-4 col-xs-12">
+                                                            <input name="optionsentence" id="optionsentence" #optionsentence class="form-control mr-2" placeholder="{{ 'Word' | translate }}" title="Word" [(ngModel)]="strOptionSentence">
+                                                        </div>
+                                                        <div class="col-md-7 col-sm-8 right-btn">
+                                                            <button class="btn btn-sm btn-warning" type="button" (click)="onAddBlank()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                            <button class="btn btn-sm btn-warning" type="button" (click)="onEditBlank()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                            <button type="button" class="btn btn-sm btn-warning" (click)="onChangeBlank()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                            <button type="button" class="btn btn-sm btn-warning" (click)="onDeleteBlank()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                            </div>
+                                            </div>
+                                        </td>
+                                        <td width="10%" align="center">
+                                            <button class="btn btn-sm btn-success" type="button" (click)="onAddSelectToList()"> {{ 'Add' | translate }} <i class="fa fa-chevron-right fa-fw"></i></button>
+                                        </td>
+                                                <td width="35%">
+                                                    <label> {{ 'List of candidates' | translate }} </label>
+                                            <table class="table table-bordered table-hover">
+                                            <thead>
+                                                            <tr>
+                                                <th> {{ 'Select' | translate }}</th>
+                                                <th> {{ 'Action' | translate }}</th>
+                                                            </tr>
+                                            </thead>
+                                            <tr *ngFor="let blank_select of blank_selectlist; let i = index">
+                                                <td>
+                                                    <select name="list_sentences{{i}}" class="form-control" (change)="onChangeProbSelect()" [(ngModel)]="blank_select.select_value" style="width: 100%;">
+                                                        <option *ngFor="let op of blank_select.options" value="{{op}}" selected="blank_select.select_value=={{op}}">{{op}}</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                                <button class="btn btn-sm btn-primary"
+                                                        (click)="onAddSelect($event, i)">
+                                                        <i class="fa fa-chevron-up fa-fw"></i> {{ 'Add' | translate }}
+                                                    </button>
+                                                                <button class="btn btn-sm primary"
+                                                        (click)="onDeleteSelect(i)">
+                                                        <i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        </td>
+                                        </tr>
+                                    </table>
+                                    {{createCkEditor()}}
+                                </div>
+                            </div>
+                                    <div class="tab-pane" id="tab3">
+                                <div *ngIf="editedProblem.type == 'WSM' || editedProblem.type == 'WES' || editedProblem.type == 'LWS' || editedProblem.type == 'LTS'">
+                                    <textarea name="solution" class="form-control" placeholder="{{ 'Solution Sentences' | translate }}" title="Solution Sentences" rows="5" [(ngModel)]="editedProblem.solution.text"></textarea>
+                                </div>
+                                        <div *ngIf="editedProblem.type == 'SAL' || editedProblem.type == 'SRS' || editedProblem.type == 'SPI' || editedProblem.type == 'SSA' || editedProblem.type == 'SRL'">
+                                        <p class="form-group my-2" style="width: 100%;">
+                                            {{ 'Select an Audio' | translate }} (mp3/wav): 
+                                        </p>
+                                        <fieldset class="form-group col-lg-12">
+                                        	<div class="row">
+                                                    <div class="col-md-4" style="padding-left: 1em;">
+                                                    <audio controls="false" autoplay="{{audio_autoplay}}" onpause="">
+                                                       <source src="/upload/s0/{{editedProblem.id}}/{{editedProblem.solution.audio}}" type="audio/mpeg">
+                                                    </audio>
+        	                                        <input type="text" class="form-control" title="already uploaded filename" value="{{editedProblem.solution.audio}}" disabled>
+        	                                    </div>
+                                                    <div class="col-md-8">
+                                                <div class="dropzone" id="dzsolutionfile"></div>
+        	                                    </div>
+        	                                </div>
+                                        </fieldset> 
+                                    </div>
+                                <div *ngIf="editedProblem.type == 'RSA' || editedProblem.type == 'LSB'">
+                                    <select id="select_solution_singleoptions" name="list_sentences" class="form-control" (change)="onChangeSolutionSelect()" [(ngModel)]="select_solution_value">
+                                                <option *ngFor="let op of editedProblem.content.select.options" ng-selected="for(var i = 0;  i < select_values.length;  i++){ if(op==select_values[i]) return true;} return false;" value="{{op}}">{{op}}</option>
+                                    </select>
+                                </div>
+                                <div *ngIf="editedProblem.type == 'RMA' || editedProblem.type == 'LSA'">
+                                    <select id="select_solution_multipleoptions" name="list_sentences" class="form-control" (change)="onChangeSolutionMultipleSelect()" [(ngModel)]="select_solution_values" multiple>
+                                        <option *ngFor="let op of editedProblem.content.select.options" ng-selected="for(var i = 0;  i < select_values.length;  i++){ if(op==select_values[i]) return true;} return false;" value="{{op}}">{{op}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                            <div class="form-actions">
+                                <div class="row">
+                                    <div class="col-md-offset-3 col-md-9">
+                                        <a href="javascript:;" class="btn default button-previous">
+                                        <i class="m-icon-swapleft"></i> {{ 'Back' | translate }} </a>
+                                        <button class="btn blue button-next" [disabled]="problemeditForm.invalid">
+                                        {{ 'Next' | translate }} <i class="m-icon-swapright m-icon-white"></i>
+                                        </button>
+                                        <a (click)="onClickUpdate()" class="btn green button-submit">
+                                        <i class="fa fa-save fa-fw"></i> {{ 'Save' | translate }}
+                                        </a>
+                                    </div>
+                </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+            </div>
+            {{createWizard()}}
+        </div>
+    </div>
+</div>
+<app-footer></app-footer>
