@@ -5,13 +5,13 @@ import Auth0Lock from 'auth0-lock';
 
 @Injectable()
 export class AuthService {
-  clientID = '0l5lwvnUwDloNvmjXPTlxPG8wmfzAdgp';
-  domain = 'flyplay91.auth0.com';
+  domain = window.sessionStorage.getItem('AUTH0_DOMAIN');
+  clientID = window.sessionStorage.getItem('AUTH0_CLIENT_ID');
 
   lock = new Auth0Lock(this.clientID, this.domain, {
     autoclose: true,
     auth: {
-      audience: 'https://flyplay91.auth0.com/userinfo',
+      audience: `https://${this.domain}/userinfo`,
       responseType: 'token id_token',
       redirect: false,
       params: {
