@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Http\Controllers\Controller;
 use App\Notifications\SendActivationEmail;
+use Auth0\SDK;
 
 
 use DB;
@@ -118,47 +119,49 @@ class UserController extends Controller
 	function login(Request $request){
 		//$this->validateLogin($request);
 
-		$email = isset($request->email)?$request->email:'';
-		$password = $request->password;
+		// $email = isset($request->email)?$request->email:'';
+		// $password = $request->password;
+    Log::debug('login');
+    $dd = \App::make('auth0')->decodeJWT($request->id_token);
 
 		$out_data = array();
-		if(!empty($email)) {
-			//
-			$userinfo = DB::table('users')
-					//->addSelect(array("users.*, profiles.photo"))
-					->leftJoin('profiles', array('users.id'=>'profiles.user_id'))
-					->where('email', $email)
-					->get(array('users.*', 'profiles.photo'));
+		// if(!empty($email)) {
+		// 	//
+		// 	$userinfo = DB::table('users')
+		// 			//->addSelect(array("users.*, profiles.photo"))
+		// 			->leftJoin('profiles', array('users.id'=>'profiles.user_id'))
+		// 			->where('email', $email)
+		// 			->get(array('users.*', 'profiles.photo'));
 
-			if($userinfo!=null && count($userinfo)>0) {
-				if($userinfo[0]->permission == 'E') {
-					$out_data["state"] = "error";
-					$out_data["userinfo"] = "";
-					$out_data["message"] = "Please wait for admin's accept...";
-				} else if($userinfo[0]->password == md5($password)) {
-					$out_data["state"] = "success";
-					$out_data["userinfo"] = $userinfo[0];	
-					DB::table('users')
-						->where('email', $email)
-						->increment("visited_count");
+		// 	if($userinfo!=null && count($userinfo)>0) {
+		// 		if($userinfo[0]->permission == 'E') {
+		// 			$out_data["state"] = "error";
+		// 			$out_data["userinfo"] = "";
+		// 			$out_data["message"] = "Please wait for admin's accept...";
+		// 		} else if($userinfo[0]->password == md5($password)) {
+		// 			$out_data["state"] = "success";
+		// 			$out_data["userinfo"] = $userinfo[0];	
+		// 			DB::table('users')
+		// 				->where('email', $email)
+		// 				->increment("visited_count");
 
-					//$request->session()->regenerate();							
-					$request->session()->start();
-					$out_data["_token"] = csrf_token();	
-					$request->session()->put('userinfo', $userinfo[0]);
-				} else {
-					$out_data["state"] = "error";
-					$out_data["userinfo"] = "";
-					$out_data["message"] = "Invalide Your Password.";
-				}				
-			} else {
-				$out_data["state"] = "error";
-				$out_data["userinfo"] = "";
-				$out_data["message"] = "Invalide Your Email.";
-			}
-		}
+		// 			//$request->session()->regenerate();							
+		// 			$request->session()->start();
+		// 			$out_data["_token"] = csrf_token();	
+		// 			$request->session()->put('userinfo', $userinfo[0]);
+		// 		} else {
+		// 			$out_data["state"] = "error";
+		// 			$out_data["userinfo"] = "";
+		// 			$out_data["message"] = "Invalide Your Password.";
+		// 		}				
+		// 	} else {
+		// 		$out_data["state"] = "error";
+		// 		$out_data["userinfo"] = "";
+		// 		$out_data["message"] = "Invalide Your Email.";
+		// 	}
+		// }
 
-		return response()->json($out_data, 200);
+		return response()->json($dd, 200);
 	}
 
 	/**

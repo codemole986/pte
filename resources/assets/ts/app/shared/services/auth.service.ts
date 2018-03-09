@@ -1,40 +1,71 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import 'rxjs/add/operator/filter';
 import Auth0Lock from 'auth0-lock';
 
+declare var $:any;
+declare var Metronic: any;
+
 @Injectable()
-export class AuthService {
+export class AuthService implements OnInit {
   domain = window.sessionStorage.getItem('AUTH0_DOMAIN');
   clientID = window.sessionStorage.getItem('AUTH0_CLIENT_ID');
+  appUrl = window.sessionStorage.getItem('APP_URL');
 
   lock = new Auth0Lock(this.clientID, this.domain, {
     autoclose: true,
     auth: {
       audience: `https://${this.domain}/userinfo`,
       responseType: 'token id_token',
-      redirect: false,
+      redirect: true,
+      responseMode: 'form_post',
+      redirectUrl: `${this.appUrl}/user/login`,
       params: {
-        scope: 'openid'
+        scope: 'openid profile email'
       }
     }
   });
 
-  constructor(public router: Router, public route: ActivatedRoute) {
+  constructor(public router: Router, public route: ActivatedRoute, private http: Http) {
     this.lock.on('authenticated', (authResult: any) => {
       if (!authResult) {
         this.router.navigate(['/']);
         console.log('error');
       } else {
-        // user has an active session, so we can use the accessToken directly.
-        this.lock.getUserInfo(authResult.accessToken, function (error, profile) {
-          console.log(error, profile);
-        });
-        window.location.hash = '';
-        this.setSession(authResult);
-        this.router.navigate(['/dashboard']);
+        this.http.post("/user/login", authResult).
+          map(
+            (response) => response.json()
+          ).
+          subscribe(
+            (data) => {
+              if (data.length == 0) {
+                return;
+              } else if(data.state == "error") {
+                Metronic.showErrMsg(data.message);
+              } else {
+                window.sessionStorage.setItem("isLoggedin", 'true');
+                window.sessionStorage.setItem("userid", data.userinfo.id);
+                window.sessionStorage.setItem("_token", data._token);
+                window.sessionStorage.setItem('permission', data.userinfo.permission);
+                window.sessionStorage.setItem('username', data.userinfo.first_name + ' ' + data.userinfo.last_name);
+                window.sessionStorage.setItem('userphoto', data.userinfo.photo);
+                
+                $('body').removeClass('login');
+                this.router.navigate(['dashboard']);  
+
+                window.location.hash = '';
+                this.setSession(authResult);
+                this.router.navigate(['/']);        
+              }
+            }
+          );
       }
     });
+  }
+
+  ngOnInit() {
+    Metronic.init();
   }
 
   public login(): void {
