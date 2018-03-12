@@ -114,15 +114,12 @@
         Layout.init(); // init layout
         Demo.init(); // init demo(theme settings page)
         //Index.init(); // init index page
+        //Tasks.initDashboardWidget(); // init tash dashboard widget
+        //Index.init(); // init index page
         /*ChartsFlotcharts.init();
         ChartsFlotcharts.initCharts();
         ChartsFlotcharts.initPieCharts();
         ChartsFlotcharts.initBarCharts();*/
-        $('.scroll-to-top').click(function(e) {
-            e.preventDefault();
-            $('html, body').animate({scrollTop: 0}, 500);
-            return false;
-        });
     });
     </script>
 

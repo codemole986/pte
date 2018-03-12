@@ -182,7 +182,7 @@ var Metronic = function() {
         // load ajax data on page init
         $('.portlet .portlet-title a.reload[data-load="true"]').click();
 
-        $('body').on('click', '.portlet > .portlet-title > .tools > .collapse, .portlet .portlet-title > .tools > .expand', function(e) {
+        /*$('body').on('click', '.portlet > .portlet-title > .tools > .collapse, .portlet .portlet-title > .tools > .expand', function(e) {
             e.preventDefault();
             var el = $(this).closest(".portlet").children(".portlet-body");
             if ($(this).hasClass("collapse")) {
@@ -192,7 +192,7 @@ var Metronic = function() {
                 $(this).removeClass("expand").addClass("collapse");
                 el.slideDown(200);
             }
-        });
+        });*/
     };
 
     // Handles custom checkboxes & radios using jQuery Uniform plugin

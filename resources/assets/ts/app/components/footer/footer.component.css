@@ -28,3 +28,9 @@
 .page-prefooter p {
 	line-height: 24px;
 }
+.page-footer .navbar-nav {
+	margin: 0 !important;
+}
+.page-footer .navbar-nav li {
+	display: inline-block;
+}

@@ -50,7 +50,7 @@ var Layout = function () {
     var handleMainMenu = function () {
 
         // handle menu toggler icon click
-        $(".page-header .menu-toggler").on("click", function(event) {
+        /*$(".page-header .menu-toggler").on("click", function(event) {
             if (Metronic.getViewPort().width < resBreakpointMd) {
                 var menu = $(".page-header .page-header-menu");
                 if (menu.is(":visible")) {
@@ -63,7 +63,7 @@ var Layout = function () {
                     Metronic.scrollTop();
                 }
             }
-        });
+        });*/
 
         // handle sub dropdown menu click for mobile devices only
         $(".hor-menu .dropdown-submenu > a").on("click", function(e) {
@@ -235,11 +235,11 @@ var Layout = function () {
             });
         }
         
-        $('.scroll-to-top').click(function(e) {
+        /*$('.scroll-to-top').click(function(e) {
             e.preventDefault();
             $('html, body').animate({scrollTop: 0}, duration);
             return false;
-        });
+        });*/
     };
 
     //* END:CORE HANDLERS *//

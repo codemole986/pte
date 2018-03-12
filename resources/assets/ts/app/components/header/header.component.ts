@@ -5,6 +5,7 @@ import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import 'rxjs/add/operator/map';
 
 declare var $:any;
+declare var Metronic: any;
 
 @Component({
     selector: 'app-header',
@@ -115,6 +116,23 @@ export class HeaderComponent implements OnInit {
 
     changeMenu() {
 
+    }
+
+    onMenuToggle(e: any) {
+        console.log("menu-toggle");
+        var resBreakpointMd = Metronic.getResponsiveBreakpoint('md');
+        if (Metronic.getViewPort().width < resBreakpointMd) {
+            var menu = $(".page-header .page-header-menu");
+            if (menu.is(":visible")) {
+                menu.slideUp(300);
+            } else {  
+                menu.slideDown(300);
+            }
+
+            if ($('body').hasClass('page-header-top-fixed')) {
+                Metronic.scrollTop();
+            }
+        }
     }
 }
 
