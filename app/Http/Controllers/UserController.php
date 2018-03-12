@@ -117,7 +117,8 @@ class UserController extends Controller
      */
   public function logout(Request $request) {
     \App::make('auth0')->logout();
-      $out_data["state"] = "success";
+    $request->session()->flush();
+    $out_data["state"] = "success";
 	  return response()->json($out_data, 200);
   }
 

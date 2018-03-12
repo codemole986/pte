@@ -60,18 +60,18 @@
 <div class="page-footer">
     <div class="container">
         <div class="row">
-            <div class="col-md-8">2018 &copy; Quiz. {{ 'All Rights Reserved.' | translate }}</div>
-            <div class="col-md-4">
+            <div class="col-md-8 col-sm-6 col-xs-6">2018 &copy; Quiz. {{ 'All Rights Reserved.' | translate }}</div>
+            <div class="col-md-4 col-sm-6 col-xs-6">
                 <ul class="navbar-nav">
                     <!-- <li><a> {{ 'Sitemap' | translate }} </a></li> -->
                     <li><a [routerLink]="['/aboutus']"> {{ 'About' | translate }} </a></li>
-                    <li>|</li>
+                    <li style="margin-top: 2px;">|</li>
                     <li><a [routerLink]="['/contactus']"> {{ 'Contact' | translate }} </a></li>
                 </ul>
             </div>
         </div>
     </div>
 </div>
-<div class="scroll-to-top">
+<div class="scroll-to-top" (click)="onScrollTop($event)">
     <i class="icon-arrow-up"></i>
 </div>

@@ -19,7 +19,7 @@
     "@angular/platform-browser": "^4.0.0",
     "@angular/platform-browser-dynamic": "^4.0.0",
     "@angular/router": "^5.0.0",
-    "@nebular/theme": "^2.0.0-rc.4",
+    "@nebular/theme": "^2.0.0-rc.4",    
     "@ng-bootstrap/ng-bootstrap": "^1.0.0-beta.5",
     "@ngx-translate/core": "^8.0.0",
     "@ngx-translate/http-loader": "^2.0.0",
@@ -28,7 +28,7 @@
     "core-js": "^2.4.1",
     "ng-dropzone": "^2.0.0",
     "ng2-smart-table": "^1.2.2",
-    "rxjs": "5.5.6",
+    "rxjs": "5.5.6",    
     "ts-loader": "^2.1.0",
     "zone.js": "^0.8.4"
   },
