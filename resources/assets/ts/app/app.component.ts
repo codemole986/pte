@@ -1,4 +1,10 @@
-﻿import { Component } from '@angular/core';
+﻿import 'rxjs/add/operator/filter';
+
+import { Component, OnInit } from '@angular/core';
+
+import { AuthService } from './shared';
+
+declare var Metronic: any;
 
 @Component({
 	selector: 'app-root',
@@ -7,4 +13,10 @@
 })
 export class AppComponent {
 	public title = 'app';
+
+  constructor(private authService: AuthService) {}
+
+  ngOnInit() {
+    this.authService.get();
+  }
 }

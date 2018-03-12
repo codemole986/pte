@@ -124,9 +124,6 @@
             return false;
         });
     });
-    window.sessionStorage.setItem('AUTH0_DOMAIN', "{{env('AUTH0_DOMAIN', '')}}");
-    window.sessionStorage.setItem('AUTH0_CLIENT_ID', "{{env('AUTH0_CLIENT_ID', '')}}");
-    window.sessionStorage.setItem('APP_URL', "{{env('APP_URL', '')}}");
     </script>
 
     <script type="text/javascript" src="{{asset('js/app.js')}}"></script>

@@ -61,7 +61,9 @@ Route::get('/user/getuserlist', 'UserController@getuserlist');
 
 Route::get('/user/getusers', 'UserController@getusers');
 
-Route::post('/user/login', 'UserController@login');
+Route::get('/user/login', 'UserController@login');
+
+Route::get('/user/register', 'UserController@login');
 
 Route::get('/user/logout', 'UserController@logout');
 
@@ -166,3 +168,7 @@ Route::get('/contactus', function() { return view('index'); } );
 Route::get('/inbox', function() { return view('index'); } );
 
 Route::get('/profile', function() { return view('index'); } );
+
+Route::get('/auth', 'AuthController@get');
+
+Route::get('/auth0/callback', '\Auth0\Login\Auth0Controller@callback');

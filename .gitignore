@@ -1,6 +1,7 @@
 vendor/
 node_modules/
 npm-debug.log
+yarn-error.log
 
 # Laravel 4 specific
 bootstrap/compiled.php
@@ -26,3 +27,6 @@ public/recordings
 
 config/app.php
 config/database.php
+
+# misc
+.DS_Store

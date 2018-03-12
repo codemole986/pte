@@ -39,7 +39,7 @@ return array(
     |
     */
 
-    'redirect_uri'  => env('APP_URL', '') . '/user/login',
+    'redirect_uri'  => env('APP_URL', '') . '/auth0/callback',
 
     /*
     |--------------------------------------------------------------------------
@@ -51,9 +51,9 @@ return array(
     |
     */
 
-    // 'persist_user' => true,
-    // 'persist_access_token' => true,
-    // 'persist_id_token' => true,
+    'persist_user' => true,
+    'persist_access_token' => true,
+    'persist_id_token' => true,
 
     /*
     |--------------------------------------------------------------------------

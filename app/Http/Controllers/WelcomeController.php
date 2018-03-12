@@ -6,10 +6,16 @@ use Illuminate\Http\Request;
 
 use DB;
 
+use Auth0\SDK\Auth0;
+use Auth0\SDK\API\Management;
+use Auth0\SDK\API\Authentication;
+use App\Helpers\AppHelper;
+
 
 class WelcomeController extends Controller
 {
     //
+
     public function testmodelview(){
         $subjects = DB::select('select * from subject');
         print_r($subjects);
@@ -37,9 +43,11 @@ class WelcomeController extends Controller
 
     public function getstatisticsdata(Request $request) {
         $out_data = array();
-        $userinfo = $request->session()->get('userinfo');
-        
-        if($userinfo!=null){
+        $userinfo = session('userinfo');
+
+        $userinfo = null;
+
+        if ($userinfo!=null) {
             if($userinfo->permission=='D') {
                 $visitedcount = DB::table('users')
                         ->where(array('id'=>$userinfo->id))
