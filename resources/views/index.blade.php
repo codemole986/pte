@@ -121,6 +121,18 @@
         ChartsFlotcharts.initPieCharts();
         ChartsFlotcharts.initBarCharts();*/
     });
+    @if(session()->has('userinfo'))
+    {
+        window.sessionStorage.setItem('isLoggedin', 'true');
+        window.sessionStorage.setItem('userid', "{{session('userinfo')->id}}");
+        window.sessionStorage.setItem('_token', "{{csrf_token()}}");
+        window.sessionStorage.setItem('permission', "{{session('userinfo')->permission}}");
+        window.sessionStorage.setItem('username', "{{session('userinfo')->first_name . ' ' . session('userinfo')->last_name}}");
+        window.sessionStorage.setItem('userphoto', "{{session('userinfo')->photo}}");
+    }
+    @else
+        window.sessionStorage.clear();
+    @endif
     </script>
 
     <script type="text/javascript" src="{{asset('js/app.js')}}"></script>

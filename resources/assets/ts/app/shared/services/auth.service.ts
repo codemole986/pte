@@ -10,30 +10,6 @@ export class AuthService {
   constructor(public router: Router, private http: Http) {
   }
 
-  public get(): void {
-    this.http.get('/auth')
-      .map(
-        (response) => response.json()
-      )
-      .subscribe(
-        (data) => {
-          if (data.state === 'error') {
-            window.sessionStorage.clear();
-          } else {
-            window.sessionStorage.setItem('isLoggedin', 'true');
-            window.sessionStorage.setItem('userid', data.userinfo.id);
-            window.sessionStorage.setItem('_token', data._token);
-            window.sessionStorage.setItem('permission', data.userinfo.permission);
-            window.sessionStorage.setItem('username', `${data.userinfo.first_name} ${data.userinfo.last_name}`);
-            window.sessionStorage.setItem('userphoto', data.userinfo.photo);
-
-            $('body').removeClass('login');
-          }
-          Metronic.init();
-        }
-      );
-  }
-
   public login(): void {
     window.location.pathname = '/user/login';
   }
