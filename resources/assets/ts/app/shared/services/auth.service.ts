@@ -38,7 +38,7 @@ export class AuthService {
     // Check whether the current time is past the
     // Access Token's expiry time
     const isLoggedin = window.sessionStorage.getItem('isLoggedin');
-    return isLoggedin;
+    return isLoggedin === 'true';
   }
 
 }
