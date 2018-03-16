@@ -27,7 +27,10 @@ public/recordings
 config/app.php
 config/database.php
 
-public/js
+public/js/app.js
+public/upload/
+public/recordings/
+storage/
 
 # misc
 .DS_Store
