@@ -37,8 +37,8 @@ export class AuthService {
   public isAuthenticated(): boolean {
     // Check whether the current time is past the
     // Access Token's expiry time
-    const expiresAt = JSON.parse(window.sessionStorage.getItem('expires_at'));
-    return new Date().getTime() < expiresAt;
+    const isLoggedin = window.sessionStorage.getItem('isLoggedin');
+    return isLoggedin;
   }
 
 }
