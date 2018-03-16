@@ -28,8 +28,8 @@ class UserRepository implements Auth0UserRepository {
       if ($user === null) {
           $user = new User();
           $user->auth0id = $userinfo['sub'];
-          $user->first_name = $userinfo['given_name'];
-          $user->last_name = $userinfo['family_name'];
+          $user->first_name = isset($userinfo['given_name']) ? $userinfo['given_name'] : '';
+          $user->last_name = isset($userinfo['family_name']) ? $userinfo['family_name'] : '';
           $user->email = $userinfo['email'];
           $user->permission = 'D';
           $user->visited_count = 0;
