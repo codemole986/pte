@@ -30,7 +30,6 @@ declare function jQuery(): any;
 	providers: [GlobalService]
 })
 export class QuizeditComponent implements OnInit, OnDestroy {
-	httpdata: any[];
 	pdegree = [
 		{ value:"", title:"* Degree" },
         { value:"Easy", title:"Easy" },
@@ -45,6 +44,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
 	editedProblem: Problem;
 
 	strOptionSentence: string;
+    strAudioURL: string;
 
 	categoryNames: any[];
 	types: any[];
@@ -105,10 +105,14 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         var that = this;
         this.router.events.subscribe((val: any) => {
             if (val instanceof ActivationEnd) {
-                that.newproblem = (val.snapshot.params['add'] != null ? true : false);
+            	
+            	if(val.snapshot.routeConfig.path.indexOf("quizedit") < 0) 
+            		return;
+
+            	that.newproblem = (val.snapshot.params['add'] != null ? true : false);
                 that.editproblem = (val.snapshot.params['edit'] != null ? true : false);
                 if (that.newproblem) {
-                    that.editedProblem = new Problem;
+                	that.editedProblem = new Problem;
                     that.editedProblem.category = val.snapshot.params['category'];
                     that.editedProblem.type = val.snapshot.params['type'];
                     that.onSelectProbCategory(that.editedProblem.category, that.editedProblem.type);
@@ -132,14 +136,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        console.log("destroy");
-        /*if (this.thisDropzone) {
-            this.thisDropzone.destroy();
-        }
-
-        if (this.solutionDropzone) {
-            this.solutionDropzone.destroy();
-        }*/
     }
 
 	ngOnInit() {
@@ -152,8 +148,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         }
 
         this.categoryNames = this.globalService.problemCategoryNames;
-
-
     }
 
     initialize() {
@@ -217,11 +211,13 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         }
 
         if(this.editedProblem.type =='SRS' || this.editedProblem.type =='SSA' || this.editedProblem.type =='SRL' || this.editedProblem.type =='LWS' || this.editedProblem.type =='LSA' || this.editedProblem.type =='LTW' || this.editedProblem.type =='LSB' ||  this.editedProblem.type =='LCD' || this.editedProblem.type =='LTS') {
+            /*
             if (this.thisDropzone) {
                 this.thisDropzone.destroy();
             }
             Dropzone.autoDiscover = false;
             this.create_dropzone('audio');
+            */
         }
 
         if(this.editedProblem.type == 'RSA'  ||  this.editedProblem.type == 'RMA' || this.editedProblem.type =='SPI') {
@@ -233,11 +229,13 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         }
 
         if(this.editedProblem.type == 'SAL' || this.editedProblem.type == 'SRS' || this.editedProblem.type == 'SPI' || this.editedProblem.type == 'SSA' || this.editedProblem.type =='SRL') {
+            /*
             if (this.solutionDropzone) {
                 this.solutionDropzone.destroy();
             }
             Dropzone.autoDiscover = false;
             this.create_solutiondropzone();
+            */
         }
 
 		this.show_editoption = true;
@@ -245,6 +243,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         this.show_chngoption = false;
         this.dis_deleteoption = true;
         this.strOptionSentence = "";
+        this.strAudioURL = "";
         this.str_blank = "";
         this.select_problem_values = [];
         this.select_titles = [];
@@ -357,6 +356,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         this.show_chngoption = false;
         this.dis_deleteoption = true;
         this.strOptionSentence = "";
+        this.strAudioURL = "";
         this.select_problem_values = [];
         this.select_titles = [];
         this.select_blank_values = [];
@@ -412,9 +412,29 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         10);
     }
 
+    audioplay(sqtype: string) {
+    	var audio_obj_name = "#"+sqtype+"audio";
+    	var btn_obj_name = "#btn"+sqtype+"audio";
+
+    	var audio = $(audio_obj_name)[0];
+    	if (audio.paused) {
+    		audio.play();
+    		$("#btnquizaudio").html('<i class="fa fa-pause fa-fw"></i>');
+    	}
+		else {
+			audio.pause();
+			$("#btnquizaudio").html('<i class="fa fa-play fa-fw"></i>');
+		}
+    }
+
     onClickSave() {
         if(this.editedProblem.title == null || this.editedProblem.title.length == 0 || this.editedProblem.title.length > 255 ) {
             this.savefalg = false;            
+            return;
+        }
+
+        if(isNaN(this.editedProblem.preparation_time) || this.editedProblem.preparation_time < 0  ) {
+            this.savefalg = false;
             return;
         }
 
@@ -429,21 +449,24 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         }
 
         switch (this.editedProblem.type) {
+            case 'WSM':
+                this.checkCkEditorInfo();
+                break;
             case 'LWS':
             case 'LTS':
             case 'LSA':
             case 'LSB':  
-                console.log(this.thisDropzone);
+                /*console.log(this.thisDropzone);
                 if(this.thisDropzone.files.length>0) {
                     this.editedProblem.content.audio = this.thisDropzone.files[0].name;     
-                }                
+                } */               
                 break;              
             case 'LTW':  
             case 'LCD':     
-                console.log(this.thisDropzone); 
+                /*console.log(this.thisDropzone); 
                 if(this.thisDropzone.files.length>0) {
                     this.editedProblem.content.audio = this.thisDropzone.files[0].name;     
-                } 
+                } */
                 this.checkCkEditorInfo();
                 break;
             case 'RSA' :                
@@ -469,30 +492,30 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 break;
             case 'SSA' :
             case 'SRS' :
-                if(this.thisDropzone.files.length>0) {
+                /*if(this.thisDropzone.files.length>0) {
                     this.editedProblem.content.audio = this.thisDropzone.files[0].name;     
                 } 
 
                 if(this.solutionDropzone.files.length>0) {
                     this.editedProblem.solution.audio = this.solutionDropzone.files[0].name;     
-                }  
+                } */ 
                 break;
             case 'SPI' :
                 if(this.thisDropzone.files.length>0) {
                     this.editedProblem.content.picture = this.thisDropzone.files[0].name;     
                 } 
 
-                if(this.solutionDropzone.files.length>0) {
+                /*if(this.solutionDropzone.files.length>0) {
                     this.editedProblem.solution.audio = this.solutionDropzone.files[0].name;     
-                }                 
+                } */                
                 break;
             case 'SAL' :
-                if(this.solutionDropzone.files.length>0) {
+                /*if(this.solutionDropzone.files.length>0) {
                     this.editedProblem.solution.audio = this.solutionDropzone.files[0].name;     
-                }  
+                } */ 
                 break;
             case 'SRL' :
-                if(this.thisDropzone.files.length>0) {
+                /*if(this.thisDropzone.files.length>0) {
                     if (this.thisDropzone.files.length != this.editedProblem.content.list.length) {
                         this.translate.stream("Different count of files and titles").subscribe((res: any) => {
                             Metronic.showWarnMsg(res);
@@ -506,7 +529,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 }
                 if(this.solutionDropzone.files.length>0) {
                     this.editedProblem.solution.audio = this.solutionDropzone.files[0].name;     
-                }
+                }*/
                 break;            
         }
 
@@ -525,10 +548,10 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                         that.thisDropzone.uploadFiles(that.thisDropzone.files);
                     };
 
-                    if(that.solutionDropzone && that.solutionDropzone.files.length>0) {
+                    /*if(that.solutionDropzone && that.solutionDropzone.files.length>0) {
                         that.solutionDropzone.options.params.quizid = data.qid;
                         that.solutionDropzone.uploadFiles(that.solutionDropzone.files);
-                    };
+                    };*/
 
                     that.onClickList();                         
                 } else {
@@ -581,6 +604,11 @@ export class QuizeditComponent implements OnInit, OnDestroy {
             return;
         }
 
+        if(isNaN(this.editedProblem.preparation_time) || this.editedProblem.preparation_time < 0  ) {
+            this.savefalg = false;
+            return;
+        }
+
         if(isNaN(this.editedProblem.limit_time) || this.editedProblem.limit_time < 0  ) {
             this.savefalg = false;
             return;
@@ -591,20 +619,23 @@ export class QuizeditComponent implements OnInit, OnDestroy {
             return;
         }
 
-        switch (this.editedProblem.type) {            
+        switch (this.editedProblem.type) {
+            case 'WSM':
+                this.checkCkEditorInfo();
+                break;      
             case 'LWS':
             case 'LTS':
             case 'LSA':
             case 'LSB':  
-                if(this.thisDropzone.files.length>0) {
+                /*if(this.thisDropzone.files.length>0) {
                     this.editedProblem.content.audio = this.thisDropzone.files[0].name;     
-                }                
+                } */               
                 break;              
             case 'LTW':  
             case 'LCD':      
-                if(this.thisDropzone.files.length>0) {
+                /*if(this.thisDropzone.files.length>0) {
                     this.editedProblem.content.audio = this.thisDropzone.files[0].name;     
-                } 
+                } */
                 this.checkCkEditorInfo();
                 break;
             case 'RSA' :                
@@ -630,27 +661,27 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 break;
             case 'SSA' :
             case 'SRS' :
-                if(this.thisDropzone.files.length>0) {
+                /*if(this.thisDropzone.files.length>0) {
                     this.editedProblem.content.audio = this.thisDropzone.files[0].name;     
                 } 
 
                 if(this.solutionDropzone.files.length>0) {
                     this.editedProblem.solution.audio = this.solutionDropzone.files[0].name;     
-                }  
+                }  */
                 break;
             case 'SPI' :
                 if(this.thisDropzone.files.length>0) {
                     this.editedProblem.content.picture = this.thisDropzone.files[0].name;     
                 } 
 
-                if(this.solutionDropzone.files.length>0) {
+                /*if(this.solutionDropzone.files.length>0) {
                     this.editedProblem.solution.audio = this.solutionDropzone.files[0].name;     
-                }                 
+                } */                
                 break;
             case 'SAL' :
-                if(this.solutionDropzone.files.length>0) {
+                /*if(this.solutionDropzone.files.length>0) {
                     this.editedProblem.solution.audio = this.solutionDropzone.files[0].name;     
-                }  
+                } */ 
                 break;
             case 'SRL' :
                 break; 
@@ -670,11 +701,11 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                         that.thisDropzone.options.params.quizid = that.editedProblem.id;
                         that.thisDropzone.uploadFiles(that.thisDropzone.files);
                     };
-
+					/*
                     if(that.solutionDropzone && that.solutionDropzone.files.length>0) {
                         that.solutionDropzone.options.params.quizid = that.editedProblem.id;
                         that.solutionDropzone.uploadFiles(that.solutionDropzone.files);
-                    };
+                    };*/
 
                     that.onClickList();
                 }
@@ -711,7 +742,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         setTimeout(() => {
             if (that.editedProblem.type=='SRL') {
                 if(ftype=='audio') {
-                    try {
+                    /*try {
                         that.thisDropzone = new Dropzone(objdz_name, {
                             url: '/problem/uploadfile',
                             addRemoveLinks: true,
@@ -722,8 +753,8 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                             params: {type:'quiz', quizid:'', _token: that._stoken}
                         });
                     } catch(e) {
-                        console.log(e);
-                    }
+                        
+                    }*/
                 } else {
                     try {
                         that.thisDropzone = new Dropzone(objdz_name, {
@@ -736,12 +767,12 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                             params: {type:'quiz', quizid:'', _token: that._stoken}
                         });
                     } catch(e) {
-                        console.log(e);
+                        
                     }
                 }                
             } else {
                 if(ftype=='audio') {
-                    try {
+                    /*try {
                         that.thisDropzone = new Dropzone(objdz_name, {
                             url: '/problem/uploadfile',
                             addRemoveLinks: true,
@@ -753,8 +784,8 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                             params: {type:'quiz', quizid:'', _token: that._stoken}
                         });
                     } catch(e) {
-                        console.log(e);
-                    }
+                        
+                    }*/
                 } else {
                     try {
                         that.thisDropzone = new Dropzone(objdz_name, {
@@ -768,7 +799,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                             params: {type:'quiz', quizid:'', _token: that._stoken}
                         });
                     } catch(e) {
-                        console.log(e);
+                        
                     }
                 } 
             }            
@@ -778,7 +809,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
 
     create_solutiondropzone() {
         var that = this;
-        setTimeout(() => {
+        /*setTimeout(() => {
             try {
                 that.solutionDropzone = new Dropzone('#dzsolutionfile', {
                     url: '/problem/uploadfile',
@@ -790,11 +821,11 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                     params: {type:'solution', quizid:'', _token: that._stoken}
                 });
             } catch(e) {
-                console.log(e);
+                
             }
 
             //this.solutionDropzone.options.acceptedFiles = "audio/mp3, audio/wav";            
-        }, 500);
+        }, 500);*/
     }
 
 
@@ -839,7 +870,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
 /* =============================== RSA ======================================*/
 	// problem
     validateOption() {
-    	if (this.strOptionSentence == "")
+        if (this.strOptionSentence == "")
     		return false;
 
         if (this.globalService.getIndexFromArray(this.editedProblem.content.select.options, this.strOptionSentence) >= 0)
@@ -848,12 +879,9 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         return true;
     }
     validateTitleOption() {
-        if (this.strOptionSentence == "")
+        if (this.strOptionSentence == ""  ||  this.strAudioURL == "")
             return false;
 
-        if (this.globalService.getDataFromArray(this.editedProblem.content.list, this.strOptionSentence, "title") >= 0)
-            return false;
-        
         return true;
     }
     onChangeProbSelect() {
@@ -887,7 +915,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         }
     }
     onChangeProbSelect1(index: number) {
-        console.log(index);
+        
         
     }
     onAddOption() {
@@ -921,8 +949,16 @@ export class QuizeditComponent implements OnInit, OnDestroy {
     		return;
     	}
         var i = this.globalService.getIndexFromArray(this.editedProblem.content.select.options, this.select_problem_values[0]);
-        if (i >= 0)
+        if (i >= 0) {
+            if (this.editedProblem.type == 'RFB') {
+                var str_old = this.editedProblem.content.select.options[i];
+                var str_new = this.strOptionSentence;
+                var str_data = this._CKEDITOR.instances.ck_editor.getData();
+                str_data = str_data.replace("value=\"" + str_old + "\"", "value=\"" + str_new + "\"");
+                this._CKEDITOR.instances.ck_editor.setData(str_data);
+            }
             this.editedProblem.content.select.options.splice(i, 1, this.strOptionSentence);
+        }
         
         this.show_editoption = true;
     	this.show_chngoption = false;
@@ -998,13 +1034,17 @@ export class QuizeditComponent implements OnInit, OnDestroy {
             if (this.editedProblem.content.list[i] == "")
                 this.editedProblem.content.list.splice(i, 1);
         }
-        this.editedProblem.content.list.push({ "audio": "", "title": this.strOptionSentence });
+        this.editedProblem.content.list.push({ "audio": this.strAudioURL, "title": this.strOptionSentence });
         this.optionsentence.nativeElement.value='';
         this.optionsentence.nativeElement.focus();
+        $('#quizaudiofile').val('');
     }
     onEditTitleOption() {
         var i = this.globalService.getDataFromArray(this.editedProblem.content.list, this.select_titles[0], "title");
-        if (i >= 0) this.strOptionSentence = this.editedProblem.content.list[i].title;
+        if (i >= 0) {
+            this.strOptionSentence = this.editedProblem.content.list[i].title;
+            this.strAudioURL = this.editedProblem.content.list[i].audio;
+        }
         this.optionsentence.nativeElement.focus();
         this.show_editoption = false;
         this.show_chngoption = true;
@@ -1015,8 +1055,10 @@ export class QuizeditComponent implements OnInit, OnDestroy {
             return;
         }
         var i = this.globalService.getDataFromArray(this.editedProblem.content.list, this.select_titles[0], "title");
-        if (i >= 0)
+        if (i >= 0) {
             this.editedProblem.content.list[i].title = this.strOptionSentence;
+            this.editedProblem.content.list[i].audio = this.strAudioURL;
+        }
         
         this.show_editoption = true;
         this.show_chngoption = false;
@@ -1048,6 +1090,9 @@ export class QuizeditComponent implements OnInit, OnDestroy {
             var tmp = options[i].title;
             options[i].title = options[i - 1].title;
             options[i - 1].title = tmp;
+            tmp = options[i].audio;
+            options[i].audio = options[i - 1].audio;
+            options[i - 1].audio = tmp;
         }
     }
     onDownTitleOption() {
@@ -1062,6 +1107,9 @@ export class QuizeditComponent implements OnInit, OnDestroy {
             var tmp = options[i].title;
             options[i].title = options[i + 1].title;
             options[i + 1].title = tmp;
+            tmp = options[i].audio;
+            options[i].audio = options[i + 1].audio;
+            options[i + 1].audio = tmp;
         }
     }
 
@@ -1090,16 +1138,33 @@ export class QuizeditComponent implements OnInit, OnDestroy {
             return;
 
         if (this.editedProblem.type == 'LCD') {
-
             this._CKEDITOR.instances.ck_editor.insertHtml( "<span style='background-color:#ff0'>" + this.str_blank + "</span>&nbsp;" );
+            //this.checkCkEditorInfo();
         } else {
-            this._CKEDITOR.instances.ck_editor.insertHtml( "<p><input type='text' value='" + this.str_blank + "'></p>" );
+            this._CKEDITOR.instances.ck_editor.insertHtml( "<input type='text' value='" + this.str_blank + "'>" );
+            //this.checkCkEditorInfo();
         }
         this.str_blank = '';
     }
 
+    repairCkData() {
+        var str_data = this._CKEDITOR.instances.ck_editor.getData();
+        if (str_data.indexOf("<p>") < 0  &&  str_data.indexOf("</p>") < 0) {
+            str_data = "<p>" + str_data + "</p>";
+        }
+        str_data = str_data.replace("&nbsp;", " ");
+        str_data = str_data.replace("&#8203;", "");
+        this._CKEDITOR.instances.ck_editor.setData(str_data);
+    }
+
     convertCkDataToContent() {
         switch (this.editedProblem.type) {
+            case 'WSM':
+                var str_data = this._CKEDITOR.instances.ck_editor.getData();
+                str_data = str_data.replace("&nbsp;", " ");
+                str_data = str_data.replace("&#8203;", "");
+                this.editedProblem.content.text = str_data;
+                break;
             case 'RFB':
                 this.editedProblem.solution.optionno = [];
                 var str_data = this._CKEDITOR.instances.ck_editor.getData();
@@ -1277,6 +1342,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
     }
 
     checkCkEditorInfo() {
+        //this.repairCkData();
         this.convertCkDataToContent();
         this.convertContentToCkData();
     }
@@ -1416,9 +1482,10 @@ export class QuizeditComponent implements OnInit, OnDestroy {
             html = html + ">" + this.blank_selectlist[i].options[j] + "</option>";
         }
         html = html + "</select>";
+        //this.repairCkData();
         this._CKEDITOR.instances.ck_editor.insertHtml( html );
-        this.optionsentence.nativeElement.focus();
         //this.checkCkEditorInfo();
+        this.optionsentence.nativeElement.focus();
     }
     onDeleteSelect(i: number) {
         if (i < 0) return;

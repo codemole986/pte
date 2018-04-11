@@ -135,7 +135,7 @@ export class ManageComponent implements OnInit, OnDestroy {
 				        month = date.getMonth() + 1;
 				        return (month.length > 1 ? month : "0" + month) + "/" + date.getDate() + "/" + date.getFullYear();
 				    }
-				},
+				}/*,
                 {title: "Action", class:"center", render: function(data: any, type: any, row: any){
                 	var str_initpwd = '<a href="javascript:;" id="initpwd_'+row.id+'" style="font-size: 18px; margin-right: 5px;"><i class="fa fa-unlock-alt fa-fw"></i></a>';
                 	
@@ -180,7 +180,7 @@ export class ManageComponent implements OnInit, OnDestroy {
 	                	});
 	                }, 200);
                 	return str_initpwd+str_del;
-                }},
+                }},*/
             ], 
 
             scrollY: false,
@@ -258,7 +258,6 @@ export class ManageComponent implements OnInit, OnDestroy {
 			map(
 				(response) => response.json()
 			).subscribe((data) => {
-				console.log(data);
 				if(data.state == "error") {
 			    	Metronic.showErrMsg(data.message);
 				} else {

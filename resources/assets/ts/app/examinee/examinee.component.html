@@ -90,15 +90,19 @@
                                 {{currentProblem.guide}} 
                             </div>
                             <!-- <app-problem [data]="quiz_id"></app-problem> -->
-                            <div *ngIf="currentProblem.type == 'WSM' || currentProblem.type == 'WES' || currentProblem.type == 'SAL'" class="row">
+                            <div *ngIf="currentProblem.type == 'WSM'" class="row" style="margin-top: 15px; padding: 15px;">
+                                <div #htmldata class="col-md-12"></div>
+                                {{createWSMView()}}
+                            </div>
+                            <div *ngIf="currentProblem.type == 'WES' || currentProblem.type == 'SAL'" class="row">
                                 <div class="col-md-12 mb-3">
                                     {{ currentProblem.content.text }}
                                 </div>                            
                             </div>
-                            <div *ngIf="currentProblem.type == 'SRS' || currentProblem.type == 'SSA' || currentProblem.type == 'LWS' || currentProblem.type == 'LTS' || currentProblem.type == 'LSA' || currentProblem.type == 'LSB'" class="row">
+                            <div *ngIf="currentProblem.type == 'SRS' || currentProblem.type == 'SSA' || currentProblem.type == 'LWS' || currentProblem.type == 'LTS' || currentProblem.type == 'LSA' || currentProblem.type == 'LSB' || currentProblem.type == 'LCD'" class="row">
                                 <div *ngIf="currentProblem.content.audio" style="padding: 30px;">
-                                    <audio controls="false" id="quizaudio" autoplay>
-                                       <source src="/upload/q2/{{currentProblem.id}}/{{currentProblem.content.audio}}" type="audio/mpeg">
+                                    <audio autoplay>
+                                       <source src="{{currentProblem.content.audio}}" type="audio/mpeg">
                                     </audio> 
                                 </div>                    
                             </div>
@@ -119,10 +123,11 @@
                                     </table>
                                 </div>
                                 <div class="col-md-6" style="text-align: center;">
-                                    <div *ngIf="sel_audio_index >= 0  &&  audio_visible_flag">
-                                        <audio id="sel_audio" controls="false" autoplay="true" onpause="">
-                                           <source src="/upload/q2/{{currentProblem.id}}/{{currentProblem.content.list[sel_audio_index].audio}}" type="audio/mpeg">
+                                    <div *ngIf="sel_audio_index >= 0  &&  audio_visible_flag  &&  quiz_step==1">
+                                        <audio id="quizaudio" controls="false" autoplay>
+                                           <source src="{{currentProblem.content.list[sel_audio_index].audio}}" type="audio/mpeg">
                                         </audio>
+                                        {{addAudioEndEvent()}}
                                     </div>
                                 </div>
                             </div>
@@ -222,6 +227,7 @@
                     <div class="col-md-12" style="text-align: center; margin-top: 30px;">
                         <button *ngIf="!audio_flag  &&  !end_exam_flag" class="btn btn-sm btn-success" type="button" (click)="startAnswerRecording()"> {{ 'Start recording' | translate }} <i class="fa fa-microphone fa-fw"></i></button>
                         <ngb-progressbar *ngIf="audio_flag" value="{{progressvalue}}" type="info" class="progress-striped progress-xs form-control">{{progressvalue}}%</ngb-progressbar>
+                        <button *ngIf="audio_flag  &&  !endbutton" class="btn btn-sm red" type="button" (click)="endExamine()" style="margin-top: 10px;"> {{ 'Stop recording' | translate }} <i class="fa fa-microphone fa-fw"></i></button>
                     </div>
                 </div>
 
@@ -283,7 +289,7 @@
                             <div *ngIf="currentProblem.type=='SRS' ||currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SSA'"  class="card-body">
                                 <div *ngIf="currentProblem.solution.audio">
                                     <audio controls autoplay="true">
-                                       <source src="/upload/s0/{{currentProblem.id}}/{{currentProblem.solution.audio}}" type="audio/mpeg">
+                                       <source src="{{currentProblem.solution.audio}}" type="audio/mpeg">
                                     </audio> 
                                 </div>
                             </div>
@@ -343,8 +349,11 @@
                                         <div class="col-sm-3 mb-3">
                                             <h5 style="color:#6CF;">{{ 'Degree' | translate }}: {{ currentProblem.degree }}</h5>
                                         </div>
-                                        <div class="col-sm-3 mb-3" *ngIf="selfexam">
-                                            <h5 style="color:#09F;">{{ 'Remain Time' | translate }}: {{currentlimittime | converttimestamp }}</h5>                    
+                                        <div class="col-sm-3 mb-3" *ngIf="selfexam && quiz_step==0">
+                                            <h5 style="color:#09F;">{{ 'Preparation Time' | translate }}: {{currentpretime | converttimestamp }}</h5>
+                                        </div>
+                                        <div class="col-sm-3 mb-3" *ngIf="selfexam && quiz_step>0">
+                                            <h5 style="color:#09F;">{{ 'Remain Time' | translate }}: {{currentlimittime | converttimestamp }}</h5>
                                         </div>
                                     </div>
                                 </div>
@@ -355,16 +364,26 @@
                                             {{currentProblem.guide}} 
                                         </div>
                                         <!-- <app-problem [data]="quiz_id"></app-problem> -->
-                                        <div *ngIf="currentProblem.type == 'WSM' || currentProblem.type == 'WES' || currentProblem.type == 'SAL'" class="row">
+                                        <div *ngIf="currentProblem.type == 'WSM'" class="row" style="margin-top: 15px; padding: 15px;">
+                                            <div #htmldata class="col-md-12"></div>
+                                            {{createWSMView()}}
+                                        </div>
+                                        <div *ngIf="currentProblem.type == 'WES' || currentProblem.type == 'SAL'" class="row">
                                             <div class="col-md-12 mb-3" style="padding: 1em;">
                                                 {{ currentProblem.content.text }}
                                             </div>                            
                                         </div>
-                                        <div *ngIf="currentProblem.type == 'SRS' || currentProblem.type == 'SSA' || currentProblem.type == 'LWS' || currentProblem.type == 'LTS' || currentProblem.type == 'LSA' || currentProblem.type == 'LSB'" class="row">
-                                            <div *ngIf="currentProblem.content.audio" style="padding: 30px;">
-                                                <audio controls="false" id="quizaudio" autoplay>
-                                                   <source src="/upload/q2/{{currentProblem.id}}/{{currentProblem.content.audio}}" type="audio/mpeg">
-                                                </audio> 
+                                        <div *ngIf="(currentProblem.type == 'SRS' || currentProblem.type == 'SRL' || currentProblem.type == 'SSA') && quiz_step==2">
+                                            <audio autoplay>
+                                               <source src="/assets/snd/ding.mp3" type="audio/mpeg">
+                                            </audio> 
+                                        </div>
+                                        <div *ngIf="currentProblem.type == 'SRS' || currentProblem.type == 'SSA' || currentProblem.category == 'Listening'" class="row">
+                                            <div *ngIf="currentProblem.content.audio && quiz_step==1 && !audio_flag" style="padding: 30px;">
+                                                <audio id="quizaudio" controls="false" autoplay>
+                                                   <source src="{{currentProblem.content.audio}}" type="audio/mpeg">
+                                                </audio>
+                                                {{addAudioEndEvent()}}
                                             </div>                    
                                         </div>
                                         <div *ngIf="currentProblem.type == 'SPI' " class="row">
@@ -389,18 +408,18 @@
                                                 </table>
                                             </div>
                                             <div class="col-md-6" style="text-align: center;">
-                                                <div *ngIf="sel_audio_index >= 0  &&  audio_visible_flag  &&  !end_exam_flag">
-                                                    <audio id="sel_audio" controls="false" autoplay>
-                                                       <source src="/upload/q2/{{currentProblem.id}}/{{currentProblem.content.list[sel_audio_index].audio}}" type="audio/mpeg">
+                                                <div *ngIf="sel_audio_index >= 0  &&  audio_visible_flag  &&  !end_exam_flag  &&  quiz_step==1">
+                                                    <audio id="quizaudio" controls="false" autoplay>
+                                                       <source src="{{currentProblem.content.list[sel_audio_index].audio}}" type="audio/mpeg">
                                                     </audio>
+                                                    {{addAudioEndEvent()}}
                                                 </div>
                                                 <div style="margin-top: 30px;">
-                                                    <button *ngIf="!audio_flag  &&  !end_exam_flag" class="btn btn-sm btn-success" type="button" (click)="startAnswerRecording()"> {{ 'Start recording' | translate }} <i class="fa fa-microphone fa-fw"></i></button>
+                                                    <button *ngIf="!audio_flag  &&  !end_exam_flag && (currentProblem.type=='SAL' || currentProblem.type=='SPI')" class="btn btn-sm btn-success" type="button" (click)="startAnswerRecording()"> {{ 'Start recording' | translate }} <i class="fa fa-microphone fa-fw"></i></button>
                                                     <ngb-progressbar *ngIf="audio_flag" value="{{progressvalue}}" type="info" class="progress-striped progress-xs form-control">{{progressvalue}}%</ngb-progressbar>
-                                                    <div *ngIf="end_exam_flag">
-                                                        <audio controls>
-                                                           <source id="selfaudiosource" src="" type="audio/mpeg">
-                                                        </audio> 
+                                                    <button *ngIf="audio_flag  &&  !endbutton" class="btn btn-sm red" type="button" (click)="endExamine()" style="margin-top: 10px;"> {{ 'Stop recording' | translate }} <i class="fa fa-microphone fa-fw"></i></button>
+                                                    <div id="divselfaudiosource" *ngIf="audiovisibleflag" style="margin-top: 5px;">
+                                                        {{ 'Converting to Mp3...' | translate }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -487,19 +506,20 @@
                                         <div *ngIf="currentProblem.type=='WSM' || currentProblem.type=='WES' || currentProblem.type=='LWS' || currentProblem.type=='LTS'" class="row" style="font-size: 16px;">
                                             <div class="col-md-12">
                                                 <div class="col-md-12 mb-3">
-                                                    <textarea name="content" id="txtanswer" class="form-control"  placeholder="Problem Sentences" title="Problem Sentences" rows="5" [(ngModel)]="currentAnswer.answer.text" [disabled]="answertext" ></textarea>                    
+                                                    <textarea name="content" id="txtanswer" class="form-control"  placeholder="Problem Sentences" title="Problem Sentences" rows="10" [(ngModel)]="currentAnswer.answer.text" [disabled]="answertext" (keyup)="onChangeAnswer()" style="margin-bottom: 5px;"></textarea>
+                                                    {{ 'Word count' | translate }}: <span id="word_count">0</span>
+                                                    <a id="download_answer" (click)="downloadAnswerTxt()" style="float: right;">{{ 'Download answer text' | translate }}</a>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div *ngIf="currentProblem.type=='SRS' || currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SSA'" class="row" style="font-size: 16px;">
                                             <div class="col-md-12" style="text-align: center; margin-top: 30px;">
-                                                <button *ngIf="!audio_flag  &&  !end_exam_flag" class="btn btn-sm btn-success" type="button" (click)="startAnswerRecording()"> {{ 'Start recording' | translate }} <i class="fa fa-microphone fa-fw"></i></button>
+                                                <button *ngIf="!audio_flag  &&  !end_exam_flag && (currentProblem.type=='SAL' || currentProblem.type=='SPI')" class="btn btn-sm btn-success" type="button" (click)="startAnswerRecording()"> {{ 'Start recording' | translate }} <i class="fa fa-microphone fa-fw"></i></button>
                                                 <ngb-progressbar *ngIf="audio_flag" value="{{progressvalue}}" type="info" class="progress-striped progress-xs form-control">{{progressvalue}}%</ngb-progressbar>
-                                                <div *ngIf="audiovisibleflag">
-                                                    <audio controls>
-                                                       <source id="selfaudiosource" src="" type="audio/mpeg">
-                                                    </audio> 
+                                                <button *ngIf="audio_flag  &&  !endbutton" class="btn btn-sm red" type="button" (click)="endExamine()" style="margin-top: 10px;"> {{ 'Stop recording' | translate }} <i class="fa fa-microphone fa-fw"></i></button>
+                                                <div id="divselfaudiosource" *ngIf="audiovisibleflag" style="margin-top: 5px;">
+                                                    {{ 'Converting to Mp3...' | translate }}
                                                 </div>
                                             </div>
                                         </div>
@@ -532,7 +552,7 @@
                             <div class="portlet-body">
                                 <div class="row" style="padding: 0 15px; font-size: 16px;">
                                     <div class="col-md-12">
-                                        <div *ngIf="currentProblem.type=='WSM' || currentProblem.type=='WES' || currentProblem.type=='LWS' || currentProblem.type=='LTS' "  class="card-body">
+                                        <div *ngIf="currentProblem.type=='WSM' || currentProblem.type=='WES' || currentProblem.type=='LWS' || currentProblem.type=='LTS' || currentProblem.type=='SSA'"  class="card-body">
                                             {{ currentProblem.solution.text }}
                                         </div>
                                         <div *ngIf="currentProblem.type == 'RSA'  ||  currentProblem.type == 'LSB'" class="col-md-12 mb-3" style="padding: 0 15px;">
@@ -564,10 +584,10 @@
                                                 </div>
                                             </div>
                                         </div>                        
-                                        <div *ngIf="currentProblem.type=='SRS' ||currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SSA' || currentProblem.type=='SRL'"  class="card-body">
+                                        <div *ngIf="currentProblem.type=='SRS' ||currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SRL'"  class="card-body">
                                             <div *ngIf="currentProblem.solution.audio">
                                                 <audio controls autoplay>
-                                                   <source src="/upload/s0/{{currentProblem.id}}/{{currentProblem.solution.audio}}" type="audio/mpeg">
+                                                   <source src="{{currentProblem.solution.audio}}" type="audio/mpeg">
                                                 </audio> 
                                             </div>
                                         </div>

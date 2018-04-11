@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 
 import { Router, ActivatedRoute, ActivationEnd  } from '@angular/router';
@@ -31,13 +31,16 @@ declare var Datatable: any;
 export class ExerciseComponent implements OnInit {
 	currentProblem: Problem;
 	currentAnswer: Answer;
+	currentpretime: number;
 	currentlimittime: number;
 	quiz_count: number = 0;
 	endbutton: boolean;
+	againbutton: boolean;
 	nextbutton: boolean;
 	previousbutton: boolean;	
 	solutiontextvisible: boolean;
 	markvisible: boolean;
+	quiz_step: number;
 	ctimer: any;
 	i: number;
 	arr_types: any[];
@@ -109,6 +112,10 @@ export class ExerciseComponent implements OnInit {
 		var that = this;
 		this.router.events.subscribe((val: any) => {			
         	if (val instanceof ActivationEnd) {
+        		
+        		if(val.snapshot.routeConfig.path.indexOf("exercise") < 0 ) 
+            		return;
+
             	that.quiz_id = val.snapshot.params['id'];
 				that.quiztype = val.snapshot.params['type'];
 				
@@ -166,6 +173,7 @@ export class ExerciseComponent implements OnInit {
 	            columns:[
 	            	{title: "No", data:"no"}, 
 	                {title: "Title", data:"title"}, 
+	                
 	                {title: "LimitTime(s)", data:"limit_time"}, 
 	            ], 
 
@@ -200,7 +208,6 @@ export class ExerciseComponent implements OnInit {
 				that2.listflag = false;
 				clearInterval(that2.ctimer);
 				that2.getProblem(selected_rowdata.id);
-
 				that2.quizno = selected_rowdata.no;
 				that2.initialize();
 			} ); 
@@ -218,8 +225,9 @@ export class ExerciseComponent implements OnInit {
 	initialize() {
 		this.nextquiz_id = 0;
 		this.prevquiz_id = 0;
-		this.previousbutton = false;
-		this.nextbutton = false;
+		this.previousbutton = true;
+		this.nextbutton = true;
+		this.againbutton = false;
 		this.quiz_count = 0;
 
         Metronic.init();
@@ -249,14 +257,38 @@ export class ExerciseComponent implements OnInit {
 		}		
     }
 
+    startExercise() {
+    	this.quiz_step = 1;
+		clearInterval(this.ctimer);
+
+		this.currentlimittime = Number(this.currentProblem.limit_time).valueOf();
+
+		if (!(this.currentProblem.type == 'SRS' || this.currentProblem.type == 'SSA' || this.currentProblem.type == 'SRL' || this.currentProblem.type == 'LWS' || this.currentProblem.type == 'LTS' || this.currentProblem.type == 'LSA' || this.currentProblem.type == 'LSB')) {
+
+			this.ctimer = setInterval(()=> {
+				this.currentlimittime--; 
+				this.currentAnswer.examine_uptime = this.currentProblem.limit_time - this.currentlimittime - this.record_start_time;
+				this.progressvalue = Math.round(this.currentAnswer.examine_uptime/(this.currentProblem.limit_time - this.record_start_time)*100);
+
+				if(this.currentlimittime<=0) 
+					this.endExercise(); 
+			}, 1000 );	
+		}
+
+		this.markvisible = false;
+    }
+
 	endExercise() {
 		clearInterval(this.ctimer);
 		this.saveExercise();
 		this.endbutton = true;	
+		this.againbutton = true;
 		
 		if(this.currentProblem.type == 'SRS' || this.currentProblem.type == 'SSA' || this.currentProblem.type == 'LWS' || this.currentProblem.type == 'LTS' || this.currentProblem.type == 'LSA' || this.currentProblem.type == 'LTW' || this.currentProblem.type == 'LSB' || this.currentProblem.type == 'LCD') {
-			$('#quizaudio')[0].pause();
-			$('#quizaudio')[0].currentTime = 0;
+			if ($('#quizaudio')[0] != null) {
+				$('#quizaudio')[0].pause();
+				$('#quizaudio')[0].currentTime = 0;
+			}
 		}
 
 		/*if (this.currentProblem.type == 'LTW') {
@@ -295,20 +327,39 @@ export class ExerciseComponent implements OnInit {
 		this.audio_visible_flag = false;
 	}
 
+	againExercise() {
+		//this.saveExercise();
+		clearInterval(this.ctimer);
+		this.quiz_count++;
+		this.audiovisibleflag = false;
+		this.againbutton = false;
+		this.getProblem(this.quiz_id);	
+	}
+
 	nextExercise() {
 		//this.saveExercise();
+		clearInterval(this.ctimer);
+		if(this.nextquiz_id > 0) {
 		this.quizno+=1;
 		this.quiz_count++;
 		this.audiovisibleflag = false;
 		this.getProblem(this.nextquiz_id);
+		} else {
+			this.againbutton = true;
+		}
 	}
 
 	prevExercise() {
 		//this.saveExercise();
+		clearInterval(this.ctimer);
+		if(this.prevquiz_id > 0) {
 		this.quizno-=1;
 		this.quiz_count++;
 		this.audiovisibleflag = false;
 		this.getProblem(this.prevquiz_id);
+		} else {
+			this.againbutton = true;
+		}
 	}
 
 	exitExercise() {
@@ -332,14 +383,15 @@ export class ExerciseComponent implements OnInit {
 					return;
 				}
 				if(typeof data.problem.id == "number") {
-					that.previousbutton = false;
+					that.quiz_id = data.problem.id;
+					that.previousbutton = true;
 					if(typeof data.prevqid == "number") {
 						that.prevquiz_id = data.prevqid;
 					} else {
 						that.prevquiz_id = 0;
 					}
 
-					that.nextbutton = false;
+					that.nextbutton = true;
 					if(typeof data.nextqid == "number") {
 						that.nextquiz_id = data.nextqid;
 					} else {
@@ -358,37 +410,44 @@ export class ExerciseComponent implements OnInit {
 					that.currentAnswer.type = that.currentProblem.type;									
 					
 					that.record_start_time = 0;	
-					
+					that.quiz_step = 0;
+					clearInterval(that.ctimer);
+					if(that.audio_flag) {
+						stopRecording();
+					}
+					that.audio_flag = false;
+					that.progressvalue = 0;
 					that.end_exam_flag = false;
 
-					that.currentlimittime = Number(data.problem.limit_time).valueOf();	
-					var that2 = that;
+					that.currentpretime = Number(data.problem.preparation_time).valueOf();	
 					that.ctimer = setInterval(()=> {
-						that2.currentlimittime--; 
+						that.currentpretime--; 
 						
-						if(that2.currentlimittime<=0) 
-							that2.endExercise(); 
+						if(that.currentpretime<=0) {
+							that.startExercise();
 
-						that2.currentAnswer.examine_uptime = that2.currentProblem.limit_time - that2.currentlimittime - that2.record_start_time;
-						that2.progressvalue = Math.round(that2.currentAnswer.examine_uptime/(that2.currentProblem.limit_time - that2.record_start_time)*100);
+							if (data.problem.type == 'SAL' || data.problem.type == 'SPI') {
+								that.audio_flag = true;
+								
+								startRecording(that.currentAnswer.testevent_id, that.currentProblem.id, window.sessionStorage.getItem('userid'), that._token );
+								that.record_start_time = that.currentProblem.limit_time - that.currentlimittime;
+								that.progressvalue = 0;
+							}
+							that.audio_visible_flag = false;
+						}
 					}, 1000 );	
 
 					that.markvisible = false;		
-
-					if(that.currentProblem.type == 'SRS' || that.currentProblem.type == 'SSA' || that.currentProblem.type == 'LWS' || that.currentProblem.type == 'LTS' || that.currentProblem.type == 'LSA' || that.currentProblem.type == 'LTW' || that.currentProblem.type == 'LSB' || that.currentProblem.type == 'LCD') {
-						//$('#quizaudio')[0].play();
-						//that.audio_autoplay = true;
-					}
-
 					that.setProblemDetails();
 				} else {
 					that.currentAnswer.answer = that.globalService.getSolutionObject(that.currentProblem.type);
 				}
 			}
-		)
+		);
 	}
 
 	getProblem(qid: number) {		
+		if(qid > 0) {
 		var that = this;
 		this.http.get("/problem/getfullproblem/"+qid).
 		map(
@@ -397,14 +456,15 @@ export class ExerciseComponent implements OnInit {
 		subscribe(
 			(data) => {
 				if(typeof data.problem.id == "number") {
-					that.previousbutton = false;
+						that.quiz_id = data.problem.id;
+						that.previousbutton = true;
 					if(typeof data.prevqid == "number") {
 						that.prevquiz_id = data.prevqid;
 					} else {
 						that.prevquiz_id = 0;
 					}
 
-					that.nextbutton = false;
+						that.nextbutton = true;
 					if(typeof data.nextqid == "number") {
 						that.nextquiz_id = data.nextqid;
 					} else {
@@ -423,38 +483,52 @@ export class ExerciseComponent implements OnInit {
 					that.currentAnswer.type = that.currentProblem.type;									
 					
 					that.record_start_time = 0;	
-					
+					that.quiz_step = 0;
+					clearInterval(that.ctimer);
+					if(that.audio_flag) {
+						stopRecording();
+					}
+					that.audio_flag = false;
+					that.progressvalue = 0;
 					that.end_exam_flag = false;
 
-					that.currentlimittime = Number(data.problem.limit_time).valueOf();	
-					var that2 = that;
+					that.currentpretime = Number(data.problem.preparation_time).valueOf();	
 					that.ctimer = setInterval(()=> {
-						that2.currentlimittime--; 
+						that.currentpretime--; 
 						
-						if(that2.currentlimittime<=0) 
-							that2.endExercise(); 
-
-						that2.currentAnswer.examine_uptime = that2.currentProblem.limit_time - that2.currentlimittime - that2.record_start_time;
-						that2.progressvalue = Math.round(that2.currentAnswer.examine_uptime/(that2.currentProblem.limit_time - that2.record_start_time)*100);
+						if(that.currentpretime<=0) {
+							that.startExercise(); 
+						
+							if (data.problem.type == 'SAL' || data.problem.type == 'SPI') {
+								that.audio_flag = true;
+							
+								startRecording(that.currentAnswer.testevent_id, that.currentProblem.id, window.sessionStorage.getItem('userid'), that._token );
+								that.record_start_time = that.currentProblem.limit_time - that.currentlimittime;
+								that.progressvalue = 0;
+							}
+							that.audio_visible_flag = false;
+						}
 					}, 1000 );	
 
 					that.markvisible = false;		
-
-					if(that.currentProblem.type == 'SRS' || that.currentProblem.type == 'SSA' || that.currentProblem.type == 'LWS' || that.currentProblem.type == 'LTS' || that.currentProblem.type == 'LSA' || that.currentProblem.type == 'LTW' || that.currentProblem.type == 'LSB' || that.currentProblem.type == 'LCD') {
-						//$('#quizaudio')[0].play();
-						//this.audio_autoplay = true;
-					}
-
 					that.setProblemDetails();
 				} else {
 					that.currentAnswer.answer = that.globalService.getSolutionObject(that.currentProblem.type);
 				}
 			}
-		)
+			);
+		}
+		
 	}
 
 	setProblemDetails() {
 		switch (this.currentProblem.type) {
+			case 'WSM':
+				if (this.htmldata != null) {
+	       			this.htmldata.nativeElement.innerHTML = "";
+	       			this.createWSMView();
+	       		}
+				break;
 			case 'RMA': case 'LSA':
 				this.check_answer_val = [];
 				this.check_solution_val = [];
@@ -503,6 +577,11 @@ export class ExerciseComponent implements OnInit {
 				this.rfb_options.sort(function(a,b) {    
 	        		return Math.random() - Math.random();
 	       		});
+
+	       		if (this.htmldata != null) {
+	       			this.htmldata.nativeElement.innerHTML = "";
+	       			this.createRFBView();
+	       		}
 	       		break;
 	       	case 'RAN':
 				this.rfb_content = this.currentProblem.content.text;
@@ -524,6 +603,11 @@ export class ExerciseComponent implements OnInit {
                     found = reg.test(this.rfb_content);
                     index++;
                 }
+
+                if (this.htmldata != null) {
+	       			this.htmldata.nativeElement.innerHTML = "";
+	       			this.createRANView();
+	       		}
 	       		break;
 	       	case 'LTW':
 				this.rfb_content = this.currentProblem.content.text;
@@ -535,6 +619,11 @@ export class ExerciseComponent implements OnInit {
                     this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" name=\"inputs\" value=\"\">");
                     found = reg.test(this.rfb_content);
                 }
+
+                if (this.htmldata != null) {
+	       			this.htmldata.nativeElement.innerHTML = "";
+	       			this.createLTWView();
+	       		}
 	       		break;
 	       	case 'LCD':
 				this.rfb_content = this.currentProblem.content.text;
@@ -554,6 +643,11 @@ export class ExerciseComponent implements OnInit {
                 	if (arr_str[i] != '')
                 		this.rfb_content += "<span class='LCD'>" + arr_str[i] + "</span> ";
                 }
+
+                if (this.htmldata != null) {
+	       			this.htmldata.nativeElement.innerHTML = "";
+	       			this.createLCDView();
+	       		}
                 break;
 		}
 	}
@@ -580,8 +674,19 @@ export class ExerciseComponent implements OnInit {
 			}
 		}
 	}
+
+	createWSMView() {
+		if (this.htmldata == null) return;
+		var htmldata_obj = this.htmldata.nativeElement;
+		
+		if ( htmldata_obj.innerHTML == "") {
+			htmldata_obj.innerHTML = this.currentProblem.content.text;
+		}
+	}
+
 	createRFBView() {
 		if (this.htmldata == null) return;
+		if (this.choicepanel == null) return;
 		var htmldata_obj = this.htmldata.nativeElement;
 		var choicepanel_obj = this.choicepanel.nativeElement;
 
@@ -718,9 +823,9 @@ export class ExerciseComponent implements OnInit {
             while (found) {
                 var matches = reg.exec(this.rfb_content);
                 if (this.rfb_selected_options[index] == this.currentProblem.content.select.options[this.currentProblem.solution.optionno[index]]) {
-                	this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\" style=\"color: #f00;\">");	 /*disabled*/
+                	this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\" class=\"Correct\">");	 /*disabled*/
                 } else {
-					this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\">");	 /*disabled*/
+					this.rfb_content = this.rfb_content.replace(reg, "<input type=\"text\" value=\"" + this.rfb_selected_options[index] + "\" class=\"Wrong\">");	 /*disabled*/
                 }
                 found = reg.test(this.rfb_content);
                 index++;
@@ -766,7 +871,11 @@ export class ExerciseComponent implements OnInit {
             
             for (var i = 0;  i < selects.length;  i++) {
             	if ($(selects[i]).val() == this.currentProblem.content.selectlist[this.currentProblem.solution.optionno[i].id].options[this.currentProblem.solution.optionno[i].option]) {
-            		$(selects[i]).css("color", "#f00");
+            		$(selects[i]).removeClass("Wrong");
+            		$(selects[i]).addClass("Correct");
+            	} else {
+            		$(selects[i]).removeClass("Correct");
+            		$(selects[i]).addClass("Wrong");
             	}
             }
 
@@ -863,17 +972,14 @@ export class ExerciseComponent implements OnInit {
 
 		if (html_answerdata_obj.innerHTML == "") {
 			var LCD_spans = $(htmldata_obj).find("span.LCD");
-			for (var i = 0;  i < LCD_spans.length;  i++)
-				$(LCD_spans).removeClass("LCD");
-			var spans = $(htmldata_obj).find("span");
-			for (var i = 0;  i < spans.length;  i++) {
-				if ($(spans[i]).attr("class") == "")
-					$(spans[i]).removeAttr("class");
+			for (var i = 0;  i < LCD_spans.length;  i++) {
+				$(LCD_spans).removeClass("Wrong");
+				$(LCD_spans).removeClass("Correct");
 			}
 			
 			var answer_words = [];
 			var str_data = htmldata_obj.innerHTML;
-			var reg = /(<span[ class=\"Clicked\"]*>)([a-z, ,|]*)(<\/span>)/;
+			var reg = /(<span class=\"LCD[ Clicked]*\">)([a-z, ,|]*)(<\/span>)/;
             var found = reg.test(str_data);
             while (found) {
                 var matches = reg.exec(str_data);
@@ -894,14 +1000,14 @@ export class ExerciseComponent implements OnInit {
             var arr_words = this.rfb_solutionhtml.split("&nbsp;");
             for (var i = 0;  i < arr_words.length;  i++) {
             	if (arr_words[i] != '')
-            		solution_words.push("<span>" + arr_words[i] + "</span>");
+            		solution_words.push("<span class=\"LCD\">" + arr_words[i] + "</span>");
             }
             var index = 0;
             for (var i = 0;  i < solution_words.length;  i++) {
             	var reg = /\{\{\}\}/;
             	var found = reg.test(solution_words[i]);
             	if (found) {
-            		solution_words[i] = "<span class=\"Clicked\">" + this.currentProblem.content.select.options[index++] + "</span>";
+            		solution_words[i] = "<span class=\"LCD Clicked\">" + this.currentProblem.content.select.options[index++] + "</span>";
             	}
             }
             this.rfb_solutionhtml = "";
@@ -1058,6 +1164,13 @@ export class ExerciseComponent implements OnInit {
     }
 
     onSelLecture(i: number) {
+    	if ($('#quizaudio') != null) {
+			if ($('#quizaudio')[0] != null) {
+				if (!$('#quizaudio')[0].paused)
+					return;
+			}
+		}
+
 		this.sel_audio_index = -1;
 		var that = this;
 		var index = i;
@@ -1069,6 +1182,7 @@ export class ExerciseComponent implements OnInit {
 	}
 
 	startAnswerRecording() {
+		this.startExercise();
 		this.audio_flag = true;
 		startRecording(this.currentAnswer.testevent_id, this.currentProblem.id, window.sessionStorage.getItem('userid'), this._token );
 		this.record_start_time = this.currentProblem.limit_time - this.currentlimittime;
@@ -1113,5 +1227,55 @@ export class ExerciseComponent implements OnInit {
         });
         
         this.nestable_flag = true;
+    }
+
+    onChangeAnswer() {
+    	var str_sentence = $('#txtanswer').val();
+    	var count = 0;
+    	var reg = /[a-z,A-Z,\.]{1,1000}($|([ |\n|\,|\.]{1,1000}))/;
+        var found = reg.test(str_sentence);
+        while (found) {
+            str_sentence = str_sentence.replace(reg, "");
+            found = reg.test(str_sentence);
+            count++;
+        }
+        $('#word_count').html(count);
+    }
+
+    downloadAnswerTxt() {
+    	var url = 'data:unknown;,'+$('#txtanswer').val();
+		var hf = $('#download_answer');
+		hf.attr('href', url);
+		hf.attr('download', 'answer.txt');
+		hf.html(hf.download);
+    }
+
+    addAudioEndEvent() {
+    	var that = this;
+    	/*$('#quizaudio').on('seeking', function() {
+    		console.log("seeking");
+    	})*/
+    	$('#quizaudio')[0].onended = function() {
+    		that.quiz_step = 2;
+    		that.currentlimittime = Number(that.currentProblem.limit_time).valueOf();
+			clearInterval(that.ctimer);
+			var that2 = that;
+    		that.ctimer = setInterval(()=> {
+				that2.currentlimittime--; 
+				that2.currentAnswer.examine_uptime = that2.currentProblem.limit_time - that2.currentlimittime - that2.record_start_time;
+				that2.progressvalue = Math.round(that2.currentAnswer.examine_uptime/(that2.currentProblem.limit_time - that2.record_start_time)*100);
+
+				if(that2.currentlimittime<=0) 
+					that2.endExercise(); 
+			}, 1000 );
+
+			if (that.currentProblem.type == 'SRS' || that.currentProblem.type == 'SSA' || that.currentProblem.type == 'SRL') {
+				that.audio_flag = true;
+				startRecording(that.currentAnswer.testevent_id, that.currentProblem.id, window.sessionStorage.getItem('userid'), that._token );
+				that.record_start_time = that.currentProblem.limit_time - that.currentlimittime;
+				that.progressvalue = 0;
+				that.audio_visible_flag = false;
+			}
+    	};
     }
 }

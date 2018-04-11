@@ -62,7 +62,8 @@ import {
     ChatComponent
 } from './dashboard/components';
 
-import { AuthGuard } from './shared';
+import { AuthGuard, AuthService } from './shared';
+
 
 
 export function createTranslateLoader(http: HttpClient) {
@@ -239,7 +240,7 @@ export function createTranslateLoader(http: HttpClient) {
         TypeRenderComponent,
         EvalstatusRenderComponent
     ],
-	providers: [AuthGuard],
+	providers: [AuthGuard, AuthService],
 	bootstrap: [AppComponent]
 })
 export class AppModule { }

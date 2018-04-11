@@ -4,6 +4,7 @@ export class Test {
   testclass: string;
   testdegree: string;
   totalmarks: number;
+  preparation_time: number;
   limit_time: number;
   count: number;
   preset: any;

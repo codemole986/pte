@@ -173,7 +173,7 @@ export class GlobalService {
 			case 'SRL':
 				return { audio: "" };
 			case 'SSA':
-				return { text: "", audio: "" };
+				return { text: "" };
 			case 'LWS':
 				return { text: "" };
 			case 'LTS':

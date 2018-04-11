@@ -1,4 +1,8 @@
-﻿import { Component } from '@angular/core';
+﻿import 'rxjs/add/operator/filter';
+
+import { Component } from '@angular/core';
+
+declare var Metronic: any;
 
 @Component({
 	selector: 'app-root',

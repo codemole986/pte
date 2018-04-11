@@ -22,6 +22,7 @@ class QuizProblems extends Migration
             $table->text('guide');
             $table->text('content');
             $table->text('solution');
+            $table->integer('preparation_time');
             $table->integer('limit_time');
             $table->enum('evaluate_mode', array('Auto', 'Manual'), 'Auto');
             $table->integer('points');

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 
 import { Router, ActivatedRoute } from '@angular/router';
@@ -43,6 +43,7 @@ export class ExamineeComponent implements OnInit {
 	stdtotalpoint: number;
 	currentProblem: Problem;
 	currentAnswer: Answer;
+	currentpretime: number;
 	currentlimittime: number;	
 	endbutton: boolean;
 	nextbutton: boolean;
@@ -50,6 +51,7 @@ export class ExamineeComponent implements OnInit {
 	answertext: boolean;
 	solutiontextvisible: boolean;
 	markvisible: boolean;
+	quiz_step: number;
 	ctimer: any;
 	i: number;
 	arr_types: any[];
@@ -228,6 +230,9 @@ export class ExamineeComponent implements OnInit {
 	                count: {
 	                	title: "QuizCount",
 	                },
+	                preparation_time: {
+	                	title: "PreparationTime(min)",
+	                },
 	                limit_time: {
 	                	title: "LimitTime(min)",
 	                },
@@ -259,7 +264,6 @@ export class ExamineeComponent implements OnInit {
 
 	ngOnDestroy() {
         clearInterval(this.ctimer);
-        console.log("cleared");
     }
     
 	onExamineeRowSelect(event: any) {
@@ -384,6 +388,28 @@ export class ExamineeComponent implements OnInit {
 		this.curtestevent_info.marks = this.mark;
 	}
 
+	startExamine() {
+		this.quiz_step = 1;
+		clearInterval(this.ctimer);
+
+		if(this.selfexam && this.timerflag) {
+			this.currentlimittime = Number(this.currentProblem.limit_time).valueOf();
+
+			if (!(this.currentProblem.type == 'SRS' || this.currentProblem.type == 'SSA' || this.currentProblem.type == 'SRL' || this.currentProblem.category == 'Listening')) {
+
+				this.ctimer = setInterval(()=> {
+					this.currentlimittime--; 
+					this.currentAnswer.examine_uptime = this.currentProblem.limit_time - this.currentlimittime - this.record_start_time;
+					this.progressvalue = Math.round(this.currentAnswer.examine_uptime/(this.currentProblem.limit_time - this.record_start_time)*100);
+
+					if(this.currentlimittime<=0) 
+						this.endExamine(); 
+				}, 1000 );	
+			}
+
+			this.markvisible = false;					
+		}
+	}
 	endExamine() {
 		if(this.selfexam) {
  			clearInterval(this.ctimer);
@@ -393,9 +419,11 @@ export class ExamineeComponent implements OnInit {
 			this.markvisible = true;
 			this.audio_autoplay = false; 
 			
-			if(this.currentProblem.type == 'SRS' || this.currentProblem.type == 'SSA' || this.currentProblem.type == 'LWS' || this.currentProblem.type == 'LTS' || this.currentProblem.type == 'LSA' || this.currentProblem.type == 'LSB') {
-				$('#quizaudio')[0].pause();
-				$('#quizaudio')[0].currentTime = 0;
+			if(this.currentProblem.type == 'SRS' || this.currentProblem.type == 'SSA' || this.currentProblem.category == 'Listening') {
+				if ($('#quizaudio')[0] != null) {
+					$('#quizaudio')[0].pause();
+					$('#quizaudio')[0].currentTime = 0;
+				}
 			}
 
 			if(this.audio_flag) {				
@@ -437,7 +465,7 @@ export class ExamineeComponent implements OnInit {
 						that.markvisible = true;
 						that.audio_autoplay = false; 
 						
-						if(that.currentProblem.type == 'SRS' || that.currentProblem.type == 'SSA' || that.currentProblem.type == 'LWS' || that.currentProblem.type == 'LTS' || that.currentProblem.type == 'LSA' || that.currentProblem.type == 'LSB') {
+						if(that.currentProblem.type == 'SRS' || that.currentProblem.type == 'SSA' || that.currentProblem.category == 'Listening') {
 							$('#quizaudio')[0].pause();
 							$('#quizaudio')[0].currentTime = 0;
 						}
@@ -607,17 +635,26 @@ export class ExamineeComponent implements OnInit {
 
 					this.record_start_time = 0;
 					
+					this.quiz_step = 0;
 					if(this.selfexam && this.timerflag) {
-						this.currentlimittime = Number(data.limit_time).valueOf();	
+						this.currentpretime = Number(data.preparation_time).valueOf();	
 						this.ctimer = setInterval(()=> {
-							this.currentlimittime--; 
-							if(this.currentlimittime<=0) 
-								this.endExamine(); 
-							this.currentAnswer.examine_uptime = this.currentProblem.limit_time - this.currentlimittime - this.record_start_time;
-							this.progressvalue = Math.round(this.currentAnswer.examine_uptime/(this.currentProblem.limit_time - this.record_start_time)*100);
+							this.currentpretime--; 
+							if(this.currentpretime<=0) {
+								this.startExamine();
+
+								if (data.type == 'SAL' || data.type == 'SPI') {
+									this.audio_flag = true;
+									startRecording(this.currentAnswer.testevent_id, this.currentProblem.id, window.sessionStorage.getItem('userid'), this._token );
+									this.record_start_time = this.currentProblem.limit_time - this.currentlimittime;
+									this.progressvalue = 0;
+								}
+								this.audio_visible_flag = false;
+							}
 						}, 1000 );	
 						this.markvisible = false;					
 					}
+
 					this.setProblemDetails();
 				} else {
 					if(this.selfexam && this.timerflag) {
@@ -758,8 +795,19 @@ export class ExamineeComponent implements OnInit {
 			}
 		}
 	}
+
+	createWSMView() {
+		if (this.htmldata == null) return;
+		var htmldata_obj = this.htmldata.nativeElement;
+		
+		if ( htmldata_obj.innerHTML == "") {
+			htmldata_obj.innerHTML = this.currentProblem.content.text;
+		}
+	}
+
 	createRFBView() {
 		if (this.htmldata == null) return;
+		if (this.choicepanel == null) return;
 		var htmldata_obj = this.htmldata.nativeElement;
 		var choicepanel_obj = this.choicepanel.nativeElement;
 
@@ -944,7 +992,11 @@ export class ExamineeComponent implements OnInit {
             
             for (var i = 0;  i < selects.length;  i++) {
             	if ($(selects[i]).val() == this.currentProblem.content.selectlist[this.currentProblem.solution.optionno[i].id].options[this.currentProblem.solution.optionno[i].option]) {
-            		$(selects[i]).css("color", "#f00");
+            		$(selects[i]).removeClass("Wrong");
+            		$(selects[i]).addClass("Correct");
+            	} else {
+            		$(selects[i]).removeClass("Correct");
+            		$(selects[i]).addClass("Wrong");
             	}
             }
             
@@ -1077,17 +1129,14 @@ export class ExamineeComponent implements OnInit {
 
 		if (html_answerdata_obj.innerHTML == "") {
 			var LCD_spans = $(htmldata_obj).find("span.LCD");
-			for (var i = 0;  i < LCD_spans.length;  i++)
-				$(LCD_spans).removeClass("LCD");
-			var spans = $(htmldata_obj).find("span");
-			for (var i = 0;  i < spans.length;  i++) {
-				if ($(spans[i]).attr("class") == "")
-					$(spans[i]).removeAttr("class");
+			for (var i = 0;  i < LCD_spans.length;  i++) {
+				$(LCD_spans).removeClass("Wrong");
+				$(LCD_spans).removeClass("Correct");
 			}
 			
 			var answer_words = [];
 			var str_data = htmldata_obj.innerHTML;
-			var reg = /(<span[ class=\"Clicked\"]*>)([a-z, ,|]*)(<\/span>)/;
+			var reg = /(<span class=\"LCD[ Clicked]*\">)([a-z, ,|]*)(<\/span>)/;
             var found = reg.test(str_data);
             while (found) {
                 var matches = reg.exec(str_data);
@@ -1108,14 +1157,14 @@ export class ExamineeComponent implements OnInit {
             var arr_words = this.rfb_solutionhtml.split("&nbsp;");
             for (var i = 0;  i < arr_words.length;  i++) {
             	if (arr_words[i] != '')
-            		solution_words.push("<span>" + arr_words[i] + "</span>");
+            		solution_words.push("<span class=\"LCD\">" + arr_words[i] + "</span>");
             }
             var index = 0;
             for (var i = 0;  i < solution_words.length;  i++) {
             	var reg = /\{\{\}\}/;
             	var found = reg.test(solution_words[i]);
             	if (found) {
-            		solution_words[i] = "<span class=\"Clicked\">" + this.currentProblem.content.select.options[index++] + "</span>";
+            		solution_words[i] = "<span class=\"LCD Clicked\">" + this.currentProblem.content.select.options[index++] + "</span>";
             	}
             }
             this.rfb_solutionhtml = "";
@@ -1168,7 +1217,6 @@ export class ExamineeComponent implements OnInit {
 	}
 
 	onSave(endFlag: boolean = false) {
-		console.log("examinee insert");
 		if(typeof this.currentAnswer.quiz_id == "number") {
 			//this.evaluateExamine();		
 			if(endFlag){
@@ -1312,6 +1360,13 @@ export class ExamineeComponent implements OnInit {
 	}
 
 	onSelLecture(i: number) {
+		if ($('#quizaudio') != null) {
+			if ($('#quizaudio')[0] != null) {
+				if (!$('#quizaudio')[0].paused)
+					return;
+			}
+		}
+		
 		this.sel_audio_index = -1;
 		var that = this;
 		var index = i;
@@ -1323,6 +1378,7 @@ export class ExamineeComponent implements OnInit {
 	}
 
 	startAnswerRecording() {
+		this.startExamine();
 		this.audio_flag = true;
 		startRecording(this.currentAnswer.testevent_id, this.currentProblem.id, window.sessionStorage.getItem('userid'), this._token );
 		this.record_start_time = this.currentProblem.limit_time - this.currentlimittime;
@@ -1367,5 +1423,52 @@ export class ExamineeComponent implements OnInit {
         });
         
         this.nestable_flag = true;
+    }
+
+    onChangeAnswer() {
+    	var str_sentence = $('#txtanswer').val();
+    	var count = 0;
+    	var reg = /[a-z,A-Z,\.]{1,1000}($|([ |\n|\,|\.]{1,1000}))/;
+        var found = reg.test(str_sentence);
+        while (found) {
+            str_sentence = str_sentence.replace(reg, "");
+            found = reg.test(str_sentence);
+            count++;
+        }
+        $('#word_count').html(count);
+    }
+
+    downloadAnswerTxt() {
+    	var url = 'data:unknown;,'+$('#txtanswer').val();
+		var hf = $('#download_answer');
+		hf.attr('href', url);
+		hf.attr('download', 'answer.txt');
+		hf.html(hf.download);
+    }
+
+    addAudioEndEvent() {
+    	var that = this;
+    	$('#quizaudio')[0].onended = function() {
+    		that.quiz_step = 2;
+    		that.currentlimittime = Number(that.currentProblem.limit_time).valueOf();
+			clearInterval(that.ctimer);
+			var that2 = that;
+    		that.ctimer = setInterval(()=> {
+				that2.currentlimittime--; 
+				that2.currentAnswer.examine_uptime = that2.currentProblem.limit_time - that2.currentlimittime - that2.record_start_time;
+				that2.progressvalue = Math.round(that2.currentAnswer.examine_uptime/(that2.currentProblem.limit_time - that2.record_start_time)*100);
+
+				if(that2.currentlimittime<=0) 
+					that2.endExamine(); 
+			}, 1000 );
+
+			if (that.currentProblem.type == 'SRS' || that.currentProblem.type == 'SSA' || that.currentProblem.type == 'SRL') {
+				that.audio_flag = true;
+				startRecording(that.currentAnswer.testevent_id, that.currentProblem.id, window.sessionStorage.getItem('userid'), that._token );
+				that.record_start_time = that.currentProblem.limit_time - that.currentlimittime;
+				that.progressvalue = 0;
+				that.audio_visible_flag = false;
+			}
+    	};
     }
 }

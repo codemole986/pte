@@ -161,6 +161,9 @@ export class EvalexamComponent implements OnInit {
                 count: {
                 	title: "QuizCount",
                 },
+                preparation_time: {
+                	title: "PreparationTime(min)",
+                },
                 limit_time: {
                 	title: "LimitTime(min)",
                 },

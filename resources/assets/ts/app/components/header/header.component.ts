@@ -93,7 +93,6 @@ export class HeaderComponent implements OnInit {
         ).
         subscribe(
             (data) => {
-                console.log("log out");
                 window.sessionStorage.removeItem('isLoggedin');
                 window.sessionStorage.removeItem('permission');
                 this.router.navigate(['/login']);
@@ -119,7 +118,6 @@ export class HeaderComponent implements OnInit {
     }
 
     onMenuToggle(e: any) {
-        console.log("menu-toggle");
         var resBreakpointMd = Metronic.getResponsiveBreakpoint('md');
         if (Metronic.getViewPort().width < resBreakpointMd) {
             var menu = $(".page-header .page-header-menu");

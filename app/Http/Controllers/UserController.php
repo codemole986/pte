@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers;
 
@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Http\Controllers\Controller;
 use App\Notifications\SendActivationEmail;
-
 
 use DB;
 
@@ -115,6 +114,15 @@ class UserController extends Controller
         ]);
     }*/
 
+     public function login(Request $request) {
+         $user = \App::make('auth0')->getUser();
+         if (!empty($user)) {
+             return redirect('/');
+         }
+
+         return \App::make('auth0')->login(null, null, ['scope' => 'openid profile email'], 'code');
+    }
+/*
 	function login(Request $request){
 		//$this->validateLogin($request);
 
@@ -160,12 +168,20 @@ class UserController extends Controller
 
 		return response()->json($out_data, 200);
 	}
+*/
 
 	/**
      * Logout, Clear Session, and Return.
      *
      * @return void
      */
+  public function logout(Request $request) {
+    \App::make('auth0')->logout();
+    $request->session()->flush();
+    $out_data["state"] = "success";
+	  return response()->json($out_data, 200);
+  }
+/*
     public function logout(Request $request)
     {
         //Session::flush();
@@ -174,6 +190,7 @@ class UserController extends Controller
 		return response()->json($out_data, 200);		
         //return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
     }
+*/
 
 	function update(Request $request){
 		$user_data = $request->all();		

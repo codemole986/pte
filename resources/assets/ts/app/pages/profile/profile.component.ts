@@ -117,7 +117,7 @@ export class ProfileComponent implements OnInit {
                     params: {_token: this._stoken}
                 });
             } catch(e) {
-                console.log(e);
+                
             }
             this.thisDropzone.options.acceptedFiles = "image/jpeg, images/jpg, image/png";
         }, 200);
