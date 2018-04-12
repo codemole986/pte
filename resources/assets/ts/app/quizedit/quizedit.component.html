@@ -97,7 +97,7 @@
                                     </div>
                                     <div class="tab-pane active" id="tab1">
                                         <div class="row form-group has-success">
-                                                <div class="col-md-8">
+                                                <div class="col-md-6">
                                                     <input name="title" id="title" class="form-control needfull" placeholder=" * {{ 'Title' | translate }}" title="Title" [(ngModel)]="editedProblem.title" required autofocus reverse="true" maxlength="255" #title="ngModel">
                                                 <small [hidden]="title.valid || (title.pristine)" class="text-danger">
                                                     {{ 'Title is required for 1~255 chars.' | translate }}
@@ -112,8 +112,14 @@
                                                     </small>
                                                 </div> -->
                                                 <div class="col-md-2">
+                                                    <input type="number" min="0" name="preparation_time" class="form-control needfull" placeholder=" * {{ 'PreTime (s)' | translate }}" title="PreparationTime" [(ngModel)]="editedProblem.preparation_time" required reverse="true" #preparation_time="ngModel">
+                                                    <small [hidden]="preparation_time.valid || (preparation_time.pristine)" class="text-danger">
+                                                    {{ 'PreparationTime is required with number (second unit).' | translate }}
+                                                    </small>
+                                                </div>
+                                                <div class="col-md-2">
                                                     <input type="number" min="0" name="limit_time" class="form-control needfull" placeholder=" * {{ 'LimitTime (s)' | translate }}" title="LimitTime" [(ngModel)]="editedProblem.limit_time" required reverse="true" #limit_time="ngModel">
-                                                <small [hidden]="limit_time.valid || (limit_time.pristine)" class="text-danger">
+                                                    <small [hidden]="limit_time.valid || (limit_time.pristine)" class="text-danger">
                                                     {{ 'LimitTime is required with number (second unit).' | translate }}
                                                     </small>
                                                 </div>
@@ -131,15 +137,28 @@
                                             </div>
                                         </div>
                                     <div class="tab-pane" id="tab2">
-                                            <div *ngIf="editedProblem.type == 'WSM' || editedProblem.type =='WES' || editedProblem.type =='SAL' || editedProblem.type =='SRL'">
+                                            <div *ngIf="editedProblem.type == 'WSM'">
+                                                <textarea id="ck_editor" class="form-control" placeholder="{{ 'Sentences' | translate }}" title="Sentences" rows="5"></textarea>
+                                                {{createCkEditor()}}
+                                            </div>
+                                            <div *ngIf="editedProblem.type =='WES' || editedProblem.type =='SAL' || editedProblem.type =='SRL'">
                                                 <textarea name="sentences" class="form-control needfull" placeholder="{{ 'Text' | translate }}" title="Text" rows="5" [(ngModel)]="editedProblem.content.text"></textarea>
                                             </div>
                                             <div *ngIf="editedProblem.type =='SRS' || editedProblem.type =='SSA' || editedProblem.type =='LWS' || editedProblem.type =='LSA' || editedProblem.type =='LTW' || editedProblem.type =='LSB' ||  editedProblem.type =='LCD' || editedProblem.type =='LTS'">
                                                 <p>
                                                     {{ 'Select an Audio' | translate }} (mp3/wav):
                                                 </p>
-                                                <div class="dropzone" id="dzaudiofile"></div>
-                                                <hr/>   
+                                                <!-- <div class="dropzone" id="dzaudiofile"></div> -->
+                                                
+                                                <div class="row">  
+                                                    <!-- <audio id="quizaudio">
+                                                       <source src="{{editedProblem.content.audio}}" type="audio/mpeg">
+                                                    </audio>  
+                                                    <button id="btnquizaudio" class="btn default col-md-1 col-sm-1 col-xs-2" (click)="audioplay('quiz')"><i class="fa fa-play fa-fw"></i></button> -->
+                                                    <div class="col-md-12">
+                                                        <input name="quizaudiofile" id="quizaudiofile" class="form-control" placeholder="{{ 'Audio URL' | translate }}" title="Quiz Audiofile" [(ngModel)]="editedProblem.content.audio">
+                                                    </div>
+                                                </div>   
                                             </div>
                                             <div *ngIf="editedProblem.type == 'RSA'  ||  editedProblem.type =='RMA' || editedProblem.type =='SPI'">
                                                 <div *ngIf="editedProblem.type == 'RSA'  ||  editedProblem.type =='RMA'">
@@ -222,7 +241,7 @@
                                                 <table>
                                                 <tr><td style="width: 100%;">
                                                 <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeTitleSelect()" rows="10" [(ngModel)]="select_titles" style="width: 100%; height: 150px;" multiple>
-                                                    <option *ngFor="let op of editedProblem.content.list" value="{{op.title}}">{{op.title}}</option>
+                                                    <option *ngFor="let op of editedProblem.content.list" value="{{op.title}}">{{ 'Title' | translate }} : {{op.title}},  {{ 'Audio URL' | translate }} : {{op.audio}}</option>
                                                 </select>
                                                 </td><td>
                                                 <table>
@@ -236,6 +255,17 @@
                                                 </td></tr>
                                                 </table>
                                                 <div class="row" style="margin-right: 47px;">
+                                                    <div class="col-md-12 col-sm-12 col-xs-12">
+                                                        <audio id="quizaudio">
+                                                           <source src="{{strAudioURL}}" type="audio/mpeg">
+                                                        </audio>
+                                                        <div class="col-md-11 col-sm-11 col-xs-10"> 
+                                                            <input name="quizaudiofile" id="quizaudiofile" class="form-control" placeholder="{{ 'Audio URL' | translate }}" title="Quiz Audiofile" [(ngModel)]="strAudioURL">
+                                                        </div>
+                                                        <button id="btnquizaudio" class="btn default col-md-1 col-sm-1 col-xs-2" (click)="audioplay('quiz')"><i class="fa fa-play fa-fw"></i></button>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-right: 47px;">
                                                     <div class="col-md-8 col-sm-7 col-xs-12">
                                                         <input id="optionsentence" name="optionsentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence">
                                                     </div>
@@ -247,7 +277,7 @@
                                                     </div>
                                                 </div>
                                                 <hr/>
-                                                <div class="dropzone" id="dzaudiofile"></div>
+                                                <!-- <div class="dropzone" id="dzaudiofile"></div> -->
                                             </div>
                                             <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LTW'  ||  editedProblem.type == 'LCD'">
                                                 <textarea id="ck_editor" class="form-control" placeholder="{{ 'Sentences' | translate }}" title="Sentences" rows="5"></textarea>
@@ -357,14 +387,15 @@
                                             </div>
                                         </div>
                                     <div class="tab-pane" id="tab3">
-                                            <div *ngIf="editedProblem.type == 'WSM' || editedProblem.type == 'WES' || editedProblem.type == 'LWS' || editedProblem.type == 'LTS'">
+                                            <div *ngIf="editedProblem.type == 'WSM' || editedProblem.type == 'WES' || editedProblem.type == 'LWS' || editedProblem.type == 'LTS' || editedProblem.type == 'SSA'">
                                                 <textarea name="solution" class="form-control" placeholder="{{ 'Solution Sentences' | translate }}" title="Solution Sentences" rows="5" [(ngModel)]="editedProblem.solution.text"></textarea>
                                             </div>
-                                            <div *ngIf="editedProblem.type == 'SAL' || editedProblem.type == 'SRS' || editedProblem.type == 'SPI' || editedProblem.type == 'SSA' || editedProblem.type == 'SRL'">
+                                            <div *ngIf="editedProblem.type == 'SAL' || editedProblem.type == 'SRS' || editedProblem.type == 'SPI' || editedProblem.type == 'SRL'">
                                                 <p class="form-group my-2" style="width: 100%;">
                                                     {{ 'Select an Audio' | translate }} (mp3/wav): 
                                                 </p>
-                                                <div class="dropzone" id="dzsolutionfile" style="width: 100%;"></div>
+                                                <!-- <div class="dropzone" id="dzsolutionfile" style="width: 100%;"></div> -->
+                                                <input name="solutionaudiofile" id="solutionaudiofile" class="form-control" placeholder="{{ 'Audio URL' | translate }}" title="Solution Audiofile" [(ngModel)]="editedProblem.solution.audio">
                                             </div>
                                             <div *ngIf="editedProblem.type == 'RSA' || editedProblem.type == 'LSB'">
                                                 <select id="select_solution_singleoptions" name="list_sentences" class="form-control" (change)="onChangeSolutionSelect()" [(ngModel)]="select_solution_value">
@@ -393,8 +424,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                </div>
-                                </form>
+                            </div>
+                        </form>
                         <form *ngIf="editproblem" id="submit_form" novalidate #problemeditForm="ngForm">
                             <div class="form-wizard">
                             <div class="form-body">
@@ -422,9 +453,8 @@
                                     </li>
                                 </ul>
                                 <div id="bar" class="progress" role="progressbar" style="height: 3px;">
-                                    <div class="progress-bar progress-bar-success">
-                            </div>
-                        </div>
+                                    <div class="progress-bar progress-bar-success"></div>
+                                </div>
                                 <div class="tab-content">
                                     <div class="alert alert-danger display-none">
                                         <button class="close" data-dismiss="alert"></button>
@@ -479,16 +509,17 @@
                                             </p>                            
                                             <fieldset class="form-group my-6">
                                                 <div class="row">
-                                                            <div class="col-md-4" style="padding-left: 1em;">
-                                                        <audio controls="false" autoplay="{{audio_autoplay}}" onpause="">
-                                                           <source src="/upload/q2/{{editedProblem.id}}/{{editedProblem.content.audio}}" type="audio/mpeg">
+                                                    <div class="col-md-12" style="padding-left: 1em;">
+                                                        <audio id="quizaudio">
+                                                           <source src="{{editedProblem.content.audio}}" type="audio/mpeg">
                                                         </audio>
-                                                        <input type="text" class="form-control" title="already uploaded filename" value="{{editedProblem.content.audio}}" disabled>
-                                                    </div>
-                                                            <div class="col-md-8">                                        
-                                                        <div class="dropzone" id="dzaudiofile"></div>
-                                                    <hr/> 
-                                                    </div>
+                                                        <div class="row">    
+                                                            <button id="btnquizaudio" class="btn default col-md-1 col-sm-1 col-xs-2" (click)="audioplay('quiz')"><i class="fa fa-play fa-fw"></i></button>
+                                                            <div class="col-md-11 col-sm-11 col-xs-10"> 
+                                                                <input name="quizaudiofile" id="quizaudiofile" class="form-control" placeholder="{{ 'Audio URL' | translate }}" title="Quiz Audiofile" [(ngModel)]="editedProblem.content.audio">
+                                                            </div>             
+                                                        </div>
+                                                    </div>    
                                                 </div>
                                             </fieldset>                            
                                         </div>                        
@@ -534,33 +565,33 @@
                                             </div>
                                         </div>
                                         <div *ngIf="editedProblem.type == 'LSA' || editedProblem.type == 'LSB'">
-                                                    <textarea name="select_guide" class="form-control" name="list_content_sentences" placeholder="Guide for multiple-choice" title="Guide for multiple-choice" rows="2" [(ngModel)]="editedProblem.content.select.guide"></textarea>
+                                            <textarea name="select_guide" class="form-control" name="list_content_sentences" placeholder="Guide for multiple-choice" title="Guide for multiple-choice" rows="2" [(ngModel)]="editedProblem.content.select.guide"></textarea>
                                             <label style="margin-top: 10px;"> {{ 'List of candidates' | translate }} </label>
-                                                    <select id="select_options" name="list_content_sentences" class="form-control" (change)="onChangeProbSelect()" [(ngModel)]="select_problem_values" multiple style="height: 150px;">
+                                            <select id="select_options" name="list_content_sentences" class="form-control" (change)="onChangeProbSelect()" [(ngModel)]="select_problem_values" multiple style="height: 150px;">
                                                 <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}">{{op}}</option>
                                             </select>
-                                                    <div class="row">
-                                                        <div class="col-md-8 col-sm-7 col-xs-12">
-                                                            <input id="option_sentence" name="optionSentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence">
-                                                        </div>
-                                                        <div class="col-md-4 col-sm-5 col-xs-12 right-btn">
-                                                            <button class="btn btn-sm btn-success btn-group" type="button" (click)="onAddOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
-                                                            <button id="btnEditOption" class="btn btn-sm btn-success btn-group" type="button" (click)="onEditOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
-                                                            <button id="btnChangeOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onChangeOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
-                                                            <button id="btnDeleteOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onDeleteOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
-                                                        </div>
+                                            <div class="row">
+                                                <div class="col-md-8 col-sm-7 col-xs-12">
+                                                    <input id="option_sentence" name="optionSentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence">
+                                                </div>
+                                                <div class="col-md-4 col-sm-5 col-xs-12 right-btn">
+                                                    <button class="btn btn-sm btn-success btn-group" type="button" (click)="onAddOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                    <button id="btnEditOption" class="btn btn-sm btn-success btn-group" type="button" (click)="onEditOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                    <button id="btnChangeOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onChangeOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                    <button id="btnDeleteOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onDeleteOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                                </div>
                                             </div>
                                         </div>
-                                <div *ngIf="editedProblem.type == 'RRO'">
-                                    <label> {{ 'List of target' | translate }} </label>
-                                        <table>
-                                        <tr><td style="width: 100%;">
+                                        <div *ngIf="editedProblem.type == 'RRO'">
+                                            <label> {{ 'List of target' | translate }} </label>
+                                                <table>
+                                                <tr><td style="width: 100%;">
                                                     <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeProbSelect()" rows="10" [(ngModel)]="select_problem_values" style="height: 150px; width: 100%;" multiple>
-                                            <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}">{{op}}</option>
-                                        </select>
-                                        </td><td>
-                                        <table>
-                                                        <tr><td style="padding: 5px;">
+                                                        <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}">{{op}}</option>
+                                                    </select>
+                                                </td><td>
+                                                <table>
+                                                <tr><td style="padding: 5px;">
                                             <button class="btn btn-sm btn-success" type="button" (click)="onUpOption()"><i class="fa fa-chevron-up fa-fw"></i></button>
                                         </td></tr>
                                                         <tr><td style="padding: 5px;">
@@ -587,7 +618,7 @@
                                         <table>
                                         <tr><td style="width: 100%;">
                                                     <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeTitleSelect()" rows="10" [(ngModel)]="select_titles" style="width: 100%; height: 150px;" multiple>
-                                            <option *ngFor="let op of editedProblem.content.list" value="{{op.title}}">{{op.title}}</option>
+                                            <option *ngFor="let op of editedProblem.content.list" value="{{op.title}}">{{ 'Title' | translate }} : {{op.title}},  {{ 'Audio URL' | translate }} : {{op.audio}}</option>
                                         </select>
                                         </td><td>
                                         <table>
@@ -601,31 +632,26 @@
                                         </td></tr>
                                         </table>
                                             <div class="row" style="margin-right: 47px;">
-                                                <div class="col-md-8 col-sm-7 col-xs-12">
-                                                <input id="optionsentence" name="optionsentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence">
-                                    </div>
-                                                <div class="col-md-4 col-sm-5 col-xs-12 right-btn">
-                                                    <button class="btn btn-sm btn-success btn-group" type="button" (click)="onAddTitleOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
-                                                    <button id="btnEditOption" class="btn btn-sm btn-success btn-group" type="button" (click)="onEditTitleOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
-                                                    <button id="btnChangeOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onChangeTitleOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
-                                                    <button id="btnDeleteOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onDeleteTitleOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
-                                    </div>
-
-                                    <fieldset class="form-group my-6">
-                                        <div class="row">
-                                                        <div class="col-md-4" style="padding-left: 1em;">
-                                                <div *ngFor="let item of editedProblem.content.list">
-                                                    <audio controls="false" autoplay="{{audio_autoplay}}" onpause="">
-                                                       <source src="/upload/q2/{{editedProblem.id}}/{{item.audio}}" type="audio/mpeg">
+                                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                                    <audio id="quizaudio">
+                                                       <source src="{{strAudioURL}}" type="audio/mpeg">
                                                     </audio>
-                                                    <input type="text" class="form-control" title="already uploaded filename" value="{{item.audio}}" disabled>
+                                                    <div class="col-md-11 col-sm-11 col-xs-10"> 
+                                                        <input name="quizaudiofile" id="quizaudiofile" class="form-control" placeholder="{{ 'Audio URL' | translate }}" title="Quiz Audiofile" [(ngModel)]="strAudioURL">
+                                                    </div>
+                                                    <button id="btnquizaudio" class="btn default col-md-1 col-sm-1 col-xs-2" (click)="audioplay('quiz')"><i class="fa fa-play fa-fw"></i></button>
                                                 </div>
                                             </div>
-                                                        <div class="col-md-8">
-                                                <div class="dropzone" id="dzaudiofile"></div>
+                                            <div class="row" style="margin-right: 47px;">
+                                                <div class="col-md-8 col-sm-7 col-xs-12">
+                                                <input id="optionsentence" name="optionsentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence">
                                             </div>
-                                        </div>
-                                    </fieldset>
+                                            <div class="col-md-4 col-sm-5 col-xs-12 right-btn">
+                                                <button class="btn btn-sm btn-success btn-group" type="button" (click)="onAddTitleOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
+                                                <button id="btnEditOption" class="btn btn-sm btn-success btn-group" type="button" (click)="onEditTitleOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
+                                                <button id="btnChangeOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onChangeTitleOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
+                                                <button id="btnDeleteOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onDeleteTitleOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
+                                            </div>
                                     <hr/>
                                 </div>
                                         </div>
@@ -738,24 +764,24 @@
                                 </div>
                             </div>
                                     <div class="tab-pane" id="tab3">
-                                <div *ngIf="editedProblem.type == 'WSM' || editedProblem.type == 'WES' || editedProblem.type == 'LWS' || editedProblem.type == 'LTS'">
+                                <div *ngIf="editedProblem.type == 'WSM' || editedProblem.type == 'WES' || editedProblem.type == 'LWS' || editedProblem.type == 'LTS' || editedProblem.type == 'SSA'">
                                     <textarea name="solution" class="form-control" placeholder="{{ 'Solution Sentences' | translate }}" title="Solution Sentences" rows="5" [(ngModel)]="editedProblem.solution.text"></textarea>
                                 </div>
-                                        <div *ngIf="editedProblem.type == 'SAL' || editedProblem.type == 'SRS' || editedProblem.type == 'SPI' || editedProblem.type == 'SSA' || editedProblem.type == 'SRL'">
+                                        <div *ngIf="editedProblem.type == 'SAL' || editedProblem.type == 'SRS' || editedProblem.type == 'SPI'">
                                         <p class="form-group my-2" style="width: 100%;">
                                             {{ 'Select an Audio' | translate }} (mp3/wav): 
                                         </p>
                                         <fieldset class="form-group col-lg-12">
                                         	<div class="row">
-                                                    <div class="col-md-4" style="padding-left: 1em;">
-                                                    <audio controls="false" autoplay="{{audio_autoplay}}" onpause="">
-                                                       <source src="/upload/s0/{{editedProblem.id}}/{{editedProblem.solution.audio}}" type="audio/mpeg">
-                                                    </audio>
-        	                                        <input type="text" class="form-control" title="already uploaded filename" value="{{editedProblem.solution.audio}}" disabled>
-        	                                    </div>
-                                                    <div class="col-md-8">
-                                                <div class="dropzone" id="dzsolutionfile"></div>
-        	                                    </div>
+                                                <audio id="solutionaudio">
+                                                   <source src="{{editedProblem.solution.audio}}" type="audio/mpeg">
+                                                </audio>
+
+                                                <button id="btnsolutionaudio" class="btn default col-md-1 col-sm-1 col-xs-2" (click)="audioplay('solution')"><i class="fa fa-play fa-fw"></i></button>
+                                                <div class="col-lg-11 col-md-11 col-sm-11 col-xs-10">    
+        	                                       <input name="solutionaudiofile" id="solutionaudiofile" class="form-control" placeholder="{{ 'Audio URL' | translate }}" title="Solution Audiofile" [(ngModel)]="editedProblem.solution.audio">
+                                                </div>
+        	                                    
         	                                </div>
                                         </fieldset> 
                                     </div>

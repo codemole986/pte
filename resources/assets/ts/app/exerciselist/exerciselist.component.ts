@@ -112,6 +112,7 @@ export class ExerciselistComponent implements OnInit, OnDestroy {
                     }
                 },
                 {title: "Title", data:"title"}, 
+                {title: "PreparationTime(s)", data:"preparation_time", format:"number", class:"right"},
                 {title: "LimitTime(s)", data:"limit_time", format:"number", class:"right"},
                 //{title: "Mark", data:"evaluate_mark", format:"number", class:"right"}, 
             ], 

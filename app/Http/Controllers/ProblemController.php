@@ -13,7 +13,7 @@ class ProblemController extends Controller
 		$category = isset($request->category)?$request->category:'Writing';
 		$cond = isset($request->cond)?$request->cond:'All';
 
-		$fieldnames = array('id','category', 'type', 'title', 'limit_time', 'points', 'created_at');
+		$fieldnames = array('id','category', 'type', 'title', 'preparation_time', 'limit_time', 'points', 'created_at');
 		try {
 			if($cond == 'All') {
 				$problems = DB::table('quiz_problems')	
@@ -122,7 +122,7 @@ class ProblemController extends Controller
 			$problems = DB::table('quiz_problems');
 			if($userinfo->permission == 'A' || $userinfo->permission == 'B') {
 				$str_query = DB::table('quiz_problems')
-						->addSelect(array('id', 'title', 'limit_time', 'status'))
+						->addSelect(array('id', 'title', 'preparation_time', 'limit_time', 'status'))
 						->where("type", $qtype);
 				if(!empty($search)){
 					$str_query->where("title", 'like', "%".$search["value"]."%");
@@ -131,7 +131,7 @@ class ProblemController extends Controller
 						->paginate($limit_count, ['*'], 'page', $page_num);	
 			} else {
 				$str_query = DB::table('quiz_problems')
-						->addSelect(array('id', 'title', 'limit_time'))						
+						->addSelect(array('id', 'title', 'preparation_time', 'limit_time'))						
 						->where(array("type"=>$qtype, 'status'=>1));
 				if(!empty($search)){
 					$str_query->where("title", 'like', "%".$search["value"]."%");
@@ -302,6 +302,7 @@ class ProblemController extends Controller
 			//'degree'=> 'required',
 			'title'=> 'required',
 			'guide'=> 'required',
+			'preparation_time'=> 'required',
 			'limit_time'=> 'required',
 			'evaluate_mode'=> 'required',
 			'points'=> 'required',
@@ -347,6 +348,7 @@ class ProblemController extends Controller
 			//'degree'=> 'required',
 			'title'=> 'required',
 			'guide'=> 'required',
+			'preparation_time'=> 'required',
 			'limit_time'=> 'required',
 			'evaluate_mode'=> 'required',
 			'points'=> 'required',

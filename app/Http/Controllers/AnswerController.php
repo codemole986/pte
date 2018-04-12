@@ -256,9 +256,13 @@ class AnswerController extends Controller
 		$answer_data = $request->all();
 		$data = substr($answer_data['data'], strpos($answer_data['data'], ",") + 1);
 		
+		/*$fp = fopen("1.txt", "aw+");
+		fwrite($fp, "mp3data = ".$data);
+		fclose($fp);
+		*/
 		$upload_root_path = dirname( __FILE__ ) . DIRECTORY_SEPARATOR ."../../../public/recordings";	
-		$answer_dir = "a1";
-	    $qid = isset($answer_data["quizid"])?$answer_data["quizid"]:0;	
+
+		$qid = isset($answer_data["quizid"])?$answer_data["quizid"]:0;	
 	    $tevent_id = isset($answer_data["testid"])?$answer_data["testid"]:0;	
 
 	    if($tevent_id == 0) {
@@ -272,19 +276,7 @@ class AnswerController extends Controller
 	   	}	
 			   	
 
-		/*if($request->hasFile('data')) {	
-			if($request->hasFile('data')) {
-				foreach ($request->file('data') as $file) {
-					$file->move($answer_upload_dir, $file->getClientOriginalName());
-				}	
-			}					
-			$answer = array( 'status' => 'Success');    
-		} else {
-		    $answer = array( 'status' => 'Error', 'message' => 'No Files' );
-		}*/
-
 		$decodedData = base64_decode($data);
-		//$filename = 'speaking-' . date( 'Y-m-d-H-i-s' ) .'.mp3';
 		$filename = sprintf("%d-%s",$qid, $answer_data["fname"]);
 
 		// write the data out to the file

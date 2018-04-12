@@ -7,11 +7,15 @@
     var config = cfg || {};
     var bufferLen = config.bufferLen || 4096;
     var numChannels = config.numChannels || 2;
+
     this.context = source.context;
     this.node = (this.context.createScriptProcessor ||
                  this.context.createJavaScriptNode).call(this.context,
                  bufferLen, numChannels, numChannels);
+
     var worker = new Worker(config.workerPath || WORKER_PATH);
+
+    
     worker.postMessage({
       command: 'init',
       config: {
@@ -44,8 +48,7 @@
     }
 
     this.record = function(){
-		//console.log("baron record");
-      	recording = true;
+		recording = true;
     }
 
     this.stop = function(){
@@ -73,14 +76,16 @@
 
 	//Mp3 conversion
     worker.onmessage = function(e){
+    	
       var blob = e.data;
-	  //console.log("the blob " +  blob + " " + blob.size + " " + blob.type);
-
+	  
 	  var arrayBuffer;
 	  var fileReader = new FileReader();
 
 	  fileReader.onload = function(){
+	  	
 		arrayBuffer = this.result;
+		
 		var buffer = new Uint8Array(arrayBuffer),
         data = parseWav(buffer);
 
@@ -96,32 +101,18 @@
         encoderWorker.onmessage = function(e) {
             if (e.data.cmd == 'data') {
 
-				//console.log("Converting to Mp3-format...");
-				//log.innerHTML += "\n" + "Success";
-
 				/*var audio = new Audio();
 				audio.src = 'data:audio/mp3;base64,'+encode64(e.data.buf);
 				audio.play();*/
-
-				//console.log ("The Mp3 data " + e.data.buf);
-
-				var mp3Blob = new Blob([new Uint8Array(e.data.buf)], {type: 'audio/mp3'});
-				//uploadAudio(mp3Blob);
-				uploadAudio2(mp3Blob);
-
-				/*var url = 'data:audio/mp3;base64,'+encode64(e.data.buf);
-				var li = document.createElement('li');
+				$('#divselfaudiosource').html("");
 				var au = document.createElement('audio');
-				var hf = document.createElement('a');
-
 				au.controls = true;
-				au.src = url;
-				hf.href = url;
-				hf.download = 'speaking-' + new Date().getTime() + '.mp3';
-				hf.innerHTML = hf.download;
-				li.appendChild(au);
-				li.appendChild(hf);
-				recordingslist.appendChild(li);*/
+				au.controlsList = "nodownload";
+				au.src = 'data:audio/mp3;base64,'+encode64(e.data.buf);
+				document.getElementById('divselfaudiosource').appendChild(au);
+				
+				/*var mp3Blob = new Blob([new Uint8Array(e.data.buf)], {type: 'audio/mp3'});
+				uploadAudio2(mp3Blob);*/
 
             }
         };
@@ -176,45 +167,12 @@
 		return f32Buffer;
 	}
 
-	function uploadAudio(mp3Data){
-		var reader = new FileReader();
-		reader.onload = function(event){
-			var fd = new FormData();
-			var mp3Name = encodeURIComponent('speaking-' + new Date().getTime() + '.mp3');
-			fd.append('fname', mp3Name);
-			fd.append('data', event.target.result);
-			fd.append('testid', record_test_id);
-			fd.append('quizid', record_quiz_id);
-			fd.append('userid', record_user_id);
-			$.ajax({
-				type: 'POST',
-				url: '/uploadaudio.php',
-				data: fd,
-				processData: false,
-				contentType: false
-			}).done(function(data) {
-				alert("audio-file saved.");
-				/*var odata = JSON.parse(data);
-				$.ajax({
-					type: 'POST',
-					url: '/answer/updateanseraudio',
-					data: odata["filename"],
-					processData: false,
-					contentType: false
-				}).done(function(data) {
-					
-					//console.log(data);
-					//log.innerHTML += "\n" + data;
-				});*/
-			});
-		};
-		reader.readAsDataURL(mp3Data);
-	}
-
 	function uploadAudio2(mp3Data){
 		var reader = new FileReader();
 		reader.onload = function(event){
-			var fd = new FormData();
+			
+
+			/*var fd = new FormData();
 			var mp3Name = encodeURIComponent('speaking-' + new Date().getTime() + '.mp3');
 			fd.append('fname', mp3Name);
 			fd.append('data', event.target.result);
@@ -233,15 +191,20 @@
 				if(res.status == "Success") {
 					var saudio_src = "";
 					if(record_test_id == 0) {
-						saudio_src = "/recording/"+record_user_id+"/"+record_quiz_id+"/"+record_quiz_id+"_"+mp3Name;
+						saudio_src = "/recordings/"+record_user_id+"/"+record_quiz_id+"/"+record_quiz_id+"-"+mp3Name;
 					} else {
-						saudio_src = "/recording/"+record_test_id+"/"+record_quiz_id+"/"+record_quiz_id+"_"+mp3Name;
+						saudio_src = "/recordings/"+record_test_id+"/"+record_quiz_id+"/"+record_quiz_id+"-"+mp3Name;
 					}
-					$('#selfaudiosource').attr("src", saudio_src);	
+					
+					var au = document.createElement('audio');
+					au.controls = true;
+					au.src = saudio_src;
+					document.getElementById('divselfaudiosource').appendChild(au);
+									
 				} else {
 					alert("audio-file upload fail.");	
 				}
-			});
+			});*/
 		};
 		reader.readAsDataURL(mp3Data);
 	}
@@ -250,17 +213,7 @@
     this.node && this.node.connect(this.context.destination);    //this should not be necessary
   };
 
-  /*Recorder.forceDownload = function(blob, filename){
-	console.log("Force download");
-    var url = (window.URL || window.webkitURL).createObjectURL(blob);
-    var link = window.document.createElement('a');
-    link.href = url;
-    link.download = filename || 'output.wav';
-    var click = document.createEvent("Event");
-    click.initEvent("click", true, true);
-    link.dispatchEvent(click);
-  }*/
-
+  
   window.Recorder = Recorder;
 
 })(window);

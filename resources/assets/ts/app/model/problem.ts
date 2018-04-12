@@ -8,6 +8,7 @@ export class Problem {
   content: any;
   solution: any;
   answer: string;
+  preparation_time: number;
   limit_time: number;
   evaluate_mode: string;
   points: number;

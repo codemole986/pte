@@ -1,10 +1,10 @@
 span.Clicked {
 	background-color: #ff0;
 }
-span.Wrong {
-	color: #0f0;
+.Wrong {
+	color: #aaa;
 }
-span.Correct {
+.Correct {
 	color: #f00;
 }
 .form .form-body {

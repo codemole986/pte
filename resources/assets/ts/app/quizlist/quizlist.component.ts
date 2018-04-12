@@ -113,14 +113,15 @@ export class QuizlistComponent implements OnInit, OnDestroy {
             }],
             
             columns:[
-                {title: "Category", data:"category", class:"center"},                
-                {title: "Type", data:"type", class:"left"}, 
+                {title: "Category", data:"category", class:"center", searchable:"false"},                
+                {title: "Type", data:"type", class:"left", searchable:"false"}, 
                 //{title: "Degree", data:"degree"}, 
-                {title: "Title", data:"title", class:"left"}, 
-                {title: "LimitTime(s)", data:"limit_time", class:"right"}, 
+                {title: "Title", data:"title", class:"left", searchable:"false"}, 
+                {title: "PreparationTime(s)", data:"preparation_time", class:"right", searchable:"false"},
+                {title: "LimitTime(s)", data:"limit_time", class:"right", searchable:"false"}, 
                 //{title: "Points", data:"points", class:"right"}, 
-                {title: "Creater", data:"email", class:"left"}, 
-                {title: "Action", class:"center", render: function(data: any, type: any, row: any){
+                {title: "Creater", data:"email", class:"left", searchable:"false"}, 
+                {title: "Action", class:"center", searchable:"false", render: function(data: any, type: any, row: any){
                     var str_previewquiz = '<a href="javascript:;" id="quizpreview_'+row.id+'" style="font-size: 18px; margin-right: 5px;"><i class="fa fa-play fa-fw"></i></a>';
 
                     var str_editquiz = '<a href="javascript:;" id="quizedit_'+row.id+'" style="font-size: 18px; margin-right: 5px;"><i class="fa fa-edit fa-fw"></i></a>';
@@ -129,7 +130,6 @@ export class QuizlistComponent implements OnInit, OnDestroy {
 
                     setTimeout(function(){
                         $('#quizpreview_'+row.id).on('click', function(e:any) {
-                            console.log("call quizpreview");
                             that.router.navigate(['/quiz', row.id]);
                         });
 
@@ -138,7 +138,6 @@ export class QuizlistComponent implements OnInit, OnDestroy {
                         });
 
                         $('#del_'+row.id).on('click', function(e:any) {
-                            console.log("call delete");
                             that.translate.stream("Are you sure you want to delete?").subscribe((res: any) => {
                                 bootbox.confirm(res, function(result: any){
                                    if(result) {

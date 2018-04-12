@@ -116,7 +116,6 @@ export class HeaderComponent implements OnInit {
     }
 
     onMenuToggle(e: any) {
-        console.log("menu-toggle");
         var resBreakpointMd = Metronic.getResponsiveBreakpoint('md');
         if (Metronic.getViewPort().width < resBreakpointMd) {
             var menu = $(".page-header .page-header-menu");

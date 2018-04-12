@@ -42,6 +42,7 @@
     "Good Feedbacks" : "Good Feedbacks",
     "Evaluate Problems" : "Evaluate Problems",
     "Title" : "Title",
+    "PreTime (s)" : "PreTime (s)",
     "LimitTime (s)" : "LimitTime (s)",
     "Guide" : "Guide",
     "Text" : "Text",
@@ -135,8 +136,10 @@
     "View" : "View",
     "Delete" : "Delete",
     "Start recording" : "Start recording",
+    "Stop recording" : "Stop recording",
     "Exit" : "Exit",
     "Self Exam" : "Self Exam",
+    "Preparation Time" : "Preparation Time",
     "Remain Time" : "Remain Time",
     "Can't Delete the row." : "Can't Delete the row.",
     "Are you sure you want to delete?" : "Are you sure you want to delete?",
@@ -228,6 +231,7 @@
     "Settings of a Problem" : "Settings of a Problem",
     "Title is required for 1~255 chars." : "Title is required for 1~255 chars.",
     "Degree is required." : "Degree is required.",
+    "PreparationTime is required with number (second unit)." : "PreparationTime is required with number (second unit).",
     "LimitTime is required with number (second unit)." : "LimitTime is required with number (second unit).",
     "Points is required for number(marks)." : "Points is required for number(marks).",
     "You have some form errors. Please check below." : "You have some form errors. Please check below.",
@@ -263,5 +267,10 @@
     "Select QuizType field." : "Select QuizType field.",
     "Select QuizDegree field." : "Select QuizDegree field.",
     "Select QuizCount field with Integer." : "Select QuizCount field with Integer.",
-    "Test Manage" : "Test Manage"
+    "Test Manage" : "Test Manage",
+    "Audio URL" : "Audio URL",
+    "Word count" : "Word count",
+    "Download answer text" : "Download answer text",
+    "Audio URL" : "Audio URL",
+    "Converting to Mp3..." : "Converting to Mp3..."
 }

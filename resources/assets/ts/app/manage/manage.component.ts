@@ -258,7 +258,6 @@ export class ManageComponent implements OnInit, OnDestroy {
 			map(
 				(response) => response.json()
 			).subscribe((data) => {
-				console.log(data);
 				if(data.state == "error") {
 			    	Metronic.showErrMsg(data.message);
 				} else {

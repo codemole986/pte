@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +26,8 @@ Route::get('/signup', function() { return view('index'); } );
 Route::get('/manage', function() { return view('index'); } );
 
 Route::get('/quizlist', function() { return view('index'); } );
+
+Route::get('/quiz/{id}', function() { return view('index'); } );
 
 Route::get('/quizedit/{add}/{category}/{type}', function() { return view('index'); } );
 

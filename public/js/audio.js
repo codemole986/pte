@@ -9,7 +9,8 @@
     function startUserMedia(stream) {
       if(audio_context!=null) {
         var input = audio_context.createMediaStreamSource(stream);
-        recorder = new Recorder(input, { numChannels: 1 });    
+        recorder = new Recorder(input, { numChannels: 1 }); 
+        recorder && recorder.record();       
       } 
     }
 
@@ -19,7 +20,7 @@
       record_user_id = uid;
       record_token = tkn;
       enableaudiorecord();
-      recorder && recorder.record();    
+      
     }
 
     function stopRecording() {
@@ -33,12 +34,14 @@
     }
 
     function createDownloadLink() {
-      recorder && recorder.exportWAV(function(blob) { });
+      recorder && recorder.exportWAV(function(blob) { 
+        
+      });
     }
 
     function enableaudiorecord() {
       audio_context = new AudioContext;
-      navigator.getUserMedia({audio: true}, startUserMedia, function(e) { });
+      navigator.getUserMedia({audio: true}, startUserMedia, function(e) { });      
     }
 
     function disableaudiorecord() {

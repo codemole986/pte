@@ -178,6 +178,7 @@ export class TeacherComponent extends DashboardComponent implements OnInit {
             columns:[
                 {title: "Title", data:"title"},
                 {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
+                {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                 //{title: "Points", data:"points"},
                 {title: "Date", data:"created_at"},
             ], 
@@ -210,6 +211,7 @@ export class TeacherComponent extends DashboardComponent implements OnInit {
             
             columns:[
                 {title: "Title", data:"title"},
+                {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                 {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                 //{title: "Points", data:"points"},
                 {title: "Date", data:"created_at"},
@@ -243,6 +245,7 @@ export class TeacherComponent extends DashboardComponent implements OnInit {
             
             columns:[
                 {title: "Title", data:"title"},
+                {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                 {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                 //{title: "Points", data:"points"},
                 {title: "Date", data:"created_at"},
@@ -276,6 +279,7 @@ export class TeacherComponent extends DashboardComponent implements OnInit {
             
             columns:[
                 {title: "Title", data:"title"},
+                {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                 {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                 //{title: "Points", data:"points"},
                 {title: "Date", data:"created_at"},
@@ -448,6 +452,7 @@ export class OverviewComponent extends DashboardComponent implements OnInit {
                 columns:[
                     //{title: "ID", data:"id", "visible": false}, 
                     {title: "Title", data:"title"},
+                    {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                     {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                     //{title: "Points", data:"points"},
                 ], 
@@ -481,6 +486,7 @@ export class OverviewComponent extends DashboardComponent implements OnInit {
                 columns:[
                     //{title: "ID", data:"id", "visible": false}, 
                     {title: "Title", data:"title"},
+                    {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                     {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                     //{title: "Points", data:"points"},
                 ], 
@@ -514,6 +520,7 @@ export class OverviewComponent extends DashboardComponent implements OnInit {
                 columns:[
                     //{title: "ID", data:"id", "visible": false}, 
                     {title: "Title", data:"title"},
+                    {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                     {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                     //{title: "Points", data:"points"},
                 ], 
@@ -547,6 +554,7 @@ export class OverviewComponent extends DashboardComponent implements OnInit {
                 columns:[
                     //{title: "ID", data:"id", "visible": false}, 
                     {title: "Title", data:"title"},
+                    {title: "Pre Time", data:"preparation_time", class: "right", width:105, "visible": true},
                     {title: "Limit Time", data:"limit_time", class: "right", width:105, "visible": true},
                     //{title: "Points", data:"points"},
                 ], 
@@ -693,6 +701,7 @@ export class DashStudentComponent extends DashboardComponent implements OnInit {
                 columns:[
                     //{title: "ID", data:"id", "visible": false}, 
                     {title: "Title", data:"title"},
+                    {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                     {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                     //{title: "Points", data:"points"},
                 ], 
@@ -726,6 +735,7 @@ export class DashStudentComponent extends DashboardComponent implements OnInit {
                 columns:[
                     //{title: "ID", data:"id", "visible": false}, 
                     {title: "Title", data:"title"},
+                    {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                     {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                     //{title: "Points", data:"points"},
                 ], 
@@ -759,6 +769,7 @@ export class DashStudentComponent extends DashboardComponent implements OnInit {
                 columns:[
                     //{title: "ID", data:"id", "visible": false}, 
                     {title: "Title", data:"title"},
+                    {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                     {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                     //{title: "Points", data:"points"},
                 ], 
@@ -792,6 +803,7 @@ export class DashStudentComponent extends DashboardComponent implements OnInit {
                 columns:[
                     //{title: "ID", data:"id", "visible": false}, 
                     {title: "Title", data:"title"},
+                    {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                     {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                     //{title: "Points", data:"points"},
                 ], 
@@ -924,6 +936,7 @@ export class DashManageComponent extends DashboardComponent implements OnInit {
             
             columns:[
                 {title: "Title", data:"title"},
+                {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                 {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                 //{title: "Points", data:"points"},
                 {title: "Date", data:"created_at"},
@@ -957,6 +970,7 @@ export class DashManageComponent extends DashboardComponent implements OnInit {
             
             columns:[
                 {title: "Title", data:"title"},
+                {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                 {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                 //{title: "Points", data:"points"},
                 {title: "Date", data:"created_at"},
@@ -990,6 +1004,7 @@ export class DashManageComponent extends DashboardComponent implements OnInit {
             
             columns:[
                 {title: "Title", data:"title"},
+                {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                 {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                 //{title: "Points", data:"points"},
                 {title: "Date", data:"created_at"},
@@ -1023,6 +1038,7 @@ export class DashManageComponent extends DashboardComponent implements OnInit {
             
             columns:[
                 {title: "Title", data:"title"},
+                {title: "Pre Time", data:"preparation_time", "class": "right", width:105, "visible": true},
                 {title: "Limit Time", data:"limit_time", "class": "right", width:105, "visible": true},
                 //{title: "Points", data:"points"},
                 {title: "Date", data:"created_at"},
