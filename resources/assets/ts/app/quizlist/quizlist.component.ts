@@ -68,15 +68,33 @@ export class QuizlistComponent implements OnInit, OnDestroy {
             }       
         });
 
+        $("#searchcategory").on('change', function(){
+            $("#searchtype").data("select2").data('');
+        });
+
         $("#searchtype").select2({
             allowClear: true,
             width: 250,
             minimumInputLength: 0,
             placeholder: "Select a Category",
             query: function (query: any) {
-                var data = {
-                    results: that.globalService.problemTypes[$('#searchcategory').val()]
+                var data;
+                data = {
+                    results: []
                 };
+                if($('#searchcategory').val()==''){
+                    var def_cat = ['Writing', 'Listening', 'Reading', 'Speaking'];
+                    if(def_cat instanceof Array) {
+                        for (var i=0; i < def_cat.length; i++) {
+                            data.results = data.results.concat( that.globalService.problemTypes[ def_cat[i] ] );
+                        }
+                    }
+                    
+                } else {
+                    data = {
+                        results: that.globalService.problemTypes[$('#searchcategory').val()]
+                    };
+                }
                 query.callback(data);
             }       
         });
@@ -121,7 +139,7 @@ export class QuizlistComponent implements OnInit, OnDestroy {
                 {title: "LimitTime(s)", data:"limit_time", class:"right", searchable:"false"}, 
                 //{title: "Points", data:"points", class:"right"}, 
                 {title: "Creater", data:"email", class:"left", searchable:"false"}, 
-                {title: "Action", class:"center", searchable:"false", render: function(data: any, type: any, row: any){
+                {title: "Action", class:"center", searchable:"false", width:"100", render: function(data: any, type: any, row: any){
                     var str_previewquiz = '<a href="javascript:;" id="quizpreview_'+row.id+'" style="font-size: 18px; margin-right: 5px;"><i class="fa fa-play fa-fw"></i></a>';
 
                     var str_editquiz = '<a href="javascript:;" id="quizedit_'+row.id+'" style="font-size: 18px; margin-right: 5px;"><i class="fa fa-edit fa-fw"></i></a>';

@@ -172,6 +172,25 @@ export class QuizeditComponent implements OnInit, OnDestroy {
 
 	}
 	
+
+    testpreparationtimevalue(max: number){
+        if(this.editedProblem.preparation_time > max) {
+            this.editedProblem.preparation_time = max;
+        }
+    }
+
+    testlimittimevalue(max: number){
+        if(this.editedProblem.limit_time > max) {
+            this.editedProblem.limit_time = max;
+        }
+    }
+
+    testpointsvalue(max: number){
+        if(this.editedProblem.points > max) {
+            this.editedProblem.points = max;
+        }
+    }
+
     showEditProblemForm() {        
 		this.newproblem = false;
 		this.editproblem = true;

@@ -300,6 +300,18 @@ export class TestComponent implements OnInit {
         Metronic.init();
 	}
 
+    testtotalmarksvalue(max: number){
+        if(this.curselectedTest.totalmarks > max) {
+            this.curselectedTest.totalmarks = max;
+        }
+    }
+
+    testlimittimevalue(max: number){
+        if(this.curselectedTest.limit_time > max) {
+            this.curselectedTest.limit_time = max;
+        }
+    }
+
     goTestingRoom() {
         if( this.curselectedrowid == 0 ) {
             this.translate.stream("Select test row.").subscribe((res: any) => {

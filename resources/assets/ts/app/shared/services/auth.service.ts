@@ -26,6 +26,7 @@ export class AuthService {
       )
       .subscribe(
         (data) => {
+          console.log(data);
           window.sessionStorage.clear();
           // this.router.navigateByUrl('/');
           window.location.pathname = '/';
