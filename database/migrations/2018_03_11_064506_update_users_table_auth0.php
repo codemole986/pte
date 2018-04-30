@@ -16,7 +16,7 @@ class UpdateUsersTableAuth0 extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->string('auth0id')->unique();
 
-            //$table->dropColumn('password');
+            $table->dropColumn('password');
             $table->dropColumn('remember_token');
         });
     }
@@ -31,7 +31,6 @@ class UpdateUsersTableAuth0 extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('auth0id');
 
-            //$table->string('password');
             $table->rememberToken();
         });
     }

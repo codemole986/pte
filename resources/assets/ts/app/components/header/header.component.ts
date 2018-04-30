@@ -4,6 +4,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import 'rxjs/add/operator/map';
 
+import { AuthService } from './../../shared';
+
 declare var $:any;
 declare var Metronic: any;
 
@@ -27,7 +29,7 @@ export class HeaderComponent implements OnInit {
     
     langflag: string;
 
-    constructor(private http: Http, public translate: TranslateService, public router: Router) {
+    constructor(private http: Http, public translate: TranslateService, public router: Router, private authService: AuthService) {
         this.translate.addLangs(['en', 'zh']);
         this.translate.setDefaultLang('en');
         //const browserLang = this.translate.getBrowserLang();
@@ -87,19 +89,15 @@ export class HeaderComponent implements OnInit {
     }
 
     onLoggedout() {
-        this.http.get("/user/logout").
-        map(
-            (response) => response.json()
-        ).
-        subscribe(
-            (data) => {
-                window.sessionStorage.removeItem('isLoggedin');
-                window.sessionStorage.removeItem('permission');
-                this.router.navigate(['/login']);
-            }
-        );
+        this.authService.logout();
+    }
 
-        
+    onLogin() {
+        this.authService.login();
+    }
+
+    onSignUp() {
+        this.authService.signup();
     }
 
     changeLang(language: string) {
@@ -141,10 +139,6 @@ export class HeaderComponent implements OnInit {
 })
 export class HeaderOverviewComponent extends HeaderComponent implements OnInit { 
 	@Input() default: string;
-
-	constructor(private http1: Http, private translate1: TranslateService, public router1: Router) {	
-		super(http1, translate1, router1);
-	}	
 }
 
 @Component({
@@ -154,10 +148,6 @@ export class HeaderOverviewComponent extends HeaderComponent implements OnInit {
 })
 export class HeaderStudentComponent extends HeaderComponent implements OnInit { 
 	@Input() default: string;
-
-	constructor(private http1: Http, private translate1: TranslateService, public router1: Router) {	
-		super(http1, translate1, router1); 
-	}	
 }
 
 @Component({
@@ -167,10 +157,6 @@ export class HeaderStudentComponent extends HeaderComponent implements OnInit {
 })
 export class HeaderTeacherComponent extends HeaderComponent implements OnInit { 
 	@Input() default: string;
-
-	constructor(private http1: Http, private translate1: TranslateService, public router1: Router) {	
-		super(http1, translate1, router1); 
-	}	
 }
 
 @Component({
@@ -180,9 +166,5 @@ export class HeaderTeacherComponent extends HeaderComponent implements OnInit {
 })
 export class HeaderManageComponent extends HeaderComponent implements OnInit { 
 	@Input() default: string;
-	
-	constructor(private http1: Http, private translate1: TranslateService, public router1: Router) {	
-		super(http1, translate1, router1); 
-	}	
 }
 

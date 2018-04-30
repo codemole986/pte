@@ -205,7 +205,7 @@ export class GlobalService {
 		}
 		return -1;
 	}
-	getDataFromArray(arr: string[], val: string, id: string) {
+	getDataFromArray(arr: any[], val: string, id: string) {
 		for (var i = 0;  i < arr.length;  i++) {
 			if (arr[i][id] == val) {
 				return i;

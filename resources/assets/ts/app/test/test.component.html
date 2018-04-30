@@ -78,13 +78,13 @@
                             </div>
                             <div class="row">
                                 <div class="col-sm-3 mb-3">
-                                    <input type="number" min="0" name="totalmarks" class="form-control needfull" placeholder=" * TotalMarks" title="TotalMarks" [(ngModel)]="curselectedTest.totalmarks" required reverse="true" #totalmarks="ngModel">
+                                    <input type="number" min="0" max="999" (change)="testtotalmarksvalue(9999)" name="totalmarks" class="form-control needfull" placeholder=" * TotalMarks" title="TotalMarks" [(ngModel)]="curselectedTest.totalmarks" required reverse="true" #totalmarks="ngModel">
                                     <small [hidden]="totalmarks.valid || (totalmarks.pristine && savefalg )" class="text-danger">
                                         Totalmarks field is required.
                                     </small>
                                 </div>                            
                                 <div class="col-sm-3 mb-3">
-                                    <input type="number" min="0" name="limit_time" class="form-control needfull" placeholder=" * Limit Time (min)" title="Limit Time" [(ngModel)]="curselectedTest.limit_time" required reverse="true" #limit_time="ngModel">
+                                    <input type="number" min="0" max="999" (change)="testlimittimevalue(999)" name="limit_time" class="form-control needfull" placeholder=" * Limit Time (min)" title="Limit Time" [(ngModel)]="curselectedTest.limit_time" required reverse="true" #limit_time="ngModel">
                                     <small [hidden]="limit_time.valid || (limit_time.pristine && savefalg )" class="text-danger">
                                         Limit_time field is required.
                                     </small>

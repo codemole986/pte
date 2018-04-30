@@ -20,6 +20,7 @@ declare function stopRecording(): any;
 declare var bootbox: any;
 declare var Metronic: any;
 declare var Datatable: any;
+declare var SC: any;
 
 @Component({
   	selector: 'app-exercise',
@@ -116,6 +117,8 @@ export class ExerciseComponent implements OnInit {
         		if(val.snapshot.routeConfig.path.indexOf("exercise") < 0 ) 
             		return;
 
+            	console.log("snapshot check1.", val.snapshot);
+        			
             	that.quiz_id = val.snapshot.params['id'];
 				that.quiztype = val.snapshot.params['type'];
 				
@@ -1250,13 +1253,17 @@ export class ExerciseComponent implements OnInit {
 		hf.html(hf.download);
     }
 
-    addAudioEndEvent() {
-    	var that = this;
-    	/*$('#quizaudio').on('seeking', function() {
-    		console.log("seeking");
-    	})*/
-    	$('#quizaudio')[0].onended = function() {
-    		that.quiz_step = 2;
+    addAudioAndEvent() {
+    	$('#audiocontainer').html(this.currentProblem.content.audio);
+    	
+    	var sdWidget = SC.Widget('audioPlayer');
+    	sdWidget.bind(SC.Widget.Events.PLAY, function() {
+			
+		});
+
+		var that = this;
+		sdWidget.bind(SC.Widget.Events.FINISH, function(e: any){
+			that.quiz_step = 2;
     		that.currentlimittime = Number(that.currentProblem.limit_time).valueOf();
 			clearInterval(that.ctimer);
 			var that2 = that;
@@ -1276,6 +1283,10 @@ export class ExerciseComponent implements OnInit {
 				that.progressvalue = 0;
 				that.audio_visible_flag = false;
 			}
-    	};
+		});
+    }
+
+    addSolutionAudio() {
+    	$('#solutionaudiocontainer').html(this.currentProblem.solution.audio);
     }
 }

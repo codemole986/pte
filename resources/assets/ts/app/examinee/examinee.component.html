@@ -123,11 +123,8 @@
                                     </table>
                                 </div>
                                 <div class="col-md-6" style="text-align: center;">
-                                    <div *ngIf="sel_audio_index >= 0  &&  audio_visible_flag  &&  quiz_step==1">
-                                        <audio id="quizaudio" controls="false" autoplay>
-                                           <source src="{{currentProblem.content.list[sel_audio_index].audio}}" type="audio/mpeg">
-                                        </audio>
-                                        {{addAudioEndEvent()}}
+                                    <div id="audiocontainer" *ngIf="sel_audio_index >= 0  &&  audio_visible_flag  &&  quiz_step==1">
+                                        {{addAudioAndEvent()}}
                                     </div>
                                 </div>
                             </div>
@@ -287,10 +284,8 @@
                                 </div>
                             </div>                        
                             <div *ngIf="currentProblem.type=='SRS' ||currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SSA'"  class="card-body">
-                                <div *ngIf="currentProblem.solution.audio">
-                                    <audio controls autoplay="true">
-                                       <source src="{{currentProblem.solution.audio}}" type="audio/mpeg">
-                                    </audio> 
+                                <div id="solutionaudiocontainer" *ngIf="currentProblem.solution.audio">
+                                    {{addSolutionAudio()}} 
                                 </div>
                             </div>
                             <div *ngIf="currentProblem.type == 'RFB'" class="card-body">
@@ -379,11 +374,8 @@
                                             </audio> 
                                         </div>
                                         <div *ngIf="currentProblem.type == 'SRS' || currentProblem.type == 'SSA' || currentProblem.category == 'Listening'" class="row">
-                                            <div *ngIf="currentProblem.content.audio && quiz_step==1 && !audio_flag" style="padding: 30px;">
-                                                <audio id="quizaudio" controls="false" autoplay>
-                                                   <source src="{{currentProblem.content.audio}}" type="audio/mpeg">
-                                                </audio>
-                                                {{addAudioEndEvent()}}
+                                            <div id="audiocontainer" *ngIf="currentProblem.content.audio && quiz_step==1 && !audio_flag" style="padding: 30px;">
+                                                {{addAudioAndEvent()}}
                                             </div>                    
                                         </div>
                                         <div *ngIf="currentProblem.type == 'SPI' " class="row">
@@ -408,11 +400,8 @@
                                                 </table>
                                             </div>
                                             <div class="col-md-6" style="text-align: center;">
-                                                <div *ngIf="sel_audio_index >= 0  &&  audio_visible_flag  &&  !end_exam_flag  &&  quiz_step==1">
-                                                    <audio id="quizaudio" controls="false" autoplay>
-                                                       <source src="{{currentProblem.content.list[sel_audio_index].audio}}" type="audio/mpeg">
-                                                    </audio>
-                                                    {{addAudioEndEvent()}}
+                                                <div id="audiocontainer" *ngIf="sel_audio_index >= 0  &&  audio_visible_flag  &&  !end_exam_flag  &&  quiz_step==1">
+                                                    {{addAudioAndEvent()}}
                                                 </div>
                                                 <div style="margin-top: 30px;">
                                                     <button *ngIf="!audio_flag  &&  !end_exam_flag && (currentProblem.type=='SAL' || currentProblem.type=='SPI')" class="btn btn-sm btn-success" type="button" (click)="startAnswerRecording()"> {{ 'Start recording' | translate }} <i class="fa fa-microphone fa-fw"></i></button>
@@ -585,10 +574,8 @@
                                             </div>
                                         </div>                        
                                         <div *ngIf="currentProblem.type=='SRS' ||currentProblem.type=='SAL' || currentProblem.type=='SPI' || currentProblem.type=='SRL'"  class="card-body">
-                                            <div *ngIf="currentProblem.solution.audio">
-                                                <audio controls autoplay>
-                                                   <source src="{{currentProblem.solution.audio}}" type="audio/mpeg">
-                                                </audio> 
+                                            <div id="solutionaudiocontainer" *ngIf="currentProblem.solution.audio">
+                                                {{addSolutionAudio()}}
                                             </div>
                                         </div>
                                         <div *ngIf="currentProblem.type == 'RFB'" class="card-body">

@@ -112,19 +112,19 @@
                                                     </small>
                                                 </div> -->
                                                 <div class="col-md-2">
-                                                    <input type="number" min="0" name="preparation_time" class="form-control needfull" placeholder=" * {{ 'PreTime (s)' | translate }}" title="PreparationTime" [(ngModel)]="editedProblem.preparation_time" required reverse="true" #preparation_time="ngModel">
+                                                    <input type="number" min="0" max="999" name="preparation_time" class="form-control needfull" placeholder=" * {{ 'PreTime (s)' | translate }}" (change)="testpreparationtimevalue(999)" title="PreparationTime" [(ngModel)]="editedProblem.preparation_time"  required reverse="true" #preparation_time="ngModel">
                                                     <small [hidden]="preparation_time.valid || (preparation_time.pristine)" class="text-danger">
                                                     {{ 'PreparationTime is required with number (second unit).' | translate }}
                                                     </small>
                                                 </div>
                                                 <div class="col-md-2">
-                                                    <input type="number" min="0" name="limit_time" class="form-control needfull" placeholder=" * {{ 'LimitTime (s)' | translate }}" title="LimitTime" [(ngModel)]="editedProblem.limit_time" required reverse="true" #limit_time="ngModel">
-                                                    <small [hidden]="limit_time.valid || (limit_time.pristine)" class="text-danger">
+                                                    <input type="number" min="0" min="999" name="limit_time" class="form-control needfull" (change)="testlimittimevalue(999)" placeholder=" * {{ 'LimitTime (s)' | translate }}" title="LimitTime" [(ngModel)]="editedProblem.limit_time" required reverse="true" #limit_time="ngModel">
+                                                    <small [hidden]="limit_time.valid || limit_time.max || (limit_time.pristine)" class="text-danger">
                                                     {{ 'LimitTime is required with number (second unit).' | translate }}
                                                     </small>
                                                 </div>
                                                 <div class="col-md-2">
-                                                    <input type="number" min="0" name="points" class="form-control needfull" placeholder="* {{ 'Points' | translate }}" title="Points" [(ngModel)]="editedProblem.points" required reverse="true" #points="ngModel">
+                                                    <input type="number" min="0" max="9999" (change)="testpointsvalue(9999)" name="points" class="form-control needfull" placeholder="* {{ 'Points' | translate }}" title="Points" [(ngModel)]="editedProblem.points" required reverse="true" #points="ngModel">
                                                     <small [hidden]="points.valid || (points.pristine && savefalg)" class="text-danger">
                                                     {{ 'Points is required for number(marks).' | translate }}
                                                     </small>
@@ -156,7 +156,7 @@
                                                     </audio>  
                                                     <button id="btnquizaudio" class="btn default col-md-1 col-sm-1 col-xs-2" (click)="audioplay('quiz')"><i class="fa fa-play fa-fw"></i></button> -->
                                                     <div class="col-md-12">
-                                                        <input name="quizaudiofile" id="quizaudiofile" class="form-control" placeholder="{{ 'Audio URL' | translate }}" title="Quiz Audiofile" [(ngModel)]="editedProblem.content.audio">
+                                                        <textarea name="quizaudiofile" id="quizaudiofile" class="form-control" placeholder="{{ 'Audio Embed Code' | translate }}" title="{{ 'Audio Embed Code' | translate }}" rows="5" [(ngModel)]="editedProblem.content.audio"></textarea>
                                                     </div>
                                                 </div>   
                                             </div>
@@ -241,7 +241,7 @@
                                                 <table>
                                                 <tr><td style="width: 100%;">
                                                 <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeTitleSelect()" rows="10" [(ngModel)]="select_titles" style="width: 100%; height: 150px;" multiple>
-                                                    <option *ngFor="let op of editedProblem.content.list" value="{{op.title}}">{{ 'Title' | translate }} : {{op.title}},  {{ 'Audio URL' | translate }} : {{op.audio}}</option>
+                                                    <option *ngFor="let op of editedProblem.content.list" value="{{op.title}}">{{ 'Title' | translate }} : {{op.title}},  {{ 'Audio Embed Code' | translate }} : {{op.audio}}</option>
                                                 </select>
                                                 </td><td>
                                                 <table>
@@ -256,13 +256,7 @@
                                                 </table>
                                                 <div class="row" style="margin-right: 47px;">
                                                     <div class="col-md-12 col-sm-12 col-xs-12">
-                                                        <audio id="quizaudio">
-                                                           <source src="{{strAudioURL}}" type="audio/mpeg">
-                                                        </audio>
-                                                        <div class="col-md-11 col-sm-11 col-xs-10"> 
-                                                            <input name="quizaudiofile" id="quizaudiofile" class="form-control" placeholder="{{ 'Audio URL' | translate }}" title="Quiz Audiofile" [(ngModel)]="strAudioURL">
-                                                        </div>
-                                                        <button id="btnquizaudio" class="btn default col-md-1 col-sm-1 col-xs-2" (click)="audioplay('quiz')"><i class="fa fa-play fa-fw"></i></button>
+                                                        <textarea name="quizaudiofile" id="quizaudiofile" class="form-control" placeholder="{{ 'Audio Embed Code' | translate }}" title="{{ 'Audio Embed Code' | translate }}" rows="5" [(ngModel)]="strAudioURL"></textarea>
                                                     </div>
                                                 </div>
                                                 <div class="row" style="margin-right: 47px;">
@@ -394,8 +388,7 @@
                                                 <p class="form-group my-2" style="width: 100%;">
                                                     {{ 'Select an Audio' | translate }} (mp3/wav): 
                                                 </p>
-                                                <!-- <div class="dropzone" id="dzsolutionfile" style="width: 100%;"></div> -->
-                                                <input name="solutionaudiofile" id="solutionaudiofile" class="form-control" placeholder="{{ 'Audio URL' | translate }}" title="Solution Audiofile" [(ngModel)]="editedProblem.solution.audio">
+                                                <textarea name="solutionaudiofile" id="solutionaudiofile" class="form-control" placeholder="{{ 'Audio Embed Code' | translate }}" title="{{ 'Audio Embed Code' | translate }}" rows="5" [(ngModel)]="editedProblem.solution.audio"></textarea>
                                             </div>
                                             <div *ngIf="editedProblem.type == 'RSA' || editedProblem.type == 'LSB'">
                                                 <select id="select_solution_singleoptions" name="list_sentences" class="form-control" (change)="onChangeSolutionSelect()" [(ngModel)]="select_solution_value">
@@ -481,13 +474,13 @@
                                                 </small>
                                             </div> -->
                                             <div class="col-md-2">
-                                        <input type="number" min="0" name="limit_time" class="form-control needfull" placeholder=" * {{ 'LimitTime (s)' | translate }}" title="LimitTime" [(ngModel)]="editedProblem.limit_time" required reverse="true" #limit_time="ngModel">
+                                        <input type="number" min="0" max="999" (change)="testlimittimevalue(999)" name="limit_time" class="form-control needfull" placeholder=" * {{ 'LimitTime (s)' | translate }}" title="LimitTime" [(ngModel)]="editedProblem.limit_time" required reverse="true" #limit_time="ngModel">
                                                 <small [hidden]="limit_time.valid || (limit_time.pristine)" class="text-danger">
                                                     {{ 'LimitTime is required with number (second unit).' | translate }}
                                                 </small>
                                             </div>
                                             <div class="col-md-2">
-                                                <input type="number" min="0" name="points" class="form-control needfull" placeholder="* {{ 'Points' | translate }}" title="Points" [(ngModel)]="editedProblem.points" required reverse="true" #points="ngModel">
+                                                <input type="number" min="0" max="9999" (change)="testpointsvalue(9999)" name="points" class="form-control needfull" placeholder="* {{ 'Points' | translate }}" title="Points" [(ngModel)]="editedProblem.points" required reverse="true" #points="ngModel">
                                                 <small [hidden]="points.valid || (points.pristine && savefalg)" class="text-danger">
                                                             {{ 'Points is required for number(marks).' | translate }}
                                                 </small>
@@ -514,9 +507,8 @@
                                                            <source src="{{editedProblem.content.audio}}" type="audio/mpeg">
                                                         </audio>
                                                         <div class="row">    
-                                                            <button id="btnquizaudio" class="btn default col-md-1 col-sm-1 col-xs-2" (click)="audioplay('quiz')"><i class="fa fa-play fa-fw"></i></button>
-                                                            <div class="col-md-11 col-sm-11 col-xs-10"> 
-                                                                <input name="quizaudiofile" id="quizaudiofile" class="form-control" placeholder="{{ 'Audio URL' | translate }}" title="Quiz Audiofile" [(ngModel)]="editedProblem.content.audio">
+                                                            <div class="col-md-12 col-sm-12 col-xs-12"> 
+                                                                <textarea name="quizaudiofile" id="quizaudiofile" class="form-control" placeholder="{{ 'Audio Embed Code' | translate }}" title="{{ 'Audio Embed Code' | translate }}" rows="5" [(ngModel)]="editedProblem.content.audio"></textarea>
                                                             </div>             
                                                         </div>
                                                     </div>    
@@ -618,7 +610,7 @@
                                         <table>
                                         <tr><td style="width: 100%;">
                                                     <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeTitleSelect()" rows="10" [(ngModel)]="select_titles" style="width: 100%; height: 150px;" multiple>
-                                            <option *ngFor="let op of editedProblem.content.list" value="{{op.title}}">{{ 'Title' | translate }} : {{op.title}},  {{ 'Audio URL' | translate }} : {{op.audio}}</option>
+                                            <option *ngFor="let op of editedProblem.content.list" value="{{op.title}}">{{ 'Title' | translate }} : {{op.title}},  {{ 'Audio Embed Code' | translate }} : {{op.audio}}</option>
                                         </select>
                                         </td><td>
                                         <table>
@@ -633,13 +625,7 @@
                                         </table>
                                             <div class="row" style="margin-right: 47px;">
                                                 <div class="col-md-12 col-sm-12 col-xs-12">
-                                                    <audio id="quizaudio">
-                                                       <source src="{{strAudioURL}}" type="audio/mpeg">
-                                                    </audio>
-                                                    <div class="col-md-11 col-sm-11 col-xs-10"> 
-                                                        <input name="quizaudiofile" id="quizaudiofile" class="form-control" placeholder="{{ 'Audio URL' | translate }}" title="Quiz Audiofile" [(ngModel)]="strAudioURL">
-                                                    </div>
-                                                    <button id="btnquizaudio" class="btn default col-md-1 col-sm-1 col-xs-2" (click)="audioplay('quiz')"><i class="fa fa-play fa-fw"></i></button>
+                                                    <textarea name="quizaudiofile" id="quizaudiofile" class="form-control" placeholder="{{ 'Audio Embed Code' | translate }}" title="{{ 'Audio Embed Code' | translate }}" rows="5" [(ngModel)]="strAudioURL"></textarea>
                                                 </div>
                                             </div>
                                             <div class="row" style="margin-right: 47px;">
@@ -767,19 +753,14 @@
                                 <div *ngIf="editedProblem.type == 'WSM' || editedProblem.type == 'WES' || editedProblem.type == 'LWS' || editedProblem.type == 'LTS' || editedProblem.type == 'SSA'">
                                     <textarea name="solution" class="form-control" placeholder="{{ 'Solution Sentences' | translate }}" title="Solution Sentences" rows="5" [(ngModel)]="editedProblem.solution.text"></textarea>
                                 </div>
-                                        <div *ngIf="editedProblem.type == 'SAL' || editedProblem.type == 'SRS' || editedProblem.type == 'SPI'">
+                                        <div *ngIf="editedProblem.type == 'SAL' || editedProblem.type == 'SRS' || editedProblem.type == 'SPI' || editedProblem.type == 'SRL'">
                                         <p class="form-group my-2" style="width: 100%;">
                                             {{ 'Select an Audio' | translate }} (mp3/wav): 
                                         </p>
-                                        <fieldset class="form-group col-lg-12">
+                                        <fieldset class="form-group">
                                         	<div class="row">
-                                                <audio id="solutionaudio">
-                                                   <source src="{{editedProblem.solution.audio}}" type="audio/mpeg">
-                                                </audio>
-
-                                                <button id="btnsolutionaudio" class="btn default col-md-1 col-sm-1 col-xs-2" (click)="audioplay('solution')"><i class="fa fa-play fa-fw"></i></button>
-                                                <div class="col-lg-11 col-md-11 col-sm-11 col-xs-10">    
-        	                                       <input name="solutionaudiofile" id="solutionaudiofile" class="form-control" placeholder="{{ 'Audio URL' | translate }}" title="Solution Audiofile" [(ngModel)]="editedProblem.solution.audio">
+                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">    
+        	                                       <textarea name="solutionaudiofile" id="solutionaudiofile" class="form-control" placeholder="{{ 'Audio Embed Code' | translate }}" title="{{ 'Audio Embed Code' | translate }}" rows="5" [(ngModel)]="editedProblem.solution.audio"></textarea>
                                                 </div>
         	                                    
         	                                </div>

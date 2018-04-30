@@ -20,7 +20,23 @@ Homestead.json
 # Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer
 .rocketeer/
 public/mix-manifest.json
+<<<<<<< HEAD
+
+public/upload
+public/recordings
+
+config/app.php
+config/database.php
+
+public/js/app.js
+public/upload/
+public/recordings/
+storage/
+
+# misc
+=======
 public/js
 
 # temp
+>>>>>>> 5395d92231e11f88e7059315e1417eb0388edefe
 .DS_Store

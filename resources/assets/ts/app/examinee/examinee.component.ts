@@ -21,6 +21,7 @@ declare function startRecording(a: any, b: any, c: any, d: any): any;
 declare function stopRecording(): any;
 declare var bootbox: any;
 declare var Metronic: any;
+declare var SC: any;
 
 @Component({
   	selector: 'app-examinee',
@@ -1446,10 +1447,17 @@ export class ExamineeComponent implements OnInit {
 		hf.html(hf.download);
     }
 
-    addAudioEndEvent() {
-    	var that = this;
-    	$('#quizaudio')[0].onended = function() {
-    		that.quiz_step = 2;
+    addAudioAndEvent() {
+    	$('#audiocontainer').html(this.currentProblem.content.audio);
+    	
+    	var sdWidget = SC.Widget('audioPlayer');
+    	sdWidget.bind(SC.Widget.Events.PLAY, function() {
+			
+		});
+
+		var that = this;
+		sdWidget.bind(SC.Widget.Events.FINISH, function(e: any){
+			that.quiz_step = 2;
     		that.currentlimittime = Number(that.currentProblem.limit_time).valueOf();
 			clearInterval(that.ctimer);
 			var that2 = that;
@@ -1469,6 +1477,10 @@ export class ExamineeComponent implements OnInit {
 				that.progressvalue = 0;
 				that.audio_visible_flag = false;
 			}
-    	};
+		});
+    }
+
+    addSolutionAudio() {
+    	$('#solutionaudiocontainer').html(this.currentProblem.solution.audio);
     }
 }

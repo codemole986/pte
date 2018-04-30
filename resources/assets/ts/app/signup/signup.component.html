@@ -22,7 +22,7 @@
                 <label class="control-label visible-ie8 visible-ie9">{{ 'First Name' | translate }}</label>
                 <div class="input-icon">
                     <i class="fa fa-font"></i>
-                    <input name="first_name" class="form-control placeholder-no-fix" type="text" placeholder="{{ 'First Name' | translate }}" [ngModel]="user.first_name" required reverse="true" #first_name="ngModel">
+                    <input name="first_name"  maxlength="255" class="form-control placeholder-no-fix" type="text" placeholder="{{ 'First Name' | translate }}" [ngModel]="user.first_name" required reverse="true" #first_name="ngModel">
                 </div>
                 <small [hidden]="first_name.valid || (first_name.pristine && !userreg.submitted)" class="text-danger">
                     <strong>{{ 'Please fill out this field.' | translate }}</strong>
@@ -32,7 +32,7 @@
                 <label class="control-label visible-ie8 visible-ie9">{{ 'Last Name' | translate }}</label>
                 <div class="input-icon">
                     <i class="fa fa-font"></i>
-                    <input name="last_name" class="form-control placeholder-no-fix" type="text" placeholder="{{ 'Last Name' | translate }}" [ngModel]="user.last_name" required reverse="true" #last_name="ngModel">
+                    <input name="last_name"  maxlength="255" class="form-control placeholder-no-fix" type="text" placeholder="{{ 'Last Name' | translate }}" [ngModel]="user.last_name" required reverse="true" #last_name="ngModel">
                 </div>
                 <small [hidden]="last_name.valid || (last_name.pristine && !userreg.submitted)" class="text-danger">
                     <strong>{{ 'Please fill out this field.' | translate }}</strong>
@@ -42,7 +42,7 @@
                 <label class="control-label visible-ie8 visible-ie9">{{ 'Address' | translate }}</label>
                 <div class="input-icon">
                     <i class="fa fa-check"></i>
-                    <input name="address" class="form-control placeholder-no-fix" type="text" placeholder="{{ 'Address' | translate }}" [ngModel]="user.address" required reverse="true" #address="ngModel">
+                    <input name="address"  maxlength="255" class="form-control placeholder-no-fix" type="text" placeholder="{{ 'Address' | translate }}" [ngModel]="user.address" required reverse="true" #address="ngModel">
                 </div>
                 <small [hidden]="address.valid || (address.pristine && !userreg.submitted)" class="text-danger">
                     <strong>{{ 'Please fill out this field.' | translate }}</strong>
@@ -55,7 +55,7 @@
                 <label class="control-label visible-ie8 visible-ie9">{{ 'Email' | translate }}</label>
                 <div class="input-icon">
                     <i class="fa fa-envelope" style="font-size: 14px;"></i>
-                    <input id="email" name="email" class="form-control placeholder-no-fix" type="email" placeholder="{{ 'Email' | translate }}" required [(ngModel)]="user.email" #email="ngModel" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$">
+                    <input id="email" name="email"  maxlength="255" class="form-control placeholder-no-fix" type="email" placeholder="{{ 'Email' | translate }}" required [(ngModel)]="user.email" #email="ngModel" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$">
                 </div>
                 <small [hidden]="email.valid || (email.pristine && !userreg.submitted)" class="text-danger">
                     <strong>{{ 'Email is required and format should be' | translate }} <i>john@doe.com</i>.</strong>
@@ -65,7 +65,7 @@
                 <label class="control-label visible-ie8 visible-ie9">{{ 'Password' | translate }}</label>
                 <div class="input-icon">
                     <i class="fa fa-lock"></i>
-                    <input #password="ngModel" type="password" class="form-control placeholder-no-fix" name="password" placeholder="{{ 'Password' | translate }}" [ngModel]="user.password" autocomplete="off" required reverse="true">
+                    <input #password="ngModel" type="password"  maxlength="255" class="form-control placeholder-no-fix" name="password" placeholder="{{ 'Password' | translate }}" [ngModel]="user.password" autocomplete="off" required reverse="true">
                 </div>
                 <small [hidden]="password.valid || (password.pristine && !userreg.submitted)" class="text-danger">
                     <strong>Please fill out this field.</strong>
@@ -75,7 +75,7 @@
                 <label class="control-label visible-ie8 visible-ie9">{{ 'Confirm Password' | translate }}</label>
                 <div class="input-icon">
                     <i class="fa fa-check"></i>
-                    <input #confirmpassword="ngModel" type="password" class="form-control placeholder-no-fix" name="confirmpassword" placeholder="{{ 'Confirm Password' | translate }}" [ngModel]="user.confirmpassword" autocomplete="off" required reverse="true">
+                    <input #confirmpassword="ngModel" type="password"  maxlength="255" class="form-control placeholder-no-fix" name="confirmpassword" placeholder="{{ 'Confirm Password' | translate }}" [ngModel]="user.confirmpassword" autocomplete="off" required reverse="true">
                 </div>
                 <small [hidden]="confirmpassword.valid || (confirmpassword.pristine && !userreg.submitted)" class="text-danger">
                     <strong>Please fill out this field.</strong>

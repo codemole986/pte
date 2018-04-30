@@ -1,4 +1,4 @@
-<div *ngIf="active_menu=='manage'">
+﻿<div *ngIf="active_menu=='manage'">
      <app-header-manage [default]="'user'"></app-header-manage>         
 </div>
 <div class="page-container">
@@ -31,7 +31,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                            <h4 id="modal_title" class="modal-title letterspace12">User Info</h4>
+                            <h4 id="modal_title" class="modal-title letterspace12">{{ 'User Info' | translate }}</h4>
                         </div>
                         <div class="modal-body">
                             <form #userchg="ngForm" novalidate (ngSubmit)="onClickSubmit(userchg.value)" class="register-form">
@@ -99,8 +99,8 @@
                             </form>    
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" id="user-submit-btn" class="btn blue-madison"><i class="fa fa-save"></i> Save </button>
-                            <button type="button" class="btn default" data-dismiss="modal"> Cancel </button>
+                            <button type="submit" id="user-submit-btn" class="btn blue-madison"><i class="fa fa-save"></i> {{ 'Save' | translate }} </button>
+                            <button type="button" class="btn default" data-dismiss="modal"> {{ 'Cancel' | translate }} </button>
                         </div>
                     </div>
                     <!-- /.modal-content -->

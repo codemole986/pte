@@ -63,7 +63,9 @@ Route::get('/user/getuserlist', 'UserController@getuserlist');
 
 Route::get('/user/getusers', 'UserController@getusers');
 
-Route::post('/user/login', 'UserController@login');
+Route::get('/user/login', 'UserController@login');
+
+Route::get('/user/register', 'UserController@login');
 
 Route::get('/user/logout', 'UserController@logout');
 

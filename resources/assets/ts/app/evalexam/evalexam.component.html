@@ -1,4 +1,4 @@
-<div *ngIf="active_menu=='overview'">
+﻿<div *ngIf="active_menu=='overview'">
      <app-header-overview [default]="'aboutus'"></app-header-overview>
 </div>
 <div *ngIf="active_menu=='student'">
@@ -59,7 +59,7 @@
                 <h6 style="color:#6CF;">{{ 'Points' | translate }}: {{ currentProblem.points }}</h6>
             </div>
             <div class="col-sm-3 mb-3">
-                <h6 class="row" style="color:#09F;">{{ 'Quiz Marks' | translate }}: <input type="number" min="0" name="evaluate_mark" class="form-control needfull" placeholder=" * {{ 'QuizMarks' | translate }}" title="quiz marks" (change)="onChangeQuizMarks()" [(ngModel)]="currentAnswer.evaluate_mark" value="{{currentAnswer.evaluate_mark}}" style="width:50%;"> </h6>
+                <h6 class="row" style="color:#09F;">{{ 'Quiz Marks' | translate }}: <input type="number" min="0" max="9999" name="evaluate_mark" class="form-control needfull" placeholder=" * {{ 'QuizMarks' | translate }}" title="quiz marks" (change)="onChangeQuizMarks()" [(ngModel)]="currentAnswer.evaluate_mark" value="{{currentAnswer.evaluate_mark}}" style="width:50%;"> </h6>
             </div>
         </div>
         <div class="form-body">
