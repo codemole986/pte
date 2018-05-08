@@ -738,67 +738,67 @@ export class ExerciseComponent implements OnInit {
 				});
 			}
 			
-			for (var i = 0;  i < words.length;  i++) {
-				words[i].addEventListener('mousedown',
-					function(e:any) {
-						if (drag_obj != null)
-							return;
-						if (this.markvisible)
-							$(this).unbind(e);
+			// for (var i = 0;  i < words.length;  i++) {
+			// 	words[i].addEventListener('mousedown',
+			// 		function(e:any) {
+			// 			if (drag_obj != null)
+			// 				return;
+			// 			if (this.markvisible)
+			// 				$(this).unbind(e);
 						
-						e.preventDefault();
-						left = 0;
-						top = 0;
-						startX = e.pageX;
-						startY = e.pageY;
-						drag_obj = this;
-						this.style.left = left;
-		                this.style.top = top;
-					}
-				);
-				words[i].addEventListener('mousemove',
-					function(e:any) {
-						if (drag_obj != this)
-							return;
-						if (this.markvisible)
-							$(this).unbind(e);
+			// 			e.preventDefault();
+			// 			left = 0;
+			// 			top = 0;
+			// 			startX = e.pageX;
+			// 			startY = e.pageY;
+			// 			drag_obj = this;
+			// 			this.style.left = left;
+		 //                this.style.top = top;
+			// 		}
+			// 	);
+			// 	words[i].addEventListener('mousemove',
+			// 		function(e:any) {
+			// 			if (drag_obj != this)
+			// 				return;
+			// 			if (this.markvisible)
+			// 				$(this).unbind(e);
 
-						e.preventDefault();
-		                var diffX = e.pageX - startX;
-		                var diffY = e.pageY - startY;
-		                left = diffX;
-		                top = diffY;
-		                this.style.left = left + "px";
-		                this.style.top = top + "px";
-					}
-				);
-				words[i].addEventListener('mouseup',
-					function(e:any) {
-						if (drag_obj != this)
-							return;
-						if (this.markvisible)
-							$(this).unbind(e);
+			// 			e.preventDefault();
+		 //                var diffX = e.pageX - startX;
+		 //                var diffY = e.pageY - startY;
+		 //                left = diffX;
+		 //                top = diffY;
+		 //                this.style.left = left + "px";
+		 //                this.style.top = top + "px";
+			// 		}
+			// 	);
+			// 	words[i].addEventListener('mouseup',
+			// 		function(e:any) {
+			// 			if (drag_obj != this)
+			// 				return;
+			// 			if (this.markvisible)
+			// 				$(this).unbind(e);
 
-						this.style.visibility = 'hidden';
-		 				var point_obj = document.elementFromPoint(e.pageX - document.body.scrollLeft, e.pageY - (window.pageYOffset || document.documentElement.scrollTop));
-		 				this.style.visibility = 'visible';
-		 				var target_obj = point_obj.closest('input');
-		 				if (target_obj != null) {
-		 					if (target_obj.tagName == "INPUT") {
-		 						if ($(target_obj).attr("disabled") != "disabled") {
-			 						$(target_obj).val(this.innerHTML);
-			 						that.checkRFBInputs();
-									this.style.visibility = 'hidden';
-								}
-								//$('#html_data input').trigger('change');
-		 					}
-		 				}
-						this.style.left = 0;
-		                this.style.top = 0;
-		                drag_obj = null;
-					}
-				);
-			}
+			// 			this.style.visibility = 'hidden';
+		 // 				var point_obj = document.elementFromPoint(e.pageX - document.body.scrollLeft, e.pageY - (window.pageYOffset || document.documentElement.scrollTop));
+		 // 				this.style.visibility = 'visible';
+		 // 				var target_obj = point_obj.closest('input');
+		 // 				if (target_obj != null) {
+		 // 					if (target_obj.tagName == "INPUT") {
+		 // 						if ($(target_obj).attr("disabled") != "disabled") {
+			//  						$(target_obj).val(this.innerHTML);
+			//  						that.checkRFBInputs();
+			// 						this.style.visibility = 'hidden';
+			// 					}
+			// 					//$('#html_data input').trigger('change');
+		 // 					}
+		 // 				}
+			// 			this.style.left = 0;
+		 //                this.style.top = 0;
+		 //                drag_obj = null;
+			// 		}
+			// 	);
+			// }
 		}
 	}
 
