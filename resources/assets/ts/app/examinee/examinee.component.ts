@@ -141,7 +141,9 @@ export class ExamineeComponent implements OnInit {
 
 	
 
-	ngOnInit() {	
+	ngOnInit() {
+		Metronic.init();
+
 		switch(window.sessionStorage.getItem('permission')) {
     		case 'A' : this.active_menu = "manage"; break;
 			case 'B' : this.active_menu = "teacher"; break;
@@ -259,8 +261,7 @@ export class ExamineeComponent implements OnInit {
 
 		}	
 
-		this.curselectedrowid = 0;	
-		Metronic.init();
+		this.curselectedrowid = 0;
 	}
 
 	ngOnDestroy() {
@@ -1448,36 +1449,40 @@ export class ExamineeComponent implements OnInit {
     }
 
     addAudioAndEvent() {
-    	$('#audiocontainer').html(this.currentProblem.content.audio);
-    	
-    	var sdWidget = SC.Widget('audioPlayer');
-    	sdWidget.bind(SC.Widget.Events.PLAY, function() {
-			
-		});
+      const _self = this;
+      const _id = `audio-player-${$.now()}`;
+      const regex = /auto_play=(true|false)/g;
+      const iframeStr = this.currentProblem.content.audio;
+      const autoplayIframe = iframeStr.replace(regex, 'auto_play=true');
 
-		var that = this;
-		sdWidget.bind(SC.Widget.Events.FINISH, function(e: any){
-			that.quiz_step = 2;
-    		that.currentlimittime = Number(that.currentProblem.limit_time).valueOf();
-			clearInterval(that.ctimer);
-			var that2 = that;
-    		that.ctimer = setInterval(()=> {
-				that2.currentlimittime--; 
-				that2.currentAnswer.examine_uptime = that2.currentProblem.limit_time - that2.currentlimittime - that2.record_start_time;
-				that2.progressvalue = Math.round(that2.currentAnswer.examine_uptime/(that2.currentProblem.limit_time - that2.record_start_time)*100);
+      $('#audiocontainer').html(autoplayIframe);
+      $('#audiocontainer > iframe').attr('id', _id);
 
-				if(that2.currentlimittime<=0) 
-					that2.endExamine(); 
-			}, 1000 );
+      const sdWidget = SC.Widget(_id);
+      sdWidget.bind(SC.Widget.Events.PLAY, function() {
+      });
 
-			if (that.currentProblem.type == 'SRS' || that.currentProblem.type == 'SSA' || that.currentProblem.type == 'SRL') {
-				that.audio_flag = true;
-				startRecording(that.currentAnswer.testevent_id, that.currentProblem.id, window.sessionStorage.getItem('userid'), that._token );
-				that.record_start_time = that.currentProblem.limit_time - that.currentlimittime;
-				that.progressvalue = 0;
-				that.audio_visible_flag = false;
-			}
-		});
+      sdWidget.bind(SC.Widget.Events.FINISH, function(e: any) {
+        _self.quiz_step = 2;
+        _self.currentlimittime = Number(_self.currentProblem.limit_time).valueOf();
+        clearInterval(_self.ctimer);
+        var _self2 = _self;
+        _self.ctimer = setInterval(()=> {
+          _self2.currentlimittime--;
+          _self2.currentAnswer.examine_uptime = _self2.currentProblem.limit_time - _self2.currentlimittime - _self2.record_start_time;
+          _self2.progressvalue = Math.round(_self2.currentAnswer.examine_uptime/(_self2.currentProblem.limit_time - _self2.record_start_time)*100);
+
+          if(_self2.currentlimittime<=0) _self2.endExamine();
+        }, 1000 );
+
+        if (_self.currentProblem.type == 'SRS' || _self.currentProblem.type == 'SSA' || _self.currentProblem.type == 'SRL') {
+          _self.audio_flag = true;
+          startRecording(_self.currentAnswer.testevent_id, _self.currentProblem.id, window.sessionStorage.getItem('userid'), _self._token );
+          _self.record_start_time = _self.currentProblem.limit_time - _self.currentlimittime;
+          _self.progressvalue = 0;
+          _self.audio_visible_flag = false;
+        }
+      });
     }
 
     addSolutionAudio() {

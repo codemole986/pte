@@ -23,10 +23,10 @@ declare var Datatable: any;
 declare var SC: any;
 
 @Component({
-  	selector: 'app-exercise',
-  	template: require('./exercise.component.html'),
+	selector: 'app-exercise',
+	template: require('./exercise.component.html'),
 	styles: [`${require('./exercise.component.css')}`],	
-    animations: [routerTransition()],
+  animations: [routerTransition()],
 	providers: [GlobalService]  
 })
 export class ExerciseComponent implements OnInit {
@@ -93,7 +93,7 @@ export class ExerciseComponent implements OnInit {
 	quizgrid: any;
 	quizno: number;
 	
-    constructor(private http: Http, private route: ActivatedRoute, private router: Router, private globalService: GlobalService, private translate: TranslateService) { 
+  constructor(private http: Http, private route: ActivatedRoute, private router: Router, private globalService: GlobalService, private translate: TranslateService) {
 		this.quiz_id = 0;
 		this.markvisible = false;
 		this.currentProblem = new Problem;
@@ -112,16 +112,14 @@ export class ExerciseComponent implements OnInit {
 
 		var that = this;
 		this.router.events.subscribe((val: any) => {			
-        	if (val instanceof ActivationEnd) {
-        		
-        		if(val.snapshot.routeConfig.path.indexOf("exercise") < 0 ) 
-            		return;
+    	if (val instanceof ActivationEnd) {
+    		if(val.snapshot.routeConfig.path.indexOf("exercise") < 0 ) return;
 
-            	console.log("snapshot check1.", val.snapshot);
-        			
-            	that.quiz_id = val.snapshot.params['id'];
+        console.log("snapshot check1.", val.snapshot);
+
+        that.quiz_id = val.snapshot.params['id'];
 				that.quiztype = val.snapshot.params['type'];
-				
+
 				if (that.quiz_id != null) {
 					that.listflag = false;					
 					clearInterval(this.ctimer);
@@ -137,75 +135,74 @@ export class ExerciseComponent implements OnInit {
 				if(typeof that.quizgrid !== "undefined")
 					that.quizgrid.ajax.reload('', true);
 		        that.initialize();
-            }
-        });
+      }
+    });
 	}
 
 	ngOnInit() {
+    Metronic.init();
+
 		switch(window.sessionStorage.getItem('permission')) {
-    		case 'A' : this.active_menu = "manage"; break;
+  		case 'A' : this.active_menu = "manage"; break;
 			case 'B' : this.active_menu = "teacher"; break;
 			case 'D' : this.active_menu = "student"; break;
 			default : this.active_menu = "overview";
-    	} 
+  	}
 
-    	var that = this;
-    	setTimeout(function(){
-	    	
-	    	that.quizgrid = $("#quiztable").DataTable({
-	            serverSide: true,
-	            stateSave: false,
+  	var that = this;
+  	setTimeout(function(){
+    	that.quizgrid = $("#quiztable").DataTable({
+        serverSide: true,
+        stateSave: false,
 
-	            "ordering": false,
-	            "info": true,
-	            "searching": true,  
+        "ordering": false,
+        "info": true,
+        "searching": true,  
 
-	            "ajax": {
-	                "type": "GET",
-	                "async": true,
-	                "url": "/problem/getproblemswithtype",
-	                "data": function (d: any){
-	                	d.type = that.quiztype;
-	                	return d;
-	                },                   
-	                "dataSrc": "data",	
-	                "dataType": "json",
-	                "cache":    false,
-	            },
-	            
-	            columns:[
-	            	{title: "No", data:"no"}, 
-	                {title: "Title", data:"title"}, 
-	                
-	                {title: "LimitTime(s)", data:"limit_time"}, 
-	            ], 
+        "ajax": {
+          "type": "GET",
+          "async": true,
+          "url": "/problem/getproblemswithtype",
+          "data": function (d: any) {
+          	d.type = that.quiztype;
+          	return d;
+          },                   
+          "dataSrc": "data",	
+          "dataType": "json",
+          "cache":    false,
+        },
+        
+        columns:[
+        	{title: "No", data:"no"}, 
+          {title: "Title", data:"title"}, 
+          {title: "LimitTime(s)", data:"limit_time"}, 
+        ], 
 
-	            scrollY: false,
-	            scrollX: false,
-	            scrollCollapse: false,
-	            jQueryUI: true,  
+        scrollY: false,
+        scrollX: false,
+        scrollCollapse: false,
+        jQueryUI: true,  
 
-	            "lengthMenu": [
-                    [5, 10, 20, 50, 150],
-                    [5, 10, 20, 50, 150] // change per page values here
-                ],
+        "lengthMenu": [
+              [5, 10, 20, 50, 150],
+              [5, 10, 20, 50, 150] // change per page values here
+          ],
 
-	            "paging": true,
-	            "pagingType": "full_numbers",           
-	            "pageLength": 10, 
+        "paging": true,
+        "pagingType": "full_numbers",           
+        "pageLength": 10, 
 
-	            //dom: "tBpi",           
-	            "dom": '<"top">irft<"bottom"rp><"clear">',
-	        });
+        //dom: "tBpi",           
+        "dom": '<"top">irft<"bottom"rp><"clear">',
+      });
 
-	        
-	        var that2 = that; 
-	        $('#quiztable tbody').on( 'dblclick', 'tr', function () {
-				if ( !$(this).hasClass('selected') ) {				
-					that2.quizgrid.$('tr.selected').removeClass('selected');
-					$(this).addClass('selected');
-				}
-				
+      var that2 = that;
+      $('#quiztable tbody').on( 'dblclick', 'tr', function () {
+        if ( !$(this).hasClass('selected') ) {
+          that2.quizgrid.$('tr.selected').removeClass('selected');
+          $(this).addClass('selected');
+        }
+
 				var selected_rowdata = that2.quizgrid.row('.selected').data();
 
 				that2.listflag = false;
@@ -213,17 +210,17 @@ export class ExerciseComponent implements OnInit {
 				that2.getProblem(selected_rowdata.id);
 				that2.quizno = selected_rowdata.no;
 				that2.initialize();
-			} ); 
-	    }, 500);
-    }
+			}); 
+    }, 500);
+  }
 
-    drawQuizGrid() {
-    	this.quizgrid.ajax.reload('', false);
+  drawQuizGrid() {
+  	this.quizgrid.ajax.reload('', false);
 	}
 
 	ngOnDestroy() {
-        clearInterval(this.ctimer);        
-    }
+    clearInterval(this.ctimer);
+  }
 
 	initialize() {
 		this.nextquiz_id = 0;
@@ -232,8 +229,6 @@ export class ExerciseComponent implements OnInit {
 		this.nextbutton = true;
 		this.againbutton = false;
 		this.quiz_count = 0;
-
-        Metronic.init();
 	}
 
 	evaluateExercise() {
@@ -246,22 +241,22 @@ export class ExerciseComponent implements OnInit {
 		if(typeof this.currentAnswer.quiz_id == "number") {
 			//this.evaluateExercise();		
 			
-			this.http.post("/answer/insert", this.currentAnswer).
-	    	map(
-	            (response) => response.json()
-	        ).
-	        subscribe(
+			this.http.post("/answer/insert", this.currentAnswer)
+        .map(
+          (response) => response.json()
+        )
+        .subscribe(
 	    		(data) => {
 	    			if(data.state == "error") {
 	    				Metronic.showErrMsg(data.message);	
 	    			}    			
 	    		}
 	    	);
-		}		
-    }
+		}
+  }
 
-    startExercise() {
-    	this.quiz_step = 1;
+  startExercise() {
+  	this.quiz_step = 1;
 		clearInterval(this.ctimer);
 
 		this.currentlimittime = Number(this.currentProblem.limit_time).valueOf();
@@ -279,7 +274,7 @@ export class ExerciseComponent implements OnInit {
 		}
 
 		this.markvisible = false;
-    }
+  }
 
 	endExercise() {
 		clearInterval(this.ctimer);
@@ -1247,43 +1242,47 @@ export class ExerciseComponent implements OnInit {
 
     downloadAnswerTxt() {
     	var url = 'data:unknown;,'+$('#txtanswer').val();
-		var hf = $('#download_answer');
-		hf.attr('href', url);
-		hf.attr('download', 'answer.txt');
-		hf.html(hf.download);
+  		var hf = $('#download_answer');
+  		hf.attr('href', url);
+  		hf.attr('download', 'answer.txt');
+  		hf.html(hf.download);
     }
 
     addAudioAndEvent() {
-    	$('#audiocontainer').html(this.currentProblem.content.audio);
-    	
-    	var sdWidget = SC.Widget('audioPlayer');
-    	sdWidget.bind(SC.Widget.Events.PLAY, function() {
-			
-		});
+      const _self = this;
+      const _id = `audio-player-${$.now()}`;
+      const regex = /auto_play=(true|false)/g;
+      const iframeStr = this.currentProblem.content.audio;
+      const autoplayIframe = iframeStr.replace(regex, 'auto_play=true');
 
-		var that = this;
-		sdWidget.bind(SC.Widget.Events.FINISH, function(e: any){
-			that.quiz_step = 2;
-    		that.currentlimittime = Number(that.currentProblem.limit_time).valueOf();
-			clearInterval(that.ctimer);
-			var that2 = that;
-    		that.ctimer = setInterval(()=> {
-				that2.currentlimittime--; 
-				that2.currentAnswer.examine_uptime = that2.currentProblem.limit_time - that2.currentlimittime - that2.record_start_time;
-				that2.progressvalue = Math.round(that2.currentAnswer.examine_uptime/(that2.currentProblem.limit_time - that2.record_start_time)*100);
+      $('#audiocontainer').html(autoplayIframe);
+      $('#audiocontainer > iframe').attr('id', _id);
 
-				if(that2.currentlimittime<=0) 
-					that2.endExercise(); 
-			}, 1000 );
+      const sdWidget = SC.Widget(_id);
+      sdWidget.bind(SC.Widget.Events.PLAY, function() {
+      });
 
-			if (that.currentProblem.type == 'SRS' || that.currentProblem.type == 'SSA' || that.currentProblem.type == 'SRL') {
-				that.audio_flag = true;
-				startRecording(that.currentAnswer.testevent_id, that.currentProblem.id, window.sessionStorage.getItem('userid'), that._token );
-				that.record_start_time = that.currentProblem.limit_time - that.currentlimittime;
-				that.progressvalue = 0;
-				that.audio_visible_flag = false;
-			}
-		});
+      sdWidget.bind(SC.Widget.Events.FINISH, function(e: any) {
+        _self.quiz_step = 2;
+        _self.currentlimittime = Number(_self.currentProblem.limit_time).valueOf();
+        clearInterval(_self.ctimer);
+        const _self2 = _self;
+        _self.ctimer = setInterval(()=> {
+          _self2.currentlimittime--;
+          _self2.currentAnswer.examine_uptime = _self2.currentProblem.limit_time - _self2.currentlimittime - _self2.record_start_time;
+          _self2.progressvalue = Math.round(_self2.currentAnswer.examine_uptime/(_self2.currentProblem.limit_time - _self2.record_start_time)*100);
+
+          if(_self2.currentlimittime<=0) _self2.endExercise();
+        }, 1000 );
+
+        if (_self.currentProblem.type == 'SRS' || _self.currentProblem.type == 'SSA' || _self.currentProblem.type == 'SRL') {
+          _self.audio_flag = true;
+          startRecording(_self.currentAnswer.testevent_id, _self.currentProblem.id, window.sessionStorage.getItem('userid'), _self._token );
+          _self.record_start_time = _self.currentProblem.limit_time - _self.currentlimittime;
+          _self.progressvalue = 0;
+          _self.audio_visible_flag = false;
+        }
+      });
     }
 
     addSolutionAudio() {
