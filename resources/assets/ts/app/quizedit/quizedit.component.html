@@ -148,7 +148,6 @@
                                                 <p>
                                                     {{ 'Select an Audio' | translate }} (mp3/wav):
                                                 </p>
-                                                <!-- <div class="dropzone" id="dzaudiofile"></div> -->
                                                 
                                                 <div class="row">  
                                                     <!-- <audio id="quizaudio">
@@ -168,7 +167,7 @@
                                                 <p style="width: 100%;">
                                                     {{ 'Select a Picture' | translate }} (jpeg/jpg/png): 
                                                 </p>
-                                                <div class="dropzone" id="dzpicturefile"></div>                            
+                                                <dropzone [message]="'Click or drag images here to upload'" (success)="onUploadSuccess($event)" (removedFile)="onRemoveFile($event)"></dropzone>
                                                 <hr/>
                                                 <div *ngIf="editedProblem.type == 'RSA'  ||  editedProblem.type =='RMA'">
                                                     <textarea name="select_guide" class="form-control" placeholder="Guide for multiple-choice" title="Guide for multiple-choice" rows="2" [(ngModel)]="editedProblem.content.select.guide"></textarea>
@@ -271,7 +270,6 @@
                                                     </div>
                                                 </div>
                                                 <hr/>
-                                                <!-- <div class="dropzone" id="dzaudiofile"></div> -->
                                             </div>
                                             <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LTW'  ||  editedProblem.type == 'LCD'">
                                                 <textarea id="ck_editor" class="form-control" placeholder="{{ 'Sentences' | translate }}" title="Sentences" rows="5"></textarea>
@@ -525,12 +523,11 @@
                                                     </p>
                                             <fieldset class="form-group my-6">
                                             	<div class="row">
-                                                            <div class="col-md-4" style="padding-left: 1em;">
-                                                        <img src="/upload/q2/{{editedProblem.id}}/{{editedProblem.content.picture}}" style="max-width: 300px;" />
-                                                        <input type="text" class="form-control" title="already uploaded filename" value="{{editedProblem.content.picture}}" disabled>
+                                                    <div class="col-md-4" style="padding-left: 1em;">
+                                                        <img src="{{editedProblem.content.picture}}" style="max-width: 300px;" />
                                                     </div>
-                                                            <div class="col-md-8">
-                                                        <div class="dropzone" id="dzpicturefile"></div>
+                                                    <div class="col-md-8">
+                                                        <dropzone [message]="'Click or drag images here to upload'" (success)="onUploadSuccess($event)" (removedFile)="onRemoveFile($event)"></dropzone>
                                                     </div>
                                                 </div>
                                             </fieldset>                                    

@@ -1,8 +1,11 @@
-import { Component, OnInit, Directive, OnDestroy, OnChanges } from '@angular/core';
+import { Component, OnInit, Directive, OnDestroy, OnChanges, EventEmitter } from '@angular/core';
 import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { NgForm } from "@angular/forms";
 import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
+import { TranslateService } from '@ngx-translate/core';
+import { remove } from 'lodash';
+import { v4 as uuid } from 'uuid';
 import 'rxjs/add/operator/map';
 import { routerTransition } from '../router.animations';
 import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
@@ -10,7 +13,6 @@ import { GlobalService } from '../shared/services/global.service';
 import { Problem } from '../model/problem';
 import { TypeRenderComponent } from '../test/type-render.component';
 import { FileUploadDirective } from '../dashboard/file-upload.directive';
-import { TranslateService } from '@ngx-translate/core';
 
 declare var $:any;
 declare var angular:any;
@@ -92,6 +94,11 @@ export class QuizeditComponent implements OnInit, OnDestroy {
     lastClickTime: number = 0;
 
     type_name: string = '';
+
+    uploadedFiles: {
+        path: string,
+        uuid: string
+    }[];
     
     constructor(private http: Http, private route: ActivatedRoute, private router: Router, private globalService: GlobalService, private translate: TranslateService) { 
         Dropzone.autoDiscover = false;
@@ -102,32 +109,37 @@ export class QuizeditComponent implements OnInit, OnDestroy {
 
         this.type_name = "";
 
-        var that = this;
+        const _self = this;
         this.router.events.subscribe((val: any) => {
             if (val instanceof ActivationEnd) {
             	
             	if(val.snapshot.routeConfig.path.indexOf("quizedit") < 0) 
             		return;
 
-            	that.newproblem = (val.snapshot.params['add'] != null ? true : false);
-                that.editproblem = (val.snapshot.params['edit'] != null ? true : false);
-                if (that.newproblem) {
-                	that.editedProblem = new Problem;
-                    that.editedProblem.category = val.snapshot.params['category'];
-                    that.editedProblem.type = val.snapshot.params['type'];
-                    that.onSelectProbCategory(that.editedProblem.category, that.editedProblem.type);
-                    that.initialize();
-                } else if (that.editproblem) {
-                    that.initialize(); 
-                    that.editedProblem = new Problem;
-                    that.http.get("/problem/getproblem/"+val.snapshot.params['id']).
+                _self.newproblem = (val.snapshot.params['add'] != null ? true : false);
+                _self.editproblem = (val.snapshot.params['edit'] != null ? true : false);
+                if (_self.newproblem) {
+                    _self.editedProblem = new Problem;
+                    _self.editedProblem.category = val.snapshot.params['category'];
+                    _self.editedProblem.type = val.snapshot.params['type'];
+                    _self.onSelectProbCategory(_self.editedProblem.category, _self.editedProblem.type);
+                    _self.initialize();
+                } else if (_self.editproblem) {
+                    _self.initialize();
+                    _self.editedProblem = new Problem;
+                    _self.http.get("/problem/getproblem/"+val.snapshot.params['id']).
                     map(
                         (response) => response.json()
                     ).
                     subscribe(
                         (data) => {
-                            that.editedProblem = data;
-                            that.showEditProblemForm();
+                            _self.editedProblem = data;
+                            _self.uploadedFiles = [{
+                                path: data.content.picture,
+                                uuid: uuid()
+                            }];
+                            console.log(_self.uploadedFiles);
+                            _self.showEditProblemForm();
                         }
                     );
                 }
@@ -146,6 +158,8 @@ export class QuizeditComponent implements OnInit, OnDestroy {
             case 'D' : this.active_menu = "student"; break;
             default : this.active_menu = "overview";
         }
+
+        this.uploadedFiles = [];
 
         this.categoryNames = this.globalService.problemCategoryNames;
     }
@@ -490,9 +504,9 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 break;
             case 'RSA' :                
             case 'RMA' :
-                if(this.thisDropzone.files.length>0) {
-                    this.editedProblem.content.picture = this.thisDropzone.files[0].name;     
-                } 
+                if(this.uploadedFiles.length > 0) {
+                    this.editedProblem.content.picture = this.uploadedFiles[0].path;
+                }
                 break;
             case 'RFB':
                 this.checkCkEditorInfo();
@@ -659,9 +673,9 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 break;
             case 'RSA' :                
             case 'RMA' :
-                if(this.thisDropzone.files.length>0) {
-                    this.editedProblem.content.picture = this.thisDropzone.files[0].name;     
-                } 
+                if(this.uploadedFiles.length > 1) {
+                    this.editedProblem.content.picture = this.uploadedFiles[1].path;
+                }
                 break;
             case 'RFB':
                 this.checkCkEditorInfo();
@@ -716,16 +730,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 if( data.state == "error") {
                     Metronic.showErrMsg(data.message);
                 } else {
-                    if(that.thisDropzone && that.thisDropzone.files.length>0) {
-                        that.thisDropzone.options.params.quizid = that.editedProblem.id;
-                        that.thisDropzone.uploadFiles(that.thisDropzone.files);
-                    };
-					/*
-                    if(that.solutionDropzone && that.solutionDropzone.files.length>0) {
-                        that.solutionDropzone.options.params.quizid = that.editedProblem.id;
-                        that.solutionDropzone.uploadFiles(that.solutionDropzone.files);
-                    };*/
-
                     that.onClickList();
                 }
     		}
@@ -1642,5 +1646,16 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         });
         
         this.nestable_flag = true;
+    }
+
+    onUploadSuccess(event: EventEmitter<any>) {
+        this.uploadedFiles.push({
+            uuid: event[0].upload.uuid,
+            path: event[1].path
+        });
+    }
+
+    onRemoveFile(event: EventEmitter<any>) {
+        remove(this.uploadedFiles, ['uuid', event.upload.uuid]);
     }
 }

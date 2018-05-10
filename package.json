@@ -24,12 +24,16 @@
     "@ngx-translate/core": "^8.0.0",
     "@ngx-translate/http-loader": "^2.0.1",
     "@types/auth0-lock": "^10.16.4",
+    "@types/lodash": "^4.14.108",
+    "@types/uuid": "^3.4.3",
     "angular2-chartjs": "^0.4.1",
     "core-js": "^2.5.5",
-    "ng-dropzone": "^2.0.0",
+    "lodash": "^4.17.10",
     "ng2-smart-table": "^1.2.2",
+    "ngx-dropzone-wrapper": "^5.3.5",
     "rxjs": "5.5.6",
     "ts-loader": "^2.1.0",
+    "uuid": "^3.2.1",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {

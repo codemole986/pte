@@ -11,6 +11,11 @@ Create `.env` file (can be based on `.env.example`
 php artisan key:generate
 ```
 
+### When using local drive for uploading files, create a symbolic link at public/storage which points to the  storage/app/public directory.
+```
+php artisan storage:link
+```
+
 ## Building
 
 ```

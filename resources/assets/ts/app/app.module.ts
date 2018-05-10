@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule} from '@angular/router';
 import { HttpModule } from '@angular/http';
+import { DropzoneModule, DROPZONE_CONFIG, DropzoneConfigInterface } from 'ngx-dropzone-wrapper';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -64,7 +65,13 @@ import {
 
 import { AuthGuard, AuthService } from './shared';
 
-
+const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
+  url: '/api/upload',
+  maxFilesize: 50,
+  acceptedFiles: 'image/*',
+  addRemoveLinks: true,
+  headers: { 'X-XSRF-TOKEN': window.sessionStorage.getItem('_token') }
+};
 
 export function createTranslateLoader(http: HttpClient) {
     return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -121,6 +128,7 @@ export function createTranslateLoader(http: HttpClient) {
         ChartModule,   
         Ng2SmartTableModule,        
         NbCardModule,
+        DropzoneModule,
         NgbModule.forRoot(),        
         NgbDropdownModule.forRoot(),
         NgbModalModule.forRoot(),
@@ -240,7 +248,14 @@ export function createTranslateLoader(http: HttpClient) {
         TypeRenderComponent,
         EvalstatusRenderComponent
     ],
-	providers: [AuthGuard, AuthService],
+	providers: [
+        AuthGuard,
+        AuthService,
+        {
+            provide: DROPZONE_CONFIG,
+            useValue: DEFAULT_DROPZONE_CONFIG
+        }
+    ],
 	bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -122,11 +122,17 @@
         ChartsFlotcharts.initPieCharts();
         ChartsFlotcharts.initBarCharts();*/
     });
+    @php
+    {
+        $encrypter = app('Illuminate\Encryption\Encrypter');
+        $encrypted_token = $encrypter->encrypt(csrf_token());
+    }
+    @endphp
     @if(session()->has('userinfo'))
     {
         window.sessionStorage.setItem('isLoggedin', 'true');
         window.sessionStorage.setItem('userid', "{{session('userinfo')->id}}");
-        window.sessionStorage.setItem('_token', "{{csrf_token()}}");
+        window.sessionStorage.setItem('_token', "{{$encrypted_token}}");
         window.sessionStorage.setItem('permission', "{{session('userinfo')->permission}}");
         window.sessionStorage.setItem('username', "{{session('userinfo')->first_name . ' ' . session('userinfo')->last_name}}");
         window.sessionStorage.setItem('userphoto', "{{session('userinfo')->photo}}");
