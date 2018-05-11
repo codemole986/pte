@@ -4,7 +4,7 @@ import { NgForm } from "@angular/forms";
 import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import { TranslateService } from '@ngx-translate/core';
-import { remove } from 'lodash';
+import { last, remove } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import 'rxjs/add/operator/map';
 import { routerTransition } from '../router.animations';
@@ -505,7 +505,8 @@ export class QuizeditComponent implements OnInit, OnDestroy {
             case 'RSA' :                
             case 'RMA' :
                 if(this.uploadedFiles.length > 0) {
-                    this.editedProblem.content.picture = this.uploadedFiles[0].path;
+                    const lastFile = last(this.uploadedFiles);
+                    this.editedProblem.content.picture = lastFile.path;
                 }
                 break;
             case 'RFB':
@@ -673,8 +674,9 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 break;
             case 'RSA' :                
             case 'RMA' :
-                if(this.uploadedFiles.length > 1) {
-                    this.editedProblem.content.picture = this.uploadedFiles[1].path;
+                if(this.uploadedFiles.length > 0) {
+                    const lastFile = last(this.uploadedFiles);
+                    this.editedProblem.content.picture = lastFile.path;
                 }
                 break;
             case 'RFB':
