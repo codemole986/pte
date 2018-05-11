@@ -4,7 +4,7 @@ import { NgForm } from "@angular/forms";
 import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import { TranslateService } from '@ngx-translate/core';
-import { last, remove } from 'lodash';
+import { every, isObject, last, remove } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import 'rxjs/add/operator/map';
 import { routerTransition } from '../router.animations';
@@ -138,7 +138,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                                 path: data.content.picture,
                                 uuid: uuid()
                             }];
-                            console.log(_self.uploadedFiles);
                             _self.showEditProblemForm();
                         }
                     );
@@ -504,6 +503,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 break;
             case 'RSA' :                
             case 'RMA' :
+            case 'SPI' :
                 if(this.uploadedFiles.length > 0) {
                     const lastFile = last(this.uploadedFiles);
                     this.editedProblem.content.picture = lastFile.path;
@@ -533,15 +533,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 if(this.solutionDropzone.files.length>0) {
                     this.editedProblem.solution.audio = this.solutionDropzone.files[0].name;     
                 } */ 
-                break;
-            case 'SPI' :
-                if(this.thisDropzone.files.length>0) {
-                    this.editedProblem.content.picture = this.thisDropzone.files[0].name;     
-                } 
-
-                /*if(this.solutionDropzone.files.length>0) {
-                    this.editedProblem.solution.audio = this.solutionDropzone.files[0].name;     
-                } */                
                 break;
             case 'SAL' :
                 /*if(this.solutionDropzone.files.length>0) {
@@ -674,6 +665,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 break;
             case 'RSA' :                
             case 'RMA' :
+            case 'SPI' :
                 if(this.uploadedFiles.length > 0) {
                     const lastFile = last(this.uploadedFiles);
                     this.editedProblem.content.picture = lastFile.path;
@@ -703,15 +695,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 if(this.solutionDropzone.files.length>0) {
                     this.editedProblem.solution.audio = this.solutionDropzone.files[0].name;     
                 }  */
-                break;
-            case 'SPI' :
-                if(this.thisDropzone.files.length>0) {
-                    this.editedProblem.content.picture = this.thisDropzone.files[0].name;     
-                } 
-
-                /*if(this.solutionDropzone.files.length>0) {
-                    this.editedProblem.solution.audio = this.solutionDropzone.files[0].name;     
-                } */                
                 break;
             case 'SAL' :
                 /*if(this.solutionDropzone.files.length>0) {
@@ -1127,14 +1110,16 @@ export class QuizeditComponent implements OnInit, OnDestroy {
 
         var sel_val = this.select_titles[0];
         var options = this.editedProblem.content.list;
-        var i = this.globalService.getDataFromArray(options, sel_val, "title");
-        if (i < options.length - 1) {
-            var tmp = options[i].title;
-            options[i].title = options[i + 1].title;
-            options[i + 1].title = tmp;
-            tmp = options[i].audio;
-            options[i].audio = options[i + 1].audio;
-            options[i + 1].audio = tmp;
+        if (every(options, isObject)) {
+            var i = this.globalService.getDataFromArray(options, sel_val, "title");
+            if (i < options.length - 1) {
+                var tmp = options[i].title;
+                options[i].title = options[i + 1].title;
+                options[i + 1].title = tmp;
+                tmp = options[i].audio;
+                options[i].audio = options[i + 1].audio;
+                options[i + 1].audio = tmp;
+            }
         }
     }
 
