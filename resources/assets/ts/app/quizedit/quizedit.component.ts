@@ -1,4 +1,4 @@
-import { Component, OnInit, Directive, OnDestroy, OnChanges, EventEmitter } from '@angular/core';
+import { Component, OnInit, Directive, OnDestroy, OnChanges } from '@angular/core';
 import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { NgForm } from "@angular/forms";
 import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
@@ -1635,14 +1635,14 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         this.nestable_flag = true;
     }
 
-    onUploadSuccess(event: EventEmitter<any>) {
+    onUploadSuccess(event: any) {
         this.uploadedFiles.push({
             uuid: event[0].upload.uuid,
             path: event[1].path
         });
     }
 
-    onRemoveFile(event: EventEmitter<any>) {
+    onRemoveFile(event: any) {
         remove(this.uploadedFiles, ['uuid', event.upload.uuid]);
     }
 }
