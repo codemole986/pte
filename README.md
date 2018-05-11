@@ -4,7 +4,7 @@
 
 ```
 composer install
-npm install
+yarn install
 ```
 Create `.env` file (can be based on `.env.example`
 ```
@@ -19,13 +19,13 @@ php artisan storage:link
 ## Building
 
 ```
-npm run dev
+yarn dev
 ```
 
 ## Watching
 
 ```
-npm run watch
+yarn watch
 ```
 
 ## Server
