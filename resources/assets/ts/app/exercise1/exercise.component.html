@@ -1,0 +1,68 @@
+<div *ngIf="active_menu=='overview'">
+    <app-header-overview [default]="'exercise'"></app-header-overview>
+</div>
+<div *ngIf="active_menu=='student'">
+    <app-header-student [default]="'exercise'"></app-header-student>
+</div>
+<div *ngIf="active_menu=='teacher'">
+    <app-header-teacher [default]="'exercise'"></app-header-teacher>
+</div>
+<div *ngIf="active_menu=='manage'">
+    <app-header-manage [default]="'exercise'"></app-header-manage>
+</div>
+<div class="page-container">
+    <!-- BEGIN PAGE HEAD -->
+    <div class="page-head">
+        <div class="container">
+            <!-- BEGIN PAGE TITLE -->
+            <div class="page-title">
+                <h1>{{ 'Exercise' | translate }} <small>exercise quiz</small></h1>
+            </div>
+            <!-- END PAGE TITLE -->
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="container">
+            <!-- BEGIN PAGE BREADCRUMB -->
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <a href="#" [routerLink]="['/']">{{ 'Home' | translate }}</a>
+                </li>
+                <li class="active">
+                    {{ 'Exercise' | translate }}
+                </li>
+            </ul>
+            <div>
+                <div class="row">
+                    <div class="col-md-4" id="quzlist">
+                        <!-- BEGIN EXAMPLE TABLE PORTLET-->
+                        <div class="portlet light">
+                            <div class="portlet-title">
+                                <div class="caption">
+                                    <i class="fa fa-table fa-fw"></i><span class="caption-subject font-green-sharp bold uppercase">{{ 'Quiz List' | translate }}</span>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <table id="quiztable" class="table table-hover"></table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-sm-12">
+                        <!-- BEGIN EXAMPLE TABLE PORTLET-->
+                        <div class="portlet light">
+                            <div class="portlet-title">
+                                <div class="caption" style="width:100%;">
+                                    <div class="row">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
