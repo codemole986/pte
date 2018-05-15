@@ -5339,6 +5339,10 @@ ng2-smart-table@^1.2.2:
     lodash "^4.17.4"
     ng2-completer "^1.2.2"
 
+ngx-datatable@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/ngx-datatable/-/ngx-datatable-1.0.3.tgz#9ef9915aa019e9983aa8e3897b61f400f2fd69d5"
+
 ngx-dropzone-wrapper@^5.3.5:
   version "5.3.5"
   resolved "https://registry.yarnpkg.com/ngx-dropzone-wrapper/-/ngx-dropzone-wrapper-5.3.5.tgz#0892fef9d79d5a17e39f92e864589d071551e0f6"

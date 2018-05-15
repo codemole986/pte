@@ -30,6 +30,7 @@
     "core-js": "^2.5.5",
     "lodash": "^4.17.10",
     "ng2-smart-table": "^1.2.2",
+    "ngx-datatable": "^1.0.3",
     "ngx-dropzone-wrapper": "^5.3.5",
     "rxjs": "5.5.6",
     "ts-loader": "^2.1.0",

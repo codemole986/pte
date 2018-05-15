@@ -30,6 +30,8 @@ declare var SC: any;
   providers: [GlobalService]
 })
 export class ExerciseComponent implements OnInit, OnDestroy {
+  loadingQuizList: boolean;
+  loadingQuiz: boolean;
   // currentProblem: Problem;
   // currentAnswer: Answer;
   // currentpretime: number;
@@ -93,11 +95,32 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   // quizgrid: any;
   // quizno: number;
 
-  constructor(private http: Http, private route: ActivatedRoute, private router: Router, private globalService: GlobalService, private translate: TranslateService) {
+  constructor(
+    private http: Http,
+    private route: ActivatedRoute,
+    private router: Router,
+    private globalService: GlobalService,
+    private translate: TranslateService
+  ) {
   }
 
   ngOnInit() {
     Metronic.init();
+
+    this.loadingQuizList = false;
+    this.loadingQuiz = false;
+
+    this.router.events.subscribe(event => {
+      if (event instanceof ActivationEnd) {
+        console.log('onenter');
+      }
+    });
+
+    this.route.params.subscribe(params => {
+      if (params.type) {
+        this.getQuizList(params.type)
+      }
+    });
   }
 
   drawQuizGrid() {
@@ -108,12 +131,19 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     // clearInterval(this.ctimer);
   }
 
-  initialize() {
-    // this.nextquiz_id = 0;
-    // this.prevquiz_id = 0;
-    // this.previousbutton = true;
-    // this.nextbutton = true;
-    // this.againbutton = false;
-    // this.quiz_count = 0;
+  getQuiz(id: number) {
+    this.http.get(`/problem/getfullproblem/${id}`)
+  }
+
+  getQuizList(type: string, offset: number = 0, limit: number = 10) {
+    this.http.get('/problem/getproblemswithtype', { params: { type, offset, limit } })
+      .map(
+        (response) => response.json()
+      )
+      .subscribe(
+        ({ data }) => {
+          console.log(data);
+        }
+      );
   }
 }
