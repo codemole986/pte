@@ -1,25 +1,22 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-
+import { Component, OnInit, OnDestroy, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute, ActivationEnd  } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
+import { TranslateService } from '@ngx-translate/core';
 import { Observable } from 'rxjs/Rx';
+import { map } from 'lodash';
+
 import { routerTransition } from '../router.animations';
 import { GlobalService } from '../shared/services/global.service';
-import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
 import { Problem } from '../model/problem';
 import { Answer } from '../model/answer';
 import { TypeRenderComponent } from '../test/type-render.component';
-import { TranslateService } from '@ngx-translate/core';
 
 declare var $:any;
 declare function startRecording(a: any, b: any, c: any, d: any): any;
 declare function stopRecording(): any;
 declare var bootbox: any;
 declare var Metronic: any;
-declare var Datatable: any;
 declare var SC: any;
 
 @Component({
@@ -30,8 +27,13 @@ declare var SC: any;
   providers: [GlobalService]
 })
 export class ExerciseComponent implements OnInit, OnDestroy {
-  loadingQuizList: boolean;
-  loadingQuiz: boolean;
+  loadingQuizList: boolean = false;
+  loadingQuiz: boolean = false;
+  list: Problem[];
+  limit: number = 5;
+  offset: number = 0;
+  count: number = 0;
+  type: string = '';
   // currentProblem: Problem;
   // currentAnswer: Answer;
   // currentpretime: number;
@@ -118,7 +120,8 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
     this.route.params.subscribe(params => {
       if (params.type) {
-        this.getQuizList(params.type)
+        this.type = params.type;
+        this.getQuizList(this.type)
       }
     });
   }
@@ -135,15 +138,29 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     this.http.get(`/problem/getfullproblem/${id}`)
   }
 
-  getQuizList(type: string, offset: number = 0, limit: number = 10) {
-    this.http.get('/problem/getproblemswithtype', { params: { type, offset, limit } })
+  getQuizList(type: string, offset: number = 0, limit: number = 15) {
+    this.http.get('/api/quiz', {
+      params: {
+        type,
+        start: offset,
+        length: limit
+      }
+    })
       .map(
         (response) => response.json()
       )
       .subscribe(
-        ({ data }) => {
-          console.log(data);
+        ({ data, recordsFiltered, recordsTotal }) => {
+          this.list = map(data, (d: Problem, index: number) => ({ ...d, no: index + this.offset * this.limit + 1 }));
+          this.count = recordsTotal;
         }
       );
+  }
+
+  setPage(page: { limit: number, offset: number }) {
+    this.limit = page.limit;
+    this.offset = page.offset;
+
+    this.getQuizList(this.type, this.offset, this.limit);
   }
 }

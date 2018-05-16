@@ -174,3 +174,5 @@ Route::get('/profile', function() { return view('index'); } );
 Route::get('/auth0/callback', '\Auth0\Login\Auth0Controller@callback');
 
 Route::post('/api/upload', 'UploadController@post');
+
+Route::get('/api/quiz', 'ProblemController@getproblems');

@@ -44,7 +44,25 @@
                                 </div>
                             </div>
                             <div class="portlet-body">
-                                <table id="quiztable" class="table table-hover"></table>
+                                <ngx-datatable
+                                    class="material"
+                                    [rows]="list"
+                                    [columns]="[{name:'No'},{name:'Title'},{name:'LimitTime(s)', prop: 'limit_time'}]"
+                                    [headerHeight]="50"
+                                    [footerHeight]="50"
+                                    [rowHeight]="'auto'"
+                                    [externalPaging]="true"
+                                    [externalSorting]="true"
+                                    [draggable]="false"
+                                    [columnMode]="'force'"
+                                    [count]="count"
+                                    [offset]="offset"
+                                    [limit]="limit"
+                                    (page)="setPage($event)">
+                                    <ngx-datatable-column name="No" [width]="1" [resizeable]="false"></ngx-datatable-column>
+                                    <ngx-datatable-column name="Title" [resizeable]="true"></ngx-datatable-column>
+                                    <ngx-datatable-column name="LimitTime(s)" prop="limit_time" [width]="40" [resizeable]="false"></ngx-datatable-column>
+                                </ngx-datatable>
                             </div>
                         </div>
                     </div>

@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule} from '@angular/router';
 import { HttpModule } from '@angular/http';
 import { DropzoneModule, DROPZONE_CONFIG, DropzoneConfigInterface } from 'ngx-dropzone-wrapper';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -129,6 +130,7 @@ export function createTranslateLoader(http: HttpClient) {
         Ng2SmartTableModule,        
         NbCardModule,
         DropzoneModule,
+        NgxDatatableModule,
         NgbModule.forRoot(),        
         NgbDropdownModule.forRoot(),
         NgbModalModule.forRoot(),

@@ -45,3 +45,7 @@ a.eraser {
     display: none;
   }
 }
+
+app-exercise .ngx-datatable .datatable-footer .datatable-pager .pager li.pages {
+  display: none;
+}
