@@ -27,8 +27,7 @@ declare var SC: any;
   providers: [GlobalService]
 })
 export class ExerciseComponent implements OnInit, OnDestroy {
-  loadingQuizList: boolean = false;
-  loadingQuiz: boolean = false;
+  active_menu: string = 'overview';
   list: Problem[];
   limit: number = 5;
   offset: number = 0;
@@ -39,68 +38,6 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   preTimerSubscription: Subscription;
   mainTimerSubscription: Subscription;
   step: number = 0;
-  // currentProblem: Problem;
-  // currentAnswer: Answer;
-  // currentpretime: number;
-  // currentlimittime: number;
-  // quiz_count: number = 0;
-  // endbutton: boolean;
-  // againbutton: boolean;
-  // nextbutton: boolean;
-  // previousbutton: boolean;
-  // solutiontextvisible: boolean;
-  // markvisible: boolean;
-  // quiz_step: number;
-  // ctimer: any;
-  // i: number;
-  // arr_types: any[];
-
-  // radio_answer_val: string;
-  // check_answer_val: any[];
-  // check_solution_val: any[];
-
-  // select_left_values: any[];
-  // select_right_values: any[];
-  // order_options: any[];
-  // order_left_options: any[];
-  // order_right_options: any[];
-
-  // audio_flag: boolean = false;
-  // audio_autoplay: boolean;
-
-  // sel_audio_index: number;
-  // audio_visible_flag: boolean;
-  // record_start_time: number;
-  // end_exam_flag: boolean;
-
-  // rfb_content: string;
-  // rfb_probhtml: string;
-  // rfb_answerhtml: string;
-  // rfb_solutionhtml: string;
-  // rfb_options: any[];
-  // rfb_selected_options: any[];
-
-  // ran_content: string;
-  // ran_selectlist: any[];
-
-  // @ViewChild('htmldata') htmldata: ElementRef;
-  // @ViewChild('choicepanel') choicepanel: ElementRef;
-  // @ViewChild('html_answerdata') html_answerdata: ElementRef;
-
-  // quiz_id: number;
-  // nextquiz_id: number;
-  // prevquiz_id: number;
-  // progressvalue: number;
-  // audiovisibleflag : boolean = false;
-
-  // listflag : boolean = true;
-
-  // _token : string = window.sessionStorage.getItem('_token');
-  // active_menu: string = "overview";
-
-  // quiztype: string;
-  // quizgrid: any;
-  // quizno: number;
 
   constructor(
     private http: Http,
@@ -114,33 +51,25 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   ngOnInit() {
     Metronic.init();
 
-    this.loadingQuizList = false;
-    this.loadingQuiz = false;
-
-    this.router.events.subscribe(event => {
-      if (event instanceof ActivationEnd) {
-        console.log('onenter');
-      }
-    });
+    switch(window.sessionStorage.getItem('permission')) {
+      case 'A' : this.active_menu = 'manage'; break;
+      case 'B' : this.active_menu = 'teacher'; break;
+      case 'D' : this.active_menu = 'student'; break;
+      default : this.active_menu = 'overview';
+    }
 
     this.route.params.subscribe(params => {
       if (params.type) {
         this.type = params.type;
-        this.getQuizList(this.type)
+        this.currentQuiz = undefined;
+        this.getQuizList(this.type);
       }
     });
   }
 
-  drawQuizGrid() {
-    // this.quizgrid.ajax.reload('', false);
-  }
-
   ngOnDestroy() {
-    // clearInterval(this.ctimer);
-  }
-
-  getQuiz(id: number) {
-    this.http.get(`/problem/getfullproblem/${id}`)
+    this.stopTimer(this.preTimerSubscription);
+    this.stopTimer(this.mainTimerSubscription);
   }
 
   getQuizList(type: string, offset: number = 0, limit: number = 15) {
@@ -166,9 +95,9 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       );
   }
 
-  setPage(page: { limit: number, offset: number }) {
-    this.limit = page.limit;
-    this.offset = page.offset;
+  setPage({ limit, offset }: { limit: number, offset: number }) {
+    this.limit = limit;
+    this.offset = offset;
 
     this.getQuizList(this.type, this.offset, this.limit);
   }
@@ -190,9 +119,9 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     return '';
   }
 
-  selectQuizRow(row: { selected: Problem[] }) {
-    if (row.selected.length > 0) {
-      this.selectQuiz(row.selected[0]);
+  selectQuizRow({ selected }: { selected: Problem[]}) {
+    if (selected.length > 0) {
+      this.selectQuiz(selected[0]);
     }
   }
 
@@ -203,7 +132,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.currentQuiz = { ...quiz };
+    this.currentQuiz = quiz;
 
     this.startExercise();
   }
