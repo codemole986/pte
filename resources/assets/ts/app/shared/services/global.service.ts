@@ -213,4 +213,30 @@ export class GlobalService {
 		}
 		return -1;
 	}
+
+  get STEP_PRE(): string { return 'STEP_PRE'; };
+  get STEP_READING(): string { return 'STEP_READING'; };
+  get STEP_MAIN(): string { return 'STEP_MAIN'; };
+  get STEP_POST(): string { return 'STEP_POST'; };
+
+  getSteps(type: string): string[] {
+    let steps = [this.STEP_PRE];
+
+    switch (type) {
+      case 'LWS':
+      case 'LSA':
+      case 'LTW':
+      case 'LSB':
+      case 'LCD':
+      case 'LTS': {
+        steps.push(this.STEP_READING, this.STEP_MAIN);
+        break;
+      }
+      default:
+    }
+
+    steps.push(this.STEP_MAIN, this.STEP_POST);
+
+    return steps;
+  }
 }

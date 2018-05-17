@@ -38,7 +38,8 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   remainingTime: number = 0;
   preTimerSubscription: Subscription;
   mainTimerSubscription: Subscription;
-  step: number = 0;
+  step: string;
+  steps: string[];
   scAudioPlayerId: string = 'sc-audio-player';
 
   constructor(
@@ -61,11 +62,15 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       default : this.active_menu = 'overview';
     }
 
+    this.step = this.globalService.STEP_PRE;
+
     this.route.params.subscribe(params => {
       if (params.type) {
         this.type = params.type;
         this.currentQuiz = undefined;
         this.getQuizList(this.type);
+        this.steps = this.globalService.getSteps(this.type);
+        this.step = this.steps[0];
       }
     });
   }
@@ -73,6 +78,14 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.stopTimer(this.preTimerSubscription);
     this.stopTimer(this.mainTimerSubscription);
+  }
+
+  isPreStep(step: string): boolean {
+    return step === this.globalService.STEP_PRE;
+  }
+
+  isMainStep(step: string): boolean {
+    return step === this.globalService.STEP_MAIN;
   }
 
   getQuizList(type: string, offset: number = 0, limit: number = 15) {
@@ -179,14 +192,14 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     this.stopTimer(this.preTimerSubscription);
     this.stopTimer(this.mainTimerSubscription);
 
-    this.step = 0;
+    this.step = this.globalService.STEP_PRE;
     this.remainingTime = preparation_time;
 
     this.preTimerSubscription = this.startTimer(0, (t: number) => {
       this.remainingTime = preparation_time - t;
 
       if (this.remainingTime <= 0) {
-        this.step = 1;
+        this.step = this.globalService.STEP_MAIN;
         this.remainingTime = limit_time;
         this.stopTimer(this.preTimerSubscription);
 
@@ -194,7 +207,7 @@ export class ExerciseComponent implements OnInit, OnDestroy {
           this.remainingTime = limit_time - t;
 
           if (this.remainingTime <= 0) {
-            this.step = 2;
+            this.step = this.globalService.STEP_POST;
             this.remainingTime = 0;
             this.stopTimer(this.mainTimerSubscription);
           }

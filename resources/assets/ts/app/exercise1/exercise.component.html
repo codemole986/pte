@@ -81,10 +81,10 @@
                                             <span class="caption-subject font-green-sharp bold uppercase">{{ currentQuiz.category | translate }}: {{ getTypeName(currentQuiz.category, currentQuiz.type) }}</span>
                                             <span class="font-blue-sharp bold">No: {{currentQuiz.no}}</span>
                                         </div>
-                                        <div class="col-md-4" *ngIf="step === 0">
+                                        <div class="col-md-4" *ngIf="isPreStep(step)">
                                             <h5 style="color:#09F;">{{ 'Preparation Time' | translate }}: {{remainingTime | converttimestamp }}</h5>
                                         </div>
-                                        <div class="col-md-4" *ngIf="step > 0">
+                                        <div class="col-md-4" *ngIf="isMainStep(step)">
                                             <h5 style="color:#09F;">{{ 'Remain Time' | translate }}: {{remainingTime | converttimestamp }}</h5>
                                         </div>
                                     </div>
