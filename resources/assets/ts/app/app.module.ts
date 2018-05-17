@@ -32,9 +32,6 @@ import { ProblemComponent } from './examinee/problem/problem.component';
 import { FileUploadDirective } from './dashboard/file-upload.directive';
 import { NumberprintPipe } from './dashboard/numberprint';
 
-import { ConverttimestampPipe } from './modules/Converttimestamp.pipe';
-import { SafePipe } from './modules/Safe.pipe';
-
 import {
     HeaderComponent, HeaderTeacherComponent, HeaderOverviewComponent, HeaderStudentComponent, HeaderManageComponent, 
     FooterComponent
@@ -66,7 +63,7 @@ import {
     ChatComponent
 } from './dashboard/components';
 
-import { AuthGuard, AuthService } from './shared';
+import { AuthGuard, AuthService, ConverttimestampPipe, SafePipe } from './shared';
 
 const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
   url: '/api/upload',
