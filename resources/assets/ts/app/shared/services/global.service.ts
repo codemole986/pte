@@ -215,7 +215,7 @@ export class GlobalService {
 	}
 
   get STEP_PRE(): string { return 'STEP_PRE'; };
-  get STEP_READING(): string { return 'STEP_READING'; };
+  get STEP_LISTENING(): string { return 'STEP_LISTENING'; };
   get STEP_MAIN(): string { return 'STEP_MAIN'; };
   get STEP_POST(): string { return 'STEP_POST'; };
 
@@ -229,7 +229,7 @@ export class GlobalService {
       case 'LSB':
       case 'LCD':
       case 'LTS': {
-        steps.push(this.STEP_READING, this.STEP_MAIN);
+        steps.push(this.STEP_LISTENING, this.STEP_MAIN);
         break;
       }
       default:

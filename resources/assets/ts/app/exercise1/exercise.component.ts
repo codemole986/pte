@@ -88,6 +88,14 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     return step === this.globalService.STEP_MAIN;
   }
 
+  isListeningStep(step: string): boolean {
+    return step === this.globalService.STEP_LISTENING;
+  }
+
+  isPostStep(step: string): boolean {
+    return step === this.globalService.STEP_POST;
+  }
+
   getQuizList(type: string, offset: number = 0, limit: number = 15) {
     this.http.get('/api/quiz', {
       params: {
