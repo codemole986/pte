@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, EventEmitter } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute, ActivationEnd  } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
@@ -38,13 +39,15 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   preTimerSubscription: Subscription;
   mainTimerSubscription: Subscription;
   step: number = 0;
+  scAudioPlayerId: string = 'sc-audio-player';
 
   constructor(
     private http: Http,
     private route: ActivatedRoute,
     private router: Router,
     private globalService: GlobalService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private sanitizer: DomSanitizer
   ) {
   }
 
@@ -126,10 +129,41 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   }
 
   selectQuiz(quiz: Problem) {
-    const { preparation_time, limit_time, id } = quiz;
+    const { preparation_time, limit_time, id, content } = quiz;
+    const { audio } = content;
+    const patternIframe = new RegExp('^<iframe(.+)</iframe>$');
+    const patternSrc = new RegExp('(?<=src=").*?(?=["])');
+    const patternAutoPlay = new RegExp('auto_play=(true|false)');
 
     if (!isEmpty(this.currentQuiz) && id === this.currentQuiz.id) {
       return;
+    }
+
+    if (audio && patternIframe.test(audio)) {
+      let src = '';
+      const matches = audio.match(patternSrc);
+
+      if (matches.length > 0) {
+        src = matches[0].replace(patternAutoPlay, 'auto_play=true');
+        quiz.content.audio = src;
+
+        window.addEventListener('message', (event: MessageEvent) => {
+          const { origin } = event;
+
+          if (origin === 'https://w.soundcloud.com') {
+            const scWidget = SC.Widget(this.scAudioPlayerId);
+
+            scWidget.bind(SC.Widget.Events.PLAY, () => {
+              console.log('play');
+            });
+
+            scWidget.bind(SC.Widget.Events.FINISH, function(e: any) {
+              console.log('finish');
+              this.step = 2;
+            });
+          }
+        });
+      }
     }
 
     this.currentQuiz = quiz;

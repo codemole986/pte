@@ -29,9 +29,11 @@ import { EvalexamComponent } from './evalexam/evalexam.component';
 import { EvalstatusRenderComponent } from './evalexam/evalstatus-render.component';
 import { EditorComponent } from './examinee/editor/editor.component';
 import { ProblemComponent } from './examinee/problem/problem.component';
-import { ConverttimestampPipe } from './examinee/examinee.converttimestamp';
 import { FileUploadDirective } from './dashboard/file-upload.directive';
 import { NumberprintPipe } from './dashboard/numberprint';
+
+import { ConverttimestampPipe } from './modules/Converttimestamp.pipe';
+import { SafePipe } from './modules/Safe.pipe';
 
 import {
     HeaderComponent, HeaderTeacherComponent, HeaderOverviewComponent, HeaderStudentComponent, HeaderManageComponent, 
@@ -115,6 +117,7 @@ export function createTranslateLoader(http: HttpClient) {
         EditorComponent,
         ProblemComponent,
         ConverttimestampPipe,
+        SafePipe,
         TimelineComponent,        
         NotificationComponent,
         ChatComponent      

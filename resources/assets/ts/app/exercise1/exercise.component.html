@@ -93,6 +93,9 @@
                             <div class="portlet-body">
                                 <div class="quiz-guide">{{currentQuiz.guide}}</div>
                                 <div class="quiz-content-text" *ngIf="currentQuiz.content.text" [innerHTML]="currentQuiz.content.text"></div>
+                                <div class="quiz-content-audio" *ngIf="currentQuiz.content.audio">
+                                    <iframe [id]="scAudioPlayerId" width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" [src]="currentQuiz.content.audio | safe"></iframe>
+                                </div>
                             </div>
                         </div>
                         <!-- BEGIN SOLUTION CONTENTS -->

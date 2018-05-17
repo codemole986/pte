@@ -1,10 +1,6 @@
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe ({
-  name : 'converttimestamp'
-})
-
-
+@Pipe ({ name : 'converttimestamp' })
 export class ConverttimestampPipe implements PipeTransform {
   transform(val : number) : string {
     var str_timestamp;
