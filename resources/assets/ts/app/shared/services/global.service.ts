@@ -229,7 +229,7 @@ export class GlobalService {
       case 'LSB':
       case 'LCD':
       case 'LTS': {
-        steps.push(this.STEP_LISTENING, this.STEP_MAIN);
+        steps.push(this.STEP_LISTENING);
         break;
       }
       default:

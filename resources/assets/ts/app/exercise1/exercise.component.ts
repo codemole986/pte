@@ -5,13 +5,14 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscription } from 'rxjs/Rx';
-import { isEmpty, map } from 'lodash';
+import { indexOf, isEmpty, map } from 'lodash';
 
 import { routerTransition } from '../router.animations';
-import { GlobalService } from '../shared/services/global.service';
 import { Problem } from '../model/problem';
 import { Answer } from '../model/answer';
 import { TypeRenderComponent } from '../test/type-render.component';
+
+import { GlobalService, TimerService } from '../shared/services';
 
 declare var $:any;
 declare function startRecording(a: any, b: any, c: any, d: any): any;
@@ -36,24 +37,28 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   type: string = '';
   currentQuiz: Problem;
   remainingTime: number = 0;
-  preTimerSubscription: Subscription;
-  mainTimerSubscription: Subscription;
   step: string;
   steps: string[];
   scAudioPlayerId: string = 'sc-audio-player';
+
+  private frequency: number = 1000;
 
   constructor(
     private http: Http,
     private route: ActivatedRoute,
     private router: Router,
-    private globalService: GlobalService,
     private translate: TranslateService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private globalService: GlobalService,
+    private timerService: TimerService
   ) {
+    this.timerService.start();
   }
 
   ngOnInit() {
     Metronic.init();
+
+    this.init();
 
     switch(window.sessionStorage.getItem('permission')) {
       case 'A' : this.active_menu = 'manage'; break;
@@ -62,22 +67,18 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       default : this.active_menu = 'overview';
     }
 
-    this.step = this.globalService.STEP_PRE;
-
     this.route.params.subscribe(params => {
       if (params.type) {
         this.type = params.type;
         this.currentQuiz = undefined;
         this.getQuizList(this.type);
         this.steps = this.globalService.getSteps(this.type);
-        this.step = this.steps[0];
       }
     });
   }
 
   ngOnDestroy() {
-    this.stopTimer(this.preTimerSubscription);
-    this.stopTimer(this.mainTimerSubscription);
+    this.stopTimer();
   }
 
   isPreStep(step: string): boolean {
@@ -94,6 +95,30 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
   isPostStep(step: string): boolean {
     return step === this.globalService.STEP_POST;
+  }
+
+  restartTimer(): void {
+    this.timerService.remove(this.calcRemainingTime);
+    this.init();
+    this.timerService.start();
+  }
+
+  stopTimer() {
+    this.timerService.remove(this.calcRemainingTime);
+  }
+
+  private init() {
+    const _self = this;
+
+    const _calcRemainingTime = _self.calcRemainingTime;
+
+    _self.calcRemainingTime = (count: number = 0) => {
+      return _calcRemainingTime.apply(_self, [count]);
+    };
+
+    _self.timerService.add(_self.calcRemainingTime, _self.frequency);
+
+    return _self;
   }
 
   getQuizList(type: string, offset: number = 0, limit: number = 15) {
@@ -168,19 +193,21 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         src = matches[0].replace(patternAutoPlay, 'auto_play=true');
         quiz.content.audio = src;
 
+        const _self = this;
+
         window.addEventListener('message', (event: MessageEvent) => {
           const { origin } = event;
 
           if (origin === 'https://w.soundcloud.com') {
-            const scWidget = SC.Widget(this.scAudioPlayerId);
+            const scWidget = SC.Widget(_self.scAudioPlayerId);
 
             scWidget.bind(SC.Widget.Events.PLAY, () => {
               console.log('play');
             });
 
-            scWidget.bind(SC.Widget.Events.FINISH, function(e: any) {
+            scWidget.bind(SC.Widget.Events.FINISH, function(event: MessageEvent) {
               console.log('finish');
-              this.step = 2;
+              _self.goToStep(_self.globalService.STEP_MAIN);
             });
           }
         });
@@ -189,52 +216,60 @@ export class ExerciseComponent implements OnInit, OnDestroy {
 
     this.currentQuiz = quiz;
 
-    this.startExercise();
+    this.goToStep(this.globalService.STEP_PRE);
   }
 
-  startExercise() {
-    if (isEmpty(this.currentQuiz)) return;
+  goToNextStep() {
+    if (isEmpty(this.steps)) return;
+
+    const index = indexOf(this.steps, this.step);
+
+    if (index < this.steps.length - 1) {
+      this.goToStep(this.steps[index + 1]);
+    }
+  }
+
+  goToPrevStep() {
+    if (isEmpty(this.steps)) return;
+
+    const index = indexOf(this.steps, this.step);
+
+    if (index > 0) {
+      this.goToStep(this.steps[index - 1]);
+    }
+  }
+
+  private calcRemainingTime(count: number): void {
+    if (this.step !== this.globalService.STEP_PRE && this.step !== this.globalService.STEP_MAIN) return;
+
+    this.remainingTime -= count;
+
+    if (this.remainingTime <=0) this.goToNextStep();
+  }
+
+  goToStep(step: string) {
+    if (isEmpty(this.currentQuiz) || step === this.step) return;
 
     const { preparation_time, limit_time, id } = this.currentQuiz;
 
-    this.stopTimer(this.preTimerSubscription);
-    this.stopTimer(this.mainTimerSubscription);
+    this.step = step;
 
-    this.step = this.globalService.STEP_PRE;
-    this.remainingTime = preparation_time;
-
-    this.preTimerSubscription = this.startTimer(0, (t: number) => {
-      this.remainingTime = preparation_time - t;
-
-      if (this.remainingTime <= 0) {
-        this.step = this.globalService.STEP_MAIN;
+    switch (this.step) {
+      case this.globalService.STEP_LISTENING:
+        return;
+      case this.globalService.STEP_MAIN:
         this.remainingTime = limit_time;
-        this.stopTimer(this.preTimerSubscription);
+        this.restartTimer();
 
-        this.mainTimerSubscription = this.startTimer(preparation_time, (t: number) => {
-          this.remainingTime = limit_time - t;
+        return;
+      case this.globalService.STEP_POST:
+        return;
+      case this.globalService.STEP_PRE:
+      default:
+        this.remainingTime = preparation_time;
+        this.restartTimer();
 
-          if (this.remainingTime <= 0) {
-            this.step = this.globalService.STEP_POST;
-            this.remainingTime = 0;
-            this.stopTimer(this.mainTimerSubscription);
-          }
-        });
-      }
-    });
-  }
-
-  startTimer(delay: number, func: Function): Subscription {
-    const timer = Observable.timer(delay, 1000);
-    const subscription = timer.subscribe(t => {
-      func(t);
-    });
-
-    return subscription;
-  }
-
-  stopTimer(subscription: Subscription) {
-    if (subscription === undefined) return;
-    subscription.unsubscribe();
+        return;
+    }
   }
 }

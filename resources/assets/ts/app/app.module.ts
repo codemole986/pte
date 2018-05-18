@@ -63,7 +63,7 @@ import {
     ChatComponent
 } from './dashboard/components';
 
-import { AuthGuard, AuthService, ConverttimestampPipe, SafePipe } from './shared';
+import { AuthGuard, AuthService, TimerService, ConverttimestampPipe, SafePipe } from './shared';
 
 const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
   url: '/api/upload',
@@ -253,6 +253,7 @@ export function createTranslateLoader(http: HttpClient) {
 	providers: [
         AuthGuard,
         AuthService,
+        TimerService,
         {
             provide: DROPZONE_CONFIG,
             useValue: DEFAULT_DROPZONE_CONFIG
