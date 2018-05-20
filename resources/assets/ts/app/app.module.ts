@@ -32,6 +32,8 @@ import { ProblemComponent } from './examinee/problem/problem.component';
 import { FileUploadDirective } from './dashboard/file-upload.directive';
 import { NumberprintPipe } from './dashboard/numberprint';
 
+import { ExerciseModule } from './exercise1/exercise.module';
+
 import {
     HeaderComponent, HeaderTeacherComponent, HeaderOverviewComponent, HeaderStudentComponent, HeaderManageComponent, 
     FooterComponent
@@ -64,6 +66,7 @@ import {
 } from './dashboard/components';
 
 import { AuthGuard, AuthService, TimerService, ConverttimestampPipe, SafePipe } from './shared';
+import { PipesModule } from './shared/pipes/';
 
 const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
   url: '/api/upload',
@@ -113,11 +116,10 @@ export function createTranslateLoader(http: HttpClient) {
         EvalstatusRenderComponent,
         EditorComponent,
         ProblemComponent,
-        ConverttimestampPipe,
         SafePipe,
         TimelineComponent,        
         NotificationComponent,
-        ChatComponent      
+        ChatComponent
     ],    
 	imports: [
 		CommonModule,
@@ -139,6 +141,9 @@ export function createTranslateLoader(http: HttpClient) {
         NgbPaginationModule.forRoot(),
         NgbCarouselModule.forRoot(),
         NgbAccordionModule.forRoot(),
+        PipesModule,
+
+        ExerciseModule,
         
         TranslateModule.forRoot({
             loader: {
