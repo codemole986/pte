@@ -9,16 +9,16 @@
                 <div class="col-md-4" *ngIf="isPreStep(step)">
                     <h5 style="color:#09F;">{{ 'Preparation Time' | translate }}: {{remainingTime | converttimestamp }}</h5>
                 </div>
-                <!-- <div class="col-md-4" *ngIf="isMainStep(step)"> -->
-                    <!-- <h5 style="color:#09F;">{{ 'Remain Time' | translate }}: {{remainingTime | converttimestamp }}</h5> -->
-                <!-- </div> -->
+                <div class="col-md-4" *ngIf="isMainStep(step)">
+                    <h5 style="color:#09F;">{{ 'Remain Time' | translate }}: {{remainingTime | converttimestamp }}</h5>
+                </div>
             </div>
         </div>
     </div>
     <div class="portlet-body">
         <div class="quiz-guide">{{quiz.guide}}</div>
         <!-- <app-exercise-srl [quiz]="quiz"></app-exercise-srl> -->
-        <!-- <div class="step-main" *ngIf="isMainStep(step)">
+        <div class="step-main" *ngIf="isMainStep(step)">
             <div class="quiz-content-text" *ngIf="quiz.content.text" [innerHTML]="quiz.content.text"></div>
             <div class="quiz-content-picture" *ngIf="quiz.content.picture">
                 <img [src]="quiz.content.picture" [alt]="quiz.title" />
@@ -28,6 +28,6 @@
             <div class="quiz-content-audio" *ngIf="quiz.content.audio">
                 <iframe [id]="scAudioPlayerId" width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" [src]="quiz.content.audio | safe"></iframe>
             </div>
-        </div> -->
+        </div>
     </div>
 </div>
