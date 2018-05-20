@@ -94,6 +94,9 @@
                                 <div class="quiz-guide">{{currentQuiz.guide}}</div>
                                 <div class="step-main" *ngIf="isMainStep(step)">
                                     <div class="quiz-content-text" *ngIf="currentQuiz.content.text" [innerHTML]="currentQuiz.content.text"></div>
+                                    <div class="quiz-content-picture" *ngIf="currentQuiz.content.picture">
+                                        <img [src]="currentQuiz.content.picture" [alt]="currentQuiz.title" />
+                                    </div>
                                 </div>
                                 <div class="step-listening" *ngIf="isListeningStep(step)">
                                     <div class="quiz-content-audio" *ngIf="currentQuiz.content.audio">
