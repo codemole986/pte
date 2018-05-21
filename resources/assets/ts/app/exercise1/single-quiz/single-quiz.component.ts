@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { indexOf, isEmpty, map } from 'lodash';
 import { Observable, Subscription } from 'rxjs/Rx';
@@ -27,9 +27,17 @@ export class SingleQuizComponent implements OnInit {
     this.onChangeQuiz(quiz);
   }
 
+  @Input() prevQuiz: Problem;
+  @Input() nextQuiz: Problem;
+
+  @Output() goToPrev = new EventEmitter<Problem>();
+  @Output() goToNext = new EventEmitter<Problem>();
+  @Output() exit = new EventEmitter<Problem>();
+
   step: string;
   steps: string[];
   remainingTime: number = 0;
+  showSolution: boolean = false;
 
   constructor(
     private globalService: GlobalService,
@@ -184,5 +192,17 @@ export class SingleQuizComponent implements OnInit {
     }
 
     return '';
+  }
+
+  toggleSolution() {
+    this.showSolution = !this.showSolution;
+  }
+
+  selectPrevQuiz(quiz: Problem) {
+    this.goToPrev.emit(quiz);
+  }
+
+  selectNextQuiz(quiz: Problem) {
+    this.goToNext.emit(quiz);
   }
 }

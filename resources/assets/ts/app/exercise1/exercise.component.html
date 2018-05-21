@@ -75,6 +75,11 @@
                     <div *ngIf="currentQuiz" class="quiz-container">
                         <app-exercise-single-quiz
                             [quiz]="currentQuiz"
+                            [nextQuiz]="nextQuiz"
+                            [prevQuiz]="prevQuiz"
+                            (goToPrev)="onSelectPrevQuiz($event)"
+                            (goToNext)="onSelectNextQuiz($event)"
+                            (exit)="onExitExercise($event)"
                         >
                         </app-exercise-single-quiz>
                     </div>

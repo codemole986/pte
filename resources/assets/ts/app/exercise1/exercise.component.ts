@@ -5,7 +5,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscription } from 'rxjs/Rx';
-import { indexOf, isEmpty, map } from 'lodash';
+import { findIndex, isEmpty, map } from 'lodash';
 
 import { routerTransition } from '../router.animations';
 import { Problem } from '../model/problem';
@@ -36,6 +36,8 @@ export class ExerciseComponent implements OnInit {
   count: number = 0;
   type: string = '';
   currentQuiz: Problem;
+  prevQuiz: Problem;
+  nextQuiz: Problem;
 
   private frequency: number = 1000;
 
@@ -143,5 +145,23 @@ export class ExerciseComponent implements OnInit {
     }
 
     this.currentQuiz = quiz;
+
+    const indexOfCurrentQuiz = findIndex(this.list, ['id', quiz.id]);
+
+    if (indexOfCurrentQuiz > 0) {
+      this.prevQuiz = this.list[indexOfCurrentQuiz - 1];
+    }
+
+    if (indexOfCurrentQuiz < this.list.length - 1) {
+      this.nextQuiz = this.list[indexOfCurrentQuiz + 1];
+    }
+  }
+
+  onSelectPrevQuiz(quiz: Problem) {
+    this.selectQuiz(quiz);
+  }
+
+  onSelectNextQuiz(quiz: Problem) {
+    this.selectQuiz(quiz);
   }
 }
