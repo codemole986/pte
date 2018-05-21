@@ -198,6 +198,10 @@ export class SingleQuizComponent implements OnInit {
     this.showSolution = !this.showSolution;
   }
 
+  onExit(quiz: Problem) {
+    this.exit.emit(quiz);
+  }
+
   selectPrevQuiz(quiz: Problem) {
     this.goToPrev.emit(quiz);
   }

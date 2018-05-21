@@ -157,6 +157,11 @@ export class ExerciseComponent implements OnInit {
     }
   }
 
+  onExitExercise(quiz: Problem) {
+    this.currentQuiz = undefined;
+    this.router.navigate(['/exerciselist']);
+  }
+
   onSelectPrevQuiz(quiz: Problem) {
     this.selectQuiz(quiz);
   }

@@ -37,7 +37,7 @@
       <button class="btn btn-sm btn-pill-left btn-primary" type="button" [disabled]="!prevQuiz" (click)="selectPrevQuiz(prevQuiz)" ><i class="fa fa-arrow-left fa-fw"></i> {{ 'Previous' | translate }} </button>
       <button class="btn btn-sm btn-primary" type="button" [disabled]="!isPostStep(step)" (click)="againExercise()"><i class="fa fa-stop fa-fw"></i> {{ 'Again' | translate }} </button>
       <button class="btn btn-sm btn-pill-right btn-primary" type="button" [disabled]="!nextQuiz" (click)="selectNextQuiz(nextQuiz)">{{ 'Next' | translate }} <i class="fa fa-arrow-right fa-fw"></i> </button>
-      <button class="btn btn-sm btn-pill-right btn-primary" type="button" (click)="exit(quiz)"> {{ 'Exit' | translate }} <i class="fa fa-mail-reply-all fa-fw"></i> </button>
+      <button class="btn btn-sm btn-pill-right btn-primary" type="button" (click)="onExit(quiz)"> {{ 'Exit' | translate }} <i class="fa fa-mail-reply-all fa-fw"></i> </button>
     </div>
   </div>
 </div>
