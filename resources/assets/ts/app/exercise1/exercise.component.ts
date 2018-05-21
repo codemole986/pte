@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, EventEmitter } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute, ActivationEnd  } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -28,7 +28,7 @@ declare var SC: any;
   animations: [routerTransition()],
   providers: [GlobalService]
 })
-export class ExerciseComponent implements OnInit, OnDestroy {
+export class ExerciseComponent implements OnInit {
   active_menu: string = 'overview';
   list: Problem[];
   limit: number = 5;
@@ -36,10 +36,6 @@ export class ExerciseComponent implements OnInit, OnDestroy {
   count: number = 0;
   type: string = '';
   currentQuiz: Problem;
-  remainingTime: number = 0;
-  step: string;
-  steps: string[];
-  scAudioPlayerId: string = 'sc-audio-player';
 
   private frequency: number = 1000;
 
@@ -50,15 +46,11 @@ export class ExerciseComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private sanitizer: DomSanitizer,
     private globalService: GlobalService,
-    private timerService: TimerService
   ) {
-    this.timerService.start();
   }
 
   ngOnInit() {
     Metronic.init();
-
-    this.init();
 
     switch(window.sessionStorage.getItem('permission')) {
       case 'A' : this.active_menu = 'manage'; break;
@@ -72,53 +64,8 @@ export class ExerciseComponent implements OnInit, OnDestroy {
         this.type = params.type;
         this.currentQuiz = undefined;
         this.getQuizList(this.type);
-        this.steps = this.globalService.getSteps(this.type);
       }
     });
-  }
-
-  ngOnDestroy() {
-    this.stopTimer();
-  }
-
-  isPreStep(step: string): boolean {
-    return step === this.globalService.STEP_PRE;
-  }
-
-  isMainStep(step: string): boolean {
-    return step === this.globalService.STEP_MAIN;
-  }
-
-  isListeningStep(step: string): boolean {
-    return step === this.globalService.STEP_LISTENING;
-  }
-
-  isPostStep(step: string): boolean {
-    return step === this.globalService.STEP_POST;
-  }
-
-  restartTimer(): void {
-    this.timerService.remove(this.calcRemainingTime);
-    this.init();
-    this.timerService.start();
-  }
-
-  stopTimer() {
-    this.timerService.remove(this.calcRemainingTime);
-  }
-
-  private init() {
-    const _self = this;
-
-    const _calcRemainingTime = _self.calcRemainingTime;
-
-    _self.calcRemainingTime = (count: number = 0) => {
-      return _calcRemainingTime.apply(_self, [count]);
-    };
-
-    _self.timerService.add(_self.calcRemainingTime, _self.frequency);
-
-    return _self;
   }
 
   getQuizList(type: string, offset: number = 0, limit: number = 15) {
@@ -192,84 +139,9 @@ export class ExerciseComponent implements OnInit, OnDestroy {
       if (matches.length > 0) {
         src = matches[0].replace(patternAutoPlay, 'auto_play=true');
         quiz.content.audio = src;
-
-        const _self = this;
-
-        window.addEventListener('message', (event: MessageEvent) => {
-          const { origin } = event;
-
-          if (origin === 'https://w.soundcloud.com') {
-            const scWidget = SC.Widget(_self.scAudioPlayerId);
-
-            scWidget.bind(SC.Widget.Events.PLAY, () => {
-              console.log('play');
-            });
-
-            scWidget.bind(SC.Widget.Events.FINISH, function(event: MessageEvent) {
-              console.log('finish');
-              _self.goToStep(_self.globalService.STEP_MAIN);
-            });
-          }
-        });
       }
     }
 
     this.currentQuiz = quiz;
-
-    this.goToStep(this.globalService.STEP_PRE);
-  }
-
-  goToNextStep() {
-    if (isEmpty(this.steps)) return;
-
-    const index = indexOf(this.steps, this.step);
-
-    if (index < this.steps.length - 1) {
-      this.goToStep(this.steps[index + 1]);
-    }
-  }
-
-  goToPrevStep() {
-    if (isEmpty(this.steps)) return;
-
-    const index = indexOf(this.steps, this.step);
-
-    if (index > 0) {
-      this.goToStep(this.steps[index - 1]);
-    }
-  }
-
-  private calcRemainingTime(count: number): void {
-    if (this.step !== this.globalService.STEP_PRE && this.step !== this.globalService.STEP_MAIN) return;
-
-    this.remainingTime -= count;
-
-    if (this.remainingTime <=0) this.goToNextStep();
-  }
-
-  goToStep(step: string) {
-    if (isEmpty(this.currentQuiz) || step === this.step) return;
-
-    const { preparation_time, limit_time, id } = this.currentQuiz;
-
-    this.step = step;
-
-    switch (this.step) {
-      case this.globalService.STEP_LISTENING:
-        return;
-      case this.globalService.STEP_MAIN:
-        this.remainingTime = limit_time;
-        this.restartTimer();
-
-        return;
-      case this.globalService.STEP_POST:
-        return;
-      case this.globalService.STEP_PRE:
-      default:
-        this.remainingTime = preparation_time;
-        this.restartTimer();
-
-        return;
-    }
   }
 }

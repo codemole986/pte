@@ -73,7 +73,10 @@
                 <!-- BEGIN QUIZ CONTENTS -->
                 <div class="col-md-8 col-sm-12">
                     <div *ngIf="currentQuiz" class="quiz-container">
-                        <app-exercise-single-quiz [quiz]="currentQuiz"></app-exercise-single-quiz>
+                        <app-exercise-single-quiz
+                            [quiz]="currentQuiz"
+                        >
+                        </app-exercise-single-quiz>
                     </div>
                 </div>
                 <!-- END QUIZ CONTENTS -->
