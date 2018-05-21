@@ -12,7 +12,7 @@ import { Problem } from '../model/problem';
 import { Answer } from '../model/answer';
 import { TypeRenderComponent } from '../test/type-render.component';
 
-import { GlobalService, TimerService } from '../shared/services';
+import { GlobalService } from '../shared/services';
 
 declare var $:any;
 declare function startRecording(a: any, b: any, c: any, d: any): any;

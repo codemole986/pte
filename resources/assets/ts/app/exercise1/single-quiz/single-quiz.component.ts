@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { indexOf, isEmpty, map } from 'lodash';
+import { Observable, Subscription } from 'rxjs/Rx';
 
-import { GlobalService, TimerService } from './../../shared';
+import { GlobalService } from './../../shared';
 
 import { Problem } from './../../model/problem';
 
@@ -15,16 +16,15 @@ declare var SC: any;
 })
 
 export class SingleQuizComponent implements OnInit {
-  private frequency: number = 1000;
-  private scAudioPlayerId: string = 'sc-audio-player';
   private _quiz: Problem;
+  private scAudioPlayerId: string = 'sc-audio-player';
+  private timerSubscription: Subscription;
 
   get quiz(): Problem {
     return this._quiz;
   }
   @Input() set quiz(quiz: Problem) {
     this.onChangeQuiz(quiz);
-    this.restartTimer();
   }
 
   step: string;
@@ -33,40 +33,22 @@ export class SingleQuizComponent implements OnInit {
 
   constructor(
     private globalService: GlobalService,
-    private translate: TranslateService,
-    private timerService: TimerService
+    private translate: TranslateService
   ) {
-    this.timerService.start();
   }
 
   ngOnInit() {
+    let timer = Observable.timer(0,1000);
+    this.timerSubscription = timer.subscribe(t => {
+      if (this.remainingTime > 0) {
+        this.remainingTime --;
+        if (this.remainingTime === 0) this.goToNextStep();
+      }
+    });
   }
 
   ngOnDestroy() {
-    this.stopTimer();
-  }
-
-  private initTimer() {
-    const _self = this;
-
-    const _calcRemainingTime = _self.calcRemainingTime;
-
-    _self.calcRemainingTime = (count: number = 0) => {
-      console.log(count);
-      return _calcRemainingTime.apply(_self, [count]);
-    };
-
-    _self.timerService.add(_self.calcRemainingTime, _self.frequency);
-
-    return _self;
-  }
-
-  private calcRemainingTime(count: number): void {
-    if (this.step !== this.globalService.STEP_PRE && this.step !== this.globalService.STEP_MAIN) return;
-
-    this.remainingTime -= count;
-
-    if (this.remainingTime <=0) this.goToNextStep();
+    this.timerSubscription.unsubscribe();
   }
 
   private onChangeQuiz(quiz: Problem) {
@@ -106,6 +88,7 @@ export class SingleQuizComponent implements OnInit {
     }
 
     this._quiz = quiz;
+    this.remainingTime = quiz.preparation_time;
     this.steps = this.globalService.getSteps(quiz.type);
 
     this.goToPreStep();
@@ -129,24 +112,17 @@ export class SingleQuizComponent implements OnInit {
 
   goToPreStep() {
     this.step = this.globalService.STEP_PRE;
+    this.goToStep(this.step);
   }
 
   goToMainStep() {
     this.step = this.globalService.STEP_MAIN;
+    this.goToStep(this.step);
   }
 
   goToPostStep() {
     this.step = this.globalService.STEP_POST;
-  }
-
-  restartTimer(): void {
-    this.stopTimer();
-    this.initTimer();
-    this.timerService.start();
-  }
-
-  stopTimer() {
-    this.timerService.remove(this.calcRemainingTime);
+    this.goToStep(this.step);
   }
 
   goToNextStep() {
@@ -181,7 +157,6 @@ export class SingleQuizComponent implements OnInit {
         return;
       case this.globalService.STEP_MAIN:
         this.remainingTime = limit_time;
-        this.restartTimer();
 
         return;
       case this.globalService.STEP_POST:
@@ -189,7 +164,6 @@ export class SingleQuizComponent implements OnInit {
       case this.globalService.STEP_PRE:
       default:
         this.remainingTime = preparation_time;
-        this.restartTimer();
 
         return;
     }

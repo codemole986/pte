@@ -65,7 +65,7 @@ import {
     ChatComponent
 } from './dashboard/components';
 
-import { AuthGuard, AuthService, TimerService, ConverttimestampPipe } from './shared';
+import { AuthGuard, AuthService, ConverttimestampPipe } from './shared';
 import { PipesModule } from './shared/pipes/';
 
 const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
@@ -257,7 +257,6 @@ export function createTranslateLoader(http: HttpClient) {
 	providers: [
         AuthGuard,
         AuthService,
-        TimerService,
         {
             provide: DROPZONE_CONFIG,
             useValue: DEFAULT_DROPZONE_CONFIG
