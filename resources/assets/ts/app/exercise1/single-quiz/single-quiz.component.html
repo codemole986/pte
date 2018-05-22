@@ -16,23 +16,11 @@
     </div>
   </div>
   <div class="portlet-body">
-    <div class="quiz-guide">{{quiz.guide}}</div>
-    <!-- <app-exercise-srl [quiz]="quiz"></app-exercise-srl> -->
-    <div class="step-main" *ngIf="isMainStep(step)">
-      <div class="quiz-content-text" *ngIf="quiz.content.text" [innerHTML]="quiz.content.text"></div>
-      <div class="quiz-content-picture" *ngIf="quiz.content.picture">
-        <img [src]="quiz.content.picture" [alt]="quiz.title" />
-      </div>
-    </div>
-    <div class="step-listening" *ngIf="isListeningStep(step)">
-      <div class="quiz-content-audio" *ngIf="quiz.content.audio">
-        <iframe [id]="scAudioPlayerId" width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" [src]="quiz.content.audio | safe"></iframe>
-      </div>
-    </div>
+    <app-exercise-single-wsm *ngIf="quiz.type === 'WSM'" [quiz]="quiz" [step]="step"></app-exercise-single-wsm>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">
-      <button class="btn btn-sm btn-pill-left yellow-gold" type="button" (click)="toggleSolution()" ><i class="fa fa-file-text-o fa-fw"></i> {{ (showSolution ? 'Hide' : 'Show') + ' Solution' | translate }} </button>
+      <button class="btn btn-sm btn-pill-left yellow-gold" type="button" [disabled]="!isPostStep(step)" (click)="toggleSolution()" ><i class="fa fa-file-text-o fa-fw"></i> {{ (showSolution ? 'Hide' : 'Show') + ' Solution' | translate }} </button>
       <button class="btn btn-sm btn-pill-left btn-primary" type="button" [disabled]="!prevQuiz" (click)="selectPrevQuiz(prevQuiz)" ><i class="fa fa-arrow-left fa-fw"></i> {{ 'Previous' | translate }} </button>
       <button class="btn btn-sm btn-primary" type="button" [disabled]="!isPostStep(step)" (click)="againExercise()"><i class="fa fa-stop fa-fw"></i> {{ 'Again' | translate }} </button>
       <button class="btn btn-sm btn-pill-right btn-primary" type="button" [disabled]="!nextQuiz" (click)="selectNextQuiz(nextQuiz)">{{ 'Next' | translate }} <i class="fa fa-arrow-right fa-fw"></i> </button>

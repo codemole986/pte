@@ -73,7 +73,7 @@
                 <!-- BEGIN QUIZ CONTENTS -->
                 <div class="col-md-8 col-sm-12">
                     <div *ngIf="currentQuiz" class="quiz-container">
-                        <app-exercise-single-quiz
+                        <app-exercise-single
                             [quiz]="currentQuiz"
                             [nextQuiz]="nextQuiz"
                             [prevQuiz]="prevQuiz"
@@ -81,7 +81,7 @@
                             (goToNext)="onSelectNextQuiz($event)"
                             (exit)="onExitExercise($event)"
                         >
-                        </app-exercise-single-quiz>
+                        </app-exercise-single>
                     </div>
                 </div>
                 <!-- END QUIZ CONTENTS -->

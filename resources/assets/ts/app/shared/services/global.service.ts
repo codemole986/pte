@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { saveAs } from 'file-saver';
 
 @Injectable()
 export class GlobalService {
@@ -238,5 +239,10 @@ export class GlobalService {
     steps.push(this.STEP_MAIN, this.STEP_POST);
 
     return steps;
+  }
+
+  downloadFile(data: any, filename: string = '', type: string = 'text/plain'){
+    const blob = new Blob([data], { type });
+    saveAs(blob, filename);
   }
 }

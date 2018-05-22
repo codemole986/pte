@@ -5,6 +5,7 @@ import { TranslateModule } from "@ngx-translate/core";
 import { PipesModule } from './../../shared/pipes/';
 
 import { SingleQuizComponent } from './single-quiz.component';
+import { WSMComponent } from './WSM/WSM.component';
 
 @NgModule({
   imports: [
@@ -13,10 +14,12 @@ import { SingleQuizComponent } from './single-quiz.component';
     PipesModule
   ],
   declarations: [
-    SingleQuizComponent
+    SingleQuizComponent,
+    WSMComponent
   ],
   exports: [
-    SingleQuizComponent
+    SingleQuizComponent,
+    WSMComponent
   ]
 })
 export class SingleQuizModule { }

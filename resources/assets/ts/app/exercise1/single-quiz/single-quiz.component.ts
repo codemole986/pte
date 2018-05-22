@@ -10,7 +10,7 @@ import { Problem } from './../../model/problem';
 declare var SC: any;
 
 @Component({
-  selector: 'app-exercise-single-quiz',
+  selector: 'app-exercise-single',
   template: require('./single-quiz.component.html'),
   styles: [`${require('./single-quiz.component.css')}`]
 })
