@@ -198,6 +198,10 @@ export class SingleQuizComponent implements OnInit {
     this.showSolution = !this.showSolution;
   }
 
+  againExercise() {
+    this.onChangeQuiz(this.quiz);
+  }
+
   onExit(quiz: Problem) {
     this.exit.emit(quiz);
   }
