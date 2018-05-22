@@ -6,3 +6,7 @@ app-exercise-single .quiz-guide {
 app-exercise-single .step-main {
   padding: 15px;
 }
+
+app-exercise-single .quiz-answer {
+  margin-bottom: 16px;
+}
