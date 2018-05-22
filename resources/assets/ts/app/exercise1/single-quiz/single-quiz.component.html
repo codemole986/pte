@@ -1,6 +1,6 @@
 <div class="portlet light">
   <div class="portlet-title">
-    <div class="caption" style="width:100%;">
+    <div class="caption" style="width: 100%;">
       <div class="row">
         <div class="col-md-8">
           <span class="caption-subject font-green-sharp bold uppercase">{{ quiz.category | translate }}: {{ getTypeName(quiz.category, quiz.type) }}</span>
@@ -29,7 +29,6 @@
         <iframe [id]="scAudioPlayerId" width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" [src]="quiz.content.audio | safe"></iframe>
       </div>
     </div>
-    <div class="quiz-solution" *ngIf="showSolution">solution</div>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">
@@ -38,6 +37,18 @@
       <button class="btn btn-sm btn-primary" type="button" [disabled]="!isPostStep(step)" (click)="againExercise()"><i class="fa fa-stop fa-fw"></i> {{ 'Again' | translate }} </button>
       <button class="btn btn-sm btn-pill-right btn-primary" type="button" [disabled]="!nextQuiz" (click)="selectNextQuiz(nextQuiz)">{{ 'Next' | translate }} <i class="fa fa-arrow-right fa-fw"></i> </button>
       <button class="btn btn-sm btn-pill-right btn-primary" type="button" (click)="onExit(quiz)"> {{ 'Exit' | translate }} <i class="fa fa-mail-reply-all fa-fw"></i> </button>
+    </div>
+  </div>
+</div>
+<div class="portlet light" *ngIf="showSolution">
+  <div class="portlet-title">
+    <div class="caption" style="width: 100%;">
+      <span class="caption-subject font-green-sharp bold uppercase">{{ 'Solution' | translate }}</span>
+    </div>
+  </div>
+  <div class="portlet-body">
+    <div class="row" style="padding: 0 15px;">
+      <div class="col-md-12"></div>
     </div>
   </div>
 </div>

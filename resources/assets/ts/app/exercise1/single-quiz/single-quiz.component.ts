@@ -98,6 +98,7 @@ export class SingleQuizComponent implements OnInit {
     this._quiz = quiz;
     this.remainingTime = quiz.preparation_time;
     this.steps = this.globalService.getSteps(quiz.type);
+    this.showSolution = false;
 
     this.goToPreStep();
   }
