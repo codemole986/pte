@@ -19,6 +19,7 @@ export class SingleQuizComponent implements OnInit {
   private _quiz: Problem;
   private scAudioPlayerId: string = 'sc-audio-player';
   private timerSubscription: Subscription;
+  private dingPeriod: number = 1000;
 
   get quiz(): Problem {
     return this._quiz;
@@ -36,6 +37,7 @@ export class SingleQuizComponent implements OnInit {
 
   step: string;
   steps: string[];
+  started: boolean = false;
   remainingTime: number = 0;
   showSolution: boolean = false;
 
@@ -48,7 +50,7 @@ export class SingleQuizComponent implements OnInit {
   ngOnInit() {
     let timer = Observable.timer(0,1000);
     this.timerSubscription = timer.subscribe(t => {
-      if (this.remainingTime > 0) {
+      if (this.started && this.remainingTime > 0) {
         this.remainingTime --;
         if (this.remainingTime === 0) this.goToNextStep();
       }
@@ -99,6 +101,7 @@ export class SingleQuizComponent implements OnInit {
     this.remainingTime = quiz.preparation_time;
     this.steps = this.globalService.getSteps(quiz.type);
     this.showSolution = false;
+    this.started = false;
 
     this.goToPreStep();
   }
@@ -159,21 +162,26 @@ export class SingleQuizComponent implements OnInit {
 
     const { preparation_time, limit_time, id } = this._quiz;
 
-    this.step = step;
-
-    switch (this.step) {
+    switch (step) {
       case this.globalService.STEP_LISTENING:
+        this.step = step;
         return;
       case this.globalService.STEP_MAIN:
-        this.remainingTime = limit_time;
-
+        this.playDingSound(() => {
+          this.remainingTime = limit_time;
+          this.step = step;
+        });
         return;
       case this.globalService.STEP_POST:
+        this.playDingSound(() => {
+          this.remainingTime = limit_time;
+          this.step = step;
+        });
         return;
       case this.globalService.STEP_PRE:
       default:
         this.remainingTime = preparation_time;
-
+        this.step = step;
         return;
     }
   }
@@ -199,7 +207,11 @@ export class SingleQuizComponent implements OnInit {
     this.showSolution = !this.showSolution;
   }
 
-  againExercise() {
+  startExercise() {
+    this.started = true;
+  }
+
+  restartExercise() {
     this.onChangeQuiz(this.quiz);
   }
 
@@ -213,5 +225,20 @@ export class SingleQuizComponent implements OnInit {
 
   selectNextQuiz(quiz: Problem) {
     this.goToNext.emit(quiz);
+  }
+
+  playDingSound(cb: Function) {
+    const audio = new Audio();
+    audio.src = this.globalService.dingSoundPath;
+    audio.load();
+
+    audio.addEventListener('canplaythrough', () => {
+      audio.play();
+
+      setTimeout(() => {
+        audio.pause();
+        cb();
+      }, this.dingPeriod);
+    }, false);
   }
 }
