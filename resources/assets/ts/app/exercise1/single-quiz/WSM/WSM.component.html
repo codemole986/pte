@@ -1,13 +1,13 @@
 <div class="quiz-guide">{{quiz.guide}}</div>
 <div class="step-main" *ngIf="isMainStep(step)">
   <div class="quiz-content-text" *ngIf="quiz.content.text" [innerHTML]="quiz.content.text"></div>
-  <div class="quiz-answer">
-    <textarea name="content" #elAnswer class="form-control" [value]="answer.answer.text" placeholder="Problem Sentences" title="Problem Sentences" rows="10" (keyup)="onChangeAnswer(elAnswer.value)"></textarea>
-    <div class="quiz-answer-footer">{{ 'Word count' | translate }}: <span>{{count}}</span><a (click)="onClickDownloadAnswerText()" style="float: right;">{{ 'Download answer text' | translate }}</a></div>
-  </div>
   <!-- <div class="quiz-content-picture" *ngIf="quiz.content.picture">
     <img [src]="quiz.content.picture" [alt]="quiz.title" />
   </div> -->
+</div>
+<div class="quiz-answer">
+  <textarea name="content" #elAnswer class="form-control" [value]="answer.answer.text" [disabled]="!isMainStep(step)" placeholder="Problem Sentences" title="Problem Sentences" rows="10" (keyup)="onChangeAnswer(elAnswer.value)"></textarea>
+  <div class="quiz-answer-footer">{{ 'Word count' | translate }}: <span>{{count}}</span><a (click)="onClickDownloadAnswerText()" style="float: right;">{{ 'Download answer text' | translate }}</a></div>
 </div>
 <!-- <div class="step-listening" *ngIf="isListeningStep(step)">
   <div class="quiz-content-audio" *ngIf="quiz.content.audio">

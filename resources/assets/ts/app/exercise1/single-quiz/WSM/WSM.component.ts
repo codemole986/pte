@@ -12,8 +12,19 @@ import { GlobalService } from './../../../shared';
 })
 
 export class WSMComponent implements OnInit {
-  @Input() quiz: Problem;
+  private _quiz: Problem;
   @Input() step: string;
+
+  get quiz(): Problem {
+    return this._quiz;
+  }
+  @Input() set quiz(quiz: Problem) {
+    this._quiz = quiz;
+    this.answer = new Answer;
+    this.answer.answer = {
+      text: ''
+    };
+  }
 
   answer: Answer;
   count: number = 0;
@@ -24,10 +35,6 @@ export class WSMComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.answer = new Answer;
-    this.answer.answer = {
-      text: ''
-    };
   }
 
   isPreStep(step: string): boolean {
