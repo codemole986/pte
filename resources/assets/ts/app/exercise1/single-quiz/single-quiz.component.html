@@ -23,6 +23,13 @@
       (updateAnswer)="updateAnswer($event)"
     >
     </app-exercise-single-wsm>
+    <app-exercise-single-wes
+      *ngIf="quiz.type === 'WES'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+    >
+    </app-exercise-single-wes>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">

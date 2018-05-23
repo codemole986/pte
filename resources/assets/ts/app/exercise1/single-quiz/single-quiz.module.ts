@@ -6,6 +6,7 @@ import { PipesModule } from './../../shared/pipes/';
 
 import { SingleQuizComponent } from './single-quiz.component';
 import { WSMComponent } from './WSM/WSM.component';
+import { WESComponent } from './WES/WES.component';
 
 @NgModule({
   imports: [
@@ -15,11 +16,13 @@ import { WSMComponent } from './WSM/WSM.component';
   ],
   declarations: [
     SingleQuizComponent,
-    WSMComponent
+    WSMComponent,
+    WESComponent
   ],
   exports: [
     SingleQuizComponent,
-    WSMComponent
+    WSMComponent,
+    WESComponent
   ]
 })
 export class SingleQuizModule { }
