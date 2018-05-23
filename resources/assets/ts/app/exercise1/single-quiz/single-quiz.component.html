@@ -16,7 +16,13 @@
     </div>
   </div>
   <div class="portlet-body">
-    <app-exercise-single-wsm *ngIf="quiz.type === 'WSM'" [quiz]="quiz" [step]="step"></app-exercise-single-wsm>
+    <app-exercise-single-wsm
+      *ngIf="quiz.type === 'WSM'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+    >
+    </app-exercise-single-wsm>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">

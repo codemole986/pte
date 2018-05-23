@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { snakeCase, words } from 'lodash';
 
 import { Problem } from './../../../model/problem';
@@ -12,21 +12,11 @@ import { GlobalService } from './../../../shared';
 })
 
 export class WSMComponent implements OnInit {
-  private _quiz: Problem;
   @Input() step: string;
+  @Input() quiz: Problem;
 
-  get quiz(): Problem {
-    return this._quiz;
-  }
-  @Input() set quiz(quiz: Problem) {
-    this._quiz = quiz;
-    this.answer = new Answer;
-    this.answer.answer = {
-      text: ''
-    };
-  }
+  @Output() updateAnswer = new EventEmitter<{ text: string }>();
 
-  answer: Answer;
   count: number = 0;
 
   constructor(
@@ -53,12 +43,12 @@ export class WSMComponent implements OnInit {
     return step === this.globalService.STEP_POST;
   }
 
-  onChangeAnswer(value: string) {
-    this.answer.answer.text = value;
+  onChangeAnswerText(value: string) {
     this.count = words(value).length;
+    this.updateAnswer.emit({ text: value });
   }
 
-  onClickDownloadAnswerText() {
-    this.globalService.downloadFile(this.answer.answer.text, `${snakeCase(this.quiz.title)}.txt`);
+  onClickDownloadAnswerText(value: string) {
+    this.globalService.downloadFile(value, `${snakeCase(this.quiz.title)}.txt`);
   }
 }

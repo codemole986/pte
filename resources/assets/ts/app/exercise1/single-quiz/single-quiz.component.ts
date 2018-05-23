@@ -1,12 +1,15 @@
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { Http, Response } from '@angular/http';
 import { TranslateService } from '@ngx-translate/core';
 import { indexOf, isEmpty, map } from 'lodash';
 import { Observable, Subscription, Subject } from 'rxjs/Rx';
 
 import { GlobalService } from './../../shared';
 
+import { Answer } from './../../model/answer';
 import { Problem } from './../../model/problem';
 
+declare var Metronic: any;
 declare var SC: any;
 
 @Component({
@@ -20,6 +23,8 @@ export class SingleQuizComponent implements OnInit {
   private scAudioPlayerId: string = 'sc-audio-player';
   private dingPeriod: number = 1000;
   private subject: Subject<boolean>;
+  private startTime: number;
+  private endTime: number;
 
   get quiz(): Problem {
     return this._quiz;
@@ -40,8 +45,10 @@ export class SingleQuizComponent implements OnInit {
   started: boolean = false;
   remainingTime: number = 0;
   showSolution: boolean = false;
+  answer: Answer;
 
   constructor(
+    private http: Http,
     private globalService: GlobalService,
     private translate: TranslateService
   ) {
@@ -179,13 +186,16 @@ export class SingleQuizComponent implements OnInit {
         this.playDingSound(() => {
           this.remainingTime = limit_time;
           this.step = step;
+          this.initAnswer();
           this.startTimer();
         });
         return;
       case this.globalService.STEP_POST:
+        this.endTime = +new Date();
         this.playDingSound(() => {
-          this.remainingTime = limit_time;
-          this.step = step;
+          this.saveAnswer(this.answer, () => {
+            this.step = step;
+          });
         });
         return;
       case this.globalService.STEP_PRE:
@@ -253,5 +263,28 @@ export class SingleQuizComponent implements OnInit {
         cb();
       }, this.dingPeriod);
     }, false);
+  }
+
+  initAnswer() {
+    this.startTime = +new Date();
+    this.answer = new Answer;
+    this.answer.testevent_id = 0;
+    this.answer.quiz_id = this.quiz.id;
+    this.answer.evaluate_mark = 0;
+    this.answer.type = this.quiz.type;
+    this.answer.answer = this.globalService.getSolutionObject(this.quiz.type);
+  }
+
+  updateAnswer(answer: any) {
+    this.answer.answer = answer;
+  }
+
+  saveAnswer(answer: Answer, cb: Function) {
+    this.http.post('/answer/insert', { ...answer, examine_uptime: (this.endTime - this.startTime) / 1000 })
+      .map((response: Response) => response.json())
+      .subscribe((data: { state: string, message: string }) => {
+        if (data.state === 'error') Metronic.showErrMsg(data.message);
+        if (cb) cb();
+      });
   }
 }
