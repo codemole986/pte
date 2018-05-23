@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { indexOf, isEmpty, map } from 'lodash';
-import { Observable, Subscription } from 'rxjs/Rx';
+import { Observable, Subscription, Subject } from 'rxjs/Rx';
 
 import { GlobalService } from './../../shared';
 
@@ -18,8 +18,8 @@ declare var SC: any;
 export class SingleQuizComponent implements OnInit {
   private _quiz: Problem;
   private scAudioPlayerId: string = 'sc-audio-player';
-  private timerSubscription: Subscription;
   private dingPeriod: number = 1000;
+  private subject: Subject<boolean>;
 
   get quiz(): Problem {
     return this._quiz;
@@ -45,20 +45,34 @@ export class SingleQuizComponent implements OnInit {
     private globalService: GlobalService,
     private translate: TranslateService
   ) {
+    this.subject = new Subject();
   }
 
   ngOnInit() {
-    let timer = Observable.timer(0,1000);
-    this.timerSubscription = timer.subscribe(t => {
-      if (this.started && this.remainingTime > 0) {
-        this.remainingTime --;
-        if (this.remainingTime === 0) this.goToNextStep();
-      }
-    });
   }
 
   ngOnDestroy() {
-    this.timerSubscription.unsubscribe();
+    this.stopTimer();
+  }
+
+  startTimer() {
+    Observable.timer(1000, 1000)
+      .takeUntil(this.subject)
+      .subscribe(t => {
+        if (this.started && this.remainingTime > 0) {
+          this.remainingTime --;
+          if (this.remainingTime === 0) this.goToNextStep();
+        }
+      });
+  }
+
+  stopTimer() {
+    this.subject.next(true);
+    this.subject.complete();
+  }
+
+  pauseTimer() {
+    this.subject.next(true);
   }
 
   private onChangeQuiz(quiz: Problem) {
@@ -102,8 +116,6 @@ export class SingleQuizComponent implements OnInit {
     this.steps = this.globalService.getSteps(quiz.type);
     this.showSolution = false;
     this.started = false;
-
-    this.goToPreStep();
   }
 
   isPreStep(step: string): boolean {
@@ -158,7 +170,9 @@ export class SingleQuizComponent implements OnInit {
   }
 
   goToStep(step: string) {
-    if (isEmpty(this._quiz) || step === this.step) return;
+    if (isEmpty(this._quiz)) return;
+
+    this.pauseTimer();
 
     const { preparation_time, limit_time, id } = this._quiz;
 
@@ -170,6 +184,7 @@ export class SingleQuizComponent implements OnInit {
         this.playDingSound(() => {
           this.remainingTime = limit_time;
           this.step = step;
+          this.startTimer();
         });
         return;
       case this.globalService.STEP_POST:
@@ -179,9 +194,11 @@ export class SingleQuizComponent implements OnInit {
         });
         return;
       case this.globalService.STEP_PRE:
-      default:
         this.remainingTime = preparation_time;
         this.step = step;
+        this.startTimer();
+        return;
+      default:
         return;
     }
   }
@@ -209,10 +226,11 @@ export class SingleQuizComponent implements OnInit {
 
   startExercise() {
     this.started = true;
+    this.goToPreStep();
   }
 
   restartExercise() {
-    this.onChangeQuiz(this.quiz);
+    this.startExercise();
   }
 
   onExit(quiz: Problem) {
