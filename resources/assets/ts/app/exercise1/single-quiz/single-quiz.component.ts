@@ -68,11 +68,6 @@ export class SingleQuizComponent implements OnInit {
 
   stopTimer() {
     this.subject.next(true);
-    this.subject.complete();
-  }
-
-  pauseTimer() {
-    this.subject.next(true);
   }
 
   private onChangeQuiz(quiz: Problem) {
@@ -172,7 +167,7 @@ export class SingleQuizComponent implements OnInit {
   goToStep(step: string) {
     if (isEmpty(this._quiz)) return;
 
-    this.pauseTimer();
+    this.stopTimer();
 
     const { preparation_time, limit_time, id } = this._quiz;
 
