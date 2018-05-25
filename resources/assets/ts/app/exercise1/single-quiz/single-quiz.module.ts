@@ -9,6 +9,7 @@ import { SingleQuizComponent } from './single-quiz.component';
 import { WSMComponent } from './WSM/WSM.component';
 import { WESComponent } from './WES/WES.component';
 import { LWSComponent } from './LWS/LWS.component';
+import { LSAComponent } from './LSA/LSA.component';
 
 @NgModule({
   imports: [
@@ -21,13 +22,15 @@ import { LWSComponent } from './LWS/LWS.component';
     SingleQuizComponent,
     WSMComponent,
     WESComponent,
-    LWSComponent
+    LWSComponent,
+    LSAComponent
   ],
   exports: [
     SingleQuizComponent,
     WSMComponent,
     WESComponent,
-    LWSComponent
+    LWSComponent,
+    LSAComponent
   ]
 })
 export class SingleQuizModule { }

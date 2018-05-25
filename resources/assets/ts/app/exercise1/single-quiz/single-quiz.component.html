@@ -38,6 +38,14 @@
       (finishAudio)="onAudioFinished($event)"
     >
     </app-exercise-single-lws>
+    <app-exercise-single-lsa
+      *ngIf="quiz.type === 'LSA'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-lsa>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">
