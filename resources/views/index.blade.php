@@ -10,6 +10,7 @@
     <meta content="" name="author"/>
     
     <!-- <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css"/> -->
+    <script src="http://looptube.net/soundcloud/soundmanager2/script/soundmanager2.js"></script>
 
     <!-- <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css"> -->
     <link href="assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
