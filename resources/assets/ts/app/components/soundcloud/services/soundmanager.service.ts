@@ -50,10 +50,15 @@ export class SoundManager {
 	}
 
 	stop(song: Song) {
-		this.soundPlayer.pause();
-		this.playlistService.remove(song);
-		this.currentSong = null;
-	}
+    if (this.currentSong !== null) {
+      if (this.isPlaying) {
+        this.soundPlayer.pause();
+      }
+
+      this.playlistService.remove(song);
+      this.currentSong = null;
+    }
+  }
 
 	togglePlayPause() {
 		if (this.currentSong != null) {

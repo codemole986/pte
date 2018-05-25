@@ -19,7 +19,6 @@ declare var Metronic: any;
 
 export class SingleQuizComponent implements OnInit {
   private _quiz: Problem;
-  private scAudioPlayerId: string = 'sc-audio-player';
   private dingPeriod: number = 1000;
   private subject: Subject<boolean>;
   private startTime: number;

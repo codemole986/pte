@@ -34,7 +34,6 @@
       *ngIf="quiz.type === 'LWS'"
       [quiz]="quiz"
       [step]="step"
-      [scAudioPlayerId]="scAudioPlayerId"
       (updateAnswer)="updateAnswer($event)"
       (finishAudio)="onAudioFinished($event)"
     >

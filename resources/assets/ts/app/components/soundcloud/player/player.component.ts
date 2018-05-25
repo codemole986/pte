@@ -18,7 +18,8 @@ import {TimeInfoCmp} from './time-info.component';
 	selector: 'player',
 	template: `
 	<section class="player">
-		<div class="row">
+		<div *ngIf="isLoading">loading...</div>
+		<div class="row" *ngIf="!isLoading">
 			<div class="col-xs-4 player-image">
 				<song-image [song]="song"></song-image>
 			</div>
@@ -102,24 +103,33 @@ export class PlayerCmp implements OnInit, OnDestroy {
 	isPlaying: boolean;
 	currentTime: number;
 	totalTime: number;
+	isLoading: boolean = false;
 
 	get trackId(): string { return this._trackId; };
 	@Input() set trackId(value: string) {
 		this._trackId = value;
+		this.isLoading = true;
 
-		if (this.song) this.playlistService.remove(this.song);
+		if (this.song) this.soundManager.stop(this.song);
 
     this.http.get(`/api/soundcloud/track/${value}`)
       .map((response: Response) => response.json())
       .subscribe((song: Song) => {
-      	this.song = song;
+        this.song = song;
+        this.isLoading = false;
 				this.playlistService
 						.getAll()
 						.subscribe(playlistData => {});
 				this.playlistService.publishChanges();
-				this.soundManager.play(this.song);
       });
 	}
+  @Input() set play(value: boolean) {
+    if (!this.song) return;
+
+    if (value) {
+      this.soundManager.play(this.song);
+    }
+  }
 
 	@Output() finish = new EventEmitter<Song>();
 
@@ -145,9 +155,8 @@ export class PlayerCmp implements OnInit, OnDestroy {
 		});
 
 		this.soundManager.on(Events.Finish, () => {
-			console.log('Events.Finish');
+      if (this.isPlaying) this.finish.emit(this.song);
 			this.isPlaying = false;
-			this.finish.emit(this.song);
 		});
 	}
 

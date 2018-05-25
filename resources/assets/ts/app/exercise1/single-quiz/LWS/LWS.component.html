@@ -3,9 +3,13 @@
   <div class="quiz-content-text" *ngIf="quiz.content.text" [innerHTML]="quiz.content.text"></div>
 </div>
 <div class="step-listening">
-  <div class="quiz-content-audio">
-    <!-- <iframe [id]="scAudioPlayerId" width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" [src]="quiz.content.audio | safe"></iframe> -->
-    <player [trackId]="quiz.content.audio" (finish)="onFinish($event)"></player>
+  <div class="quiz-content-audio" [hidden]="!playAudio">
+    <player
+      [trackId]="quiz.content.audio"
+      [play]="playAudio"
+      (finish)="onFinish($event)"
+    >
+    </player>
   </div>
 </div>
 <div class="quiz-answer">

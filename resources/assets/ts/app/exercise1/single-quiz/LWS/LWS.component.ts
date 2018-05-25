@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewChecked, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { snakeCase, words } from 'lodash';
 
 import { Problem } from './../../../model/problem';
@@ -11,33 +11,37 @@ import { GlobalService } from './../../../shared';
   styles: [`${require('./lws.component.css')}`]
 })
 
-export class LWSComponent implements OnInit, AfterViewChecked {
-  private audioFinished: boolean = false;
+export class LWSComponent {
   private _step: string;
+  private _quiz: Problem;
 
   get step(): string {
     return this._step;
   }
   @Input() set step(step: string) {
-    this.onChangeStep(step);
+    this._step = step;
+
+    if (this.isListeningStep(step)) {
+      this.playAudio = true;
+    }
   }
-  @Input() quiz: Problem;
-  @Input() scAudioPlayerId: string;
+  get quiz(): Problem {
+    return this._quiz;
+  }
+  @Input() set quiz(quiz: Problem) {
+    this._quiz = quiz;
+    this.playAudio = false;
+  }
 
   @Output() updateAnswer = new EventEmitter<{ text: string }>();
   @Output() finishAudio = new EventEmitter<string>();
 
   count: number = 0;
+  playAudio: boolean = false;
 
   constructor(
     private globalService: GlobalService
   ) {
-  }
-
-  ngOnInit() {
-  }
-
-  ngAfterViewChecked() {
   }
 
   isPreStep(step: string): boolean {
@@ -65,42 +69,8 @@ export class LWSComponent implements OnInit, AfterViewChecked {
     this.globalService.downloadFile(value, `${snakeCase(this.quiz.title)}.txt`);
   }
 
-  onChangeStep(step: string) {
-    let _self = this;
-    this._step = step;
-
-    if (step === this.globalService.STEP_LISTENING) {
-      let scWidget = SC.Widget(this.scAudioPlayerId);
-
-      scWidget.play();
-
-      window.addEventListener('onmessage', (m) => {
-        console.log('onmessage: ', m);
-      });
-
-      // scWidget.bind(SC.Widget.Events.READY, () => {
-      //   scWidget.unbind(SC.Widget.Events.READY);
-
-      //   scWidget.bind(SC.Widget.Events.PLAY, () => {
-      //     console.log('play');
-      //     _self.audioFinished = false;
-      //     scWidget.unbind(SC.Widget.Events.PLAY);
-      //   });
-
-      //   scWidget.bind(SC.Widget.Events.FINISH, function(event: MessageEvent) {
-      //     console.log('finish');
-      //     if (!_self.audioFinished) {
-      //       _self.finishAudio.emit(_self.globalService.STEP_MAIN);
-      //     }
-      //     _self.audioFinished = true;
-
-      //     scWidget.unbind(SC.Widget.Events.FINISH);
-      //   });
-      // });
-    }
-  }
-
   onFinish(song: any) {
-    console.log(song);
+    this.playAudio = false;
+    this.finishAudio.emit(this.globalService.STEP_MAIN);
   }
 }
