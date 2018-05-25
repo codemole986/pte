@@ -30,6 +30,15 @@
       (updateAnswer)="updateAnswer($event)"
     >
     </app-exercise-single-wes>
+    <app-exercise-single-lws
+      *ngIf="quiz.type === 'LWS'"
+      [quiz]="quiz"
+      [step]="step"
+      [scAudioPlayerId]="scAudioPlayerId"
+      (updateAnswer)="updateAnswer($event)"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-lws>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">

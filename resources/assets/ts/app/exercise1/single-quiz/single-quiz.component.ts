@@ -10,7 +10,6 @@ import { Answer } from './../../model/answer';
 import { Problem } from './../../model/problem';
 
 declare var Metronic: any;
-declare var SC: any;
 
 @Component({
   selector: 'app-exercise-single',
@@ -25,6 +24,7 @@ export class SingleQuizComponent implements OnInit {
   private subject: Subject<boolean>;
   private startTime: number;
   private endTime: number;
+  private audioFinished: boolean = false;
 
   get quiz(): Problem {
     return this._quiz;
@@ -78,39 +78,22 @@ export class SingleQuizComponent implements OnInit {
   }
 
   private onChangeQuiz(quiz: Problem) {
-    const { preparation_time, limit_time, id, content } = quiz;
-    const { audio } = content;
-    const patternIframe = new RegExp('^<iframe(.+)</iframe>$');
-    const patternSrc = new RegExp('(?<=src=").*?(?=["])');
-    const patternAutoPlay = new RegExp('auto_play=(true|false)');
+    let { preparation_time, limit_time, id, content } = quiz;
+    let { audio } = content;
+    let patternIframe = new RegExp('^<iframe(.+)</iframe>$');
+    let patternSrc = new RegExp('(?<=src=").*?(?=["])');
+    let patternAutoPlay = new RegExp('auto_play=(true|false)');
+    let patternTrackId = new RegExp('\/tracks\/[1-9][0-9]*');
 
     if (audio && patternIframe.test(audio)) {
-      let src = '';
-      const matches = audio.match(patternSrc);
+      let matches = audio.match(patternTrackId);
+      let trackId = '';
 
       if (matches.length > 0) {
-        src = matches[0].replace(patternAutoPlay, 'auto_play=true');
-        quiz.content.audio = src;
-
-        const _self = this;
-
-        window.addEventListener('message', (event: MessageEvent) => {
-          const { origin } = event;
-
-          if (origin === 'https://w.soundcloud.com') {
-            const scWidget = SC.Widget(_self.scAudioPlayerId);
-
-            scWidget.bind(SC.Widget.Events.PLAY, () => {
-              console.log('play');
-            });
-
-            scWidget.bind(SC.Widget.Events.FINISH, function(event: MessageEvent) {
-              console.log('finish');
-              _self.goToStep(_self.globalService.STEP_MAIN);
-            });
-          }
-        });
+        trackId = matches[0].replace('/tracks/', '');
       }
+
+      quiz.content.audio = trackId;
     }
 
     this._quiz = quiz;
@@ -137,24 +120,21 @@ export class SingleQuizComponent implements OnInit {
   }
 
   goToPreStep() {
-    this.step = this.globalService.STEP_PRE;
-    this.goToStep(this.step);
+    this.goToStep(this.globalService.STEP_PRE);
   }
 
   goToMainStep() {
-    this.step = this.globalService.STEP_MAIN;
-    this.goToStep(this.step);
+    this.goToStep(this.globalService.STEP_MAIN);
   }
 
   goToPostStep() {
-    this.step = this.globalService.STEP_POST;
-    this.goToStep(this.step);
+    this.goToStep(this.globalService.STEP_POST);
   }
 
   goToNextStep() {
     if (isEmpty(this.steps)) return;
 
-    const index = indexOf(this.steps, this.step);
+    let index = indexOf(this.steps, this.step);
 
     if (index < this.steps.length - 1) {
       this.goToStep(this.steps[index + 1]);
@@ -164,7 +144,7 @@ export class SingleQuizComponent implements OnInit {
   goToPrevStep() {
     if (isEmpty(this.steps)) return;
 
-    const index = indexOf(this.steps, this.step);
+    let index = indexOf(this.steps, this.step);
 
     if (index > 0) {
       this.goToStep(this.steps[index - 1]);
@@ -174,9 +154,11 @@ export class SingleQuizComponent implements OnInit {
   goToStep(step: string) {
     if (isEmpty(this._quiz)) return;
 
+    console.log(step);
+
     this.stopTimer();
 
-    const { preparation_time, limit_time, id } = this._quiz;
+    let { preparation_time, limit_time, id } = this._quiz;
 
     switch (step) {
       case this.globalService.STEP_LISTENING:
@@ -213,7 +195,7 @@ export class SingleQuizComponent implements OnInit {
   }
 
   getTypeName(category: string, value: string) {
-    const arr_types: { value: string, title: string }[] = this.getTypes(category);
+    let arr_types: { value: string, title: string }[] = this.getTypes(category);
 
     if(arr_types != null) {
       for (let i = 0;  i < arr_types.length; i++) {
@@ -251,7 +233,7 @@ export class SingleQuizComponent implements OnInit {
   }
 
   playDingSound(cb: Function) {
-    const audio = new Audio();
+    let audio = new Audio();
     audio.src = this.globalService.dingSoundPath;
     audio.load();
 
@@ -286,5 +268,9 @@ export class SingleQuizComponent implements OnInit {
         if (data.state === 'error') Metronic.showErrMsg(data.message);
         if (cb) cb();
       });
+  }
+
+  onAudioFinished(step: string) {
+    this.goToStep(step);
   }
 }

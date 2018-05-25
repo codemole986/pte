@@ -105,7 +105,6 @@
     <script type="text/javascript" src="{{asset('js/ckeditor/ckeditor.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/recordmp3.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/audio.js')}}"></script>
-    <script type="text/javascript" src="{{asset('js/sd-widget.js')}}"></script>  
     <script type="text/javascript" src="{{asset('js/dropzone.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/ng-dropzone.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/bootbox/bootbox.min.js')}}"></script>

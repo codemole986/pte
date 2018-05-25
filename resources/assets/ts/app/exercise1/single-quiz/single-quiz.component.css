@@ -7,6 +7,7 @@ app-exercise-single .step-main {
   padding: 15px;
 }
 
-app-exercise-single .quiz-answer {
+app-exercise-single .quiz-answer,
+app-exercise-single .quiz-content-audio {
   margin-bottom: 16px;
 }

@@ -19,7 +19,6 @@ declare function startRecording(a: any, b: any, c: any, d: any): any;
 declare function stopRecording(): any;
 declare var bootbox: any;
 declare var Metronic: any;
-declare var SC: any;
 
 @Component({
   selector: 'app-exercise',
@@ -124,24 +123,10 @@ export class ExerciseComponent implements OnInit {
   }
 
   selectQuiz(quiz: Problem) {
-    const { preparation_time, limit_time, id, content } = quiz;
-    const { audio } = content;
-    const patternIframe = new RegExp('^<iframe(.+)</iframe>$');
-    const patternSrc = new RegExp('(?<=src=").*?(?=["])');
-    const patternAutoPlay = new RegExp('auto_play=(true|false)');
+    const { id } = quiz;
 
     if (!isEmpty(this.currentQuiz) && id === this.currentQuiz.id) {
       return;
-    }
-
-    if (audio && patternIframe.test(audio)) {
-      let src = '';
-      const matches = audio.match(patternSrc);
-
-      if (matches.length > 0) {
-        src = matches[0].replace(patternAutoPlay, 'auto_play=true');
-        quiz.content.audio = src;
-      }
     }
 
     this.currentQuiz = quiz;
