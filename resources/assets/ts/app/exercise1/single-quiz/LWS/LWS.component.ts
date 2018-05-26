@@ -23,6 +23,8 @@ export class LWSComponent {
 
     if (this.isListeningStep(step)) {
       this.playAudio = true;
+    } else {
+      this.playAudio = false;
     }
   }
   get quiz(): Problem {
@@ -70,7 +72,6 @@ export class LWSComponent {
   }
 
   onFinish(song: any) {
-    this.playAudio = false;
     this.finishAudio.emit(this.globalService.STEP_MAIN);
   }
 }
