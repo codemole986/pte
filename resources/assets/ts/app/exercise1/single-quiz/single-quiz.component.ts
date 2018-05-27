@@ -100,6 +100,7 @@ export class SingleQuizComponent implements OnInit {
     this.steps = this.globalService.getSteps(quiz.type);
     this.showSolution = false;
     this.started = false;
+    this.step = '';
   }
 
   isPreStep(step: string): boolean {
