@@ -226,7 +226,6 @@ export class GlobalService {
     switch (type) {
       case 'LWS':
       case 'LSA':
-      case 'LTW':
       case 'LSB':
       case 'LCD':
       case 'LTS': {
