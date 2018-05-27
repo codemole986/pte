@@ -11,7 +11,7 @@ import { consts } from '../consts';
 		<a href='#' id="btnPrevious" title="" (click)='previous()' *ngIf="false">
 				<img src='${consts.baseUrl}images/prev.png'/>
 		</a>
-		<a id="btnPlayPause" (click)='togglePlayPause()'>
+		<a id="btnPlayPause" (click)='togglePlayPause()' [class.hide]="hidePlayButton">
 				<img src='${consts.baseUrl}images/play.png' [class.hide]='isPlaying'/>
 				<img src='${consts.baseUrl}images/pause.png' [class.hide]='!isPlaying'/>
 		</a>
@@ -54,6 +54,7 @@ import { consts } from '../consts';
 })
 export class ControlsCmp {
 	@Input("is-playing") isPlaying: boolean;
+	@Input("hide-play-button") hidePlayButton: boolean;
 	@Input() song: any;
 
 	constructor(private soundManager: SoundManager) {

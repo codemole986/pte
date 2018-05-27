@@ -30,7 +30,7 @@ import {TimeInfoCmp} from './time-info.component';
 					<div style='margin-bottom: 16px;'>
 						<time-info [song]="song" [time]="currentTime" [total-time]="totalTime"></time-info>
 					</div>
-					<controls [song]="song" [is-playing]="isPlaying"></controls>
+					<controls [song]="song" [is-playing]="isPlaying" [hide-play-button]="hidePlayButton"></controls>
 					<div class='pull-right' *ngIf="false">
 						<volume></volume>
 					</div>
@@ -104,6 +104,7 @@ export class PlayerCmp implements OnInit, OnDestroy {
 	currentTime: number;
 	totalTime: number;
 	isLoading: boolean = false;
+	hidePlayButton: boolean = false;
 
 	get trackId(): string { return this._trackId; };
 	@Input() set trackId(value: string) {
@@ -143,6 +144,7 @@ export class PlayerCmp implements OnInit, OnDestroy {
 
 		this.soundManager.on(Events.Play, () => {
 			this.isPlaying = true;
+			this.hidePlayButton = false;
 		});
 
 		this.soundManager.on(Events.PlayResume, () => {
@@ -157,6 +159,7 @@ export class PlayerCmp implements OnInit, OnDestroy {
 		this.soundManager.on(Events.Finish, () => {
       if (this.isPlaying) this.finish.emit(this.song);
 			this.isPlaying = false;
+			this.hidePlayButton = true;
 		});
 	}
 
