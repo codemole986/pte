@@ -46,6 +46,14 @@
       (finishAudio)="onAudioFinished($event)"
     >
     </app-exercise-single-lsa>
+    <app-exercise-single-ltw
+      *ngIf="quiz.type === 'LTW'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-ltw>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">
