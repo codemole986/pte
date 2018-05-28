@@ -62,6 +62,14 @@
       (finishAudio)="onAudioFinished($event)"
     >
     </app-exercise-single-lsb>
+    <app-exercise-single-lcd
+      *ngIf="quiz.type === 'LCD'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-lcd>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">
