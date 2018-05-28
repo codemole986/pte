@@ -8,6 +8,8 @@ app-exercise-single .step-main {
 }
 
 app-exercise-single .quiz-answer,
-app-exercise-single .quiz-content-audio {
+app-exercise-single .quiz-content-audio,
+app-exercise-single .quiz-content-image,
+app-exercise-single .quiz-content-text {
   margin-bottom: 16px;
 }
