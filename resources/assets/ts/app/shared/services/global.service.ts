@@ -226,8 +226,7 @@ export class GlobalService {
     switch (type) {
       case 'LWS':
       case 'LSA':
-      case 'LSB':
-      case 'LTS': {
+      case 'LSB': {
         steps.push(this.STEP_LISTENING);
         break;
       }
