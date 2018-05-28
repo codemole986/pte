@@ -227,7 +227,6 @@ export class GlobalService {
       case 'LWS':
       case 'LSA':
       case 'LSB':
-      case 'LCD':
       case 'LTS': {
         steps.push(this.STEP_LISTENING);
         break;
