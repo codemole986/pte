@@ -78,6 +78,13 @@
       (finishAudio)="onAudioFinished($event)"
     >
     </app-exercise-single-lts>
+    <app-exercise-single-rsa
+      *ngIf="quiz.type === 'RSA'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+    >
+    </app-exercise-single-rsa>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">

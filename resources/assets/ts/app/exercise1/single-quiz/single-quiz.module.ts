@@ -14,6 +14,7 @@ import { LTWComponent } from './LTW/LTW.component';
 import { LSBComponent } from './LSB/LSB.component';
 import { LCDComponent } from './LCD/LCD.component';
 import { LTSComponent } from './LTS/LTS.component';
+import { RSAComponent } from './RSA/RSA.component';
 
 @NgModule({
   imports: [
@@ -31,7 +32,8 @@ import { LTSComponent } from './LTS/LTS.component';
     LTWComponent,
     LSBComponent,
     LCDComponent,
-    LTSComponent
+    LTSComponent,
+    RSAComponent
   ],
   exports: [
     SingleQuizComponent,
@@ -42,7 +44,8 @@ import { LTSComponent } from './LTS/LTS.component';
     LTWComponent,
     LSBComponent,
     LCDComponent,
-    LTSComponent
+    LTSComponent,
+    RSAComponent
   ]
 })
 export class SingleQuizModule { }
