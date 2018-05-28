@@ -92,6 +92,13 @@
       (updateAnswer)="updateAnswer($event)"
     >
     </app-exercise-single-rma>
+    <app-exercise-single-rro
+      *ngIf="quiz.type === 'RRO'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+    >
+    </app-exercise-single-rro>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">

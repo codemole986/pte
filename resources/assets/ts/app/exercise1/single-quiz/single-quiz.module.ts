@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from "@ngx-translate/core";
+import { TranslateModule } from '@ngx-translate/core';
 
 import { PipesModule } from './../../shared/pipes/';
 import { SoundCloudModule } from './../../components';
@@ -16,6 +16,7 @@ import { LCDComponent } from './LCD/LCD.component';
 import { LTSComponent } from './LTS/LTS.component';
 import { RSAComponent } from './RSA/RSA.component';
 import { RMAComponent } from './RMA/RMA.component';
+import { RROComponent } from './RRO/RRO.component';
 
 @NgModule({
   imports: [
@@ -35,7 +36,8 @@ import { RMAComponent } from './RMA/RMA.component';
     LCDComponent,
     LTSComponent,
     RSAComponent,
-    RMAComponent
+    RMAComponent,
+    RROComponent
   ],
   exports: [
     SingleQuizComponent,
@@ -48,7 +50,8 @@ import { RMAComponent } from './RMA/RMA.component';
     LCDComponent,
     LTSComponent,
     RSAComponent,
-    RMAComponent
+    RMAComponent,
+    RROComponent
   ]
 })
 export class SingleQuizModule { }
