@@ -18,6 +18,7 @@ import { RSAComponent } from './RSA/RSA.component';
 import { RMAComponent } from './RMA/RMA.component';
 import { RROComponent } from './RRO/RRO.component';
 import { RFBComponent } from './RFB/RFB.component';
+import { RANComponent } from './RAN/RAN.component';
 
 @NgModule({
   imports: [
@@ -39,7 +40,8 @@ import { RFBComponent } from './RFB/RFB.component';
     RSAComponent,
     RMAComponent,
     RROComponent,
-    RFBComponent
+    RFBComponent,
+    RANComponent
   ],
   exports: [
     SingleQuizComponent,
@@ -54,7 +56,8 @@ import { RFBComponent } from './RFB/RFB.component';
     RSAComponent,
     RMAComponent,
     RROComponent,
-    RFBComponent
+    RFBComponent,
+    RANComponent
   ]
 })
 export class SingleQuizModule { }

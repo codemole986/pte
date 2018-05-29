@@ -106,6 +106,13 @@
       (updateAnswer)="updateAnswer($event)"
     >
     </app-exercise-single-rfb>
+    <app-exercise-single-ran
+      *ngIf="quiz.type === 'RAN'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+    >
+    </app-exercise-single-ran>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">
