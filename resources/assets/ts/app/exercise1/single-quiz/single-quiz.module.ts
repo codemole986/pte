@@ -21,6 +21,7 @@ import { RFBComponent } from './RFB/RFB.component';
 import { RANComponent } from './RAN/RAN.component';
 import { SALComponent } from './SAL/SAL.component';
 import { SRSComponent } from './SRS/SRS.component';
+import { SPIComponent } from './SPI/SPI.component';
 
 @NgModule({
   imports: [
@@ -45,7 +46,8 @@ import { SRSComponent } from './SRS/SRS.component';
     RFBComponent,
     RANComponent,
     SALComponent,
-    SRSComponent
+    SRSComponent,
+    SPIComponent
   ],
   exports: [
     SingleQuizComponent,
@@ -63,7 +65,8 @@ import { SRSComponent } from './SRS/SRS.component';
     RFBComponent,
     RANComponent,
     SALComponent,
-    SRSComponent
+    SRSComponent,
+    SPIComponent
   ]
 })
 export class SingleQuizModule { }
