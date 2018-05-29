@@ -113,6 +113,12 @@
       (updateAnswer)="updateAnswer($event)"
     >
     </app-exercise-single-ran>
+    <app-exercise-single-sal
+      *ngIf="quiz.type === 'SAL'"
+      [quiz]="quiz"
+      [step]="step"
+    >
+    </app-exercise-single-sal>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">
