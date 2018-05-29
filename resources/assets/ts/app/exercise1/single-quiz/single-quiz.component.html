@@ -119,6 +119,13 @@
       [step]="step"
     >
     </app-exercise-single-sal>
+    <app-exercise-single-srs
+      *ngIf="quiz.type === 'SRS'"
+      [quiz]="quiz"
+      [step]="step"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-srs>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">
