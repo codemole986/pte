@@ -23,6 +23,7 @@ import { SALComponent } from './SAL/SAL.component';
 import { SRSComponent } from './SRS/SRS.component';
 import { SPIComponent } from './SPI/SPI.component';
 import { SRLComponent } from './SRL/SRL.component';
+import { SSAComponent } from './SSA/SSA.component';
 
 @NgModule({
   imports: [
@@ -49,7 +50,8 @@ import { SRLComponent } from './SRL/SRL.component';
     SALComponent,
     SRSComponent,
     SPIComponent,
-    SRLComponent
+    SRLComponent,
+    SSAComponent
   ],
   exports: [
     SingleQuizComponent,
@@ -69,7 +71,8 @@ import { SRLComponent } from './SRL/SRL.component';
     SALComponent,
     SRSComponent,
     SPIComponent,
-    SRLComponent
+    SRLComponent,
+    SSAComponent
   ]
 })
 export class SingleQuizModule { }

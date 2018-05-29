@@ -139,6 +139,13 @@
       (finishAudio)="onAudioFinished($event)"
     >
     </app-exercise-single-srl>
+    <app-exercise-single-ssa
+      *ngIf="quiz.type === 'SSA'"
+      [quiz]="quiz"
+      [step]="step"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-ssa>
   </div>
   <div class="portlet-footer clearfix">
     <div class="pull-right">
