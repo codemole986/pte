@@ -10,6 +10,8 @@ import { Answer } from './../../model/answer';
 import { Problem } from './../../model/problem';
 
 declare var Metronic: any;
+declare const navigator: any;
+declare const MediaRecorder: any;
 
 @Component({
   selector: 'app-exercise-single',
@@ -24,6 +26,8 @@ export class SingleQuizComponent implements OnInit {
   private startTime: number;
   private endTime: number;
   private audioFinished: boolean = false;
+  private mediaChunks: any = [];
+  private mediaRecorder: any;
 
   get quiz(): Problem {
     return this._quiz;
@@ -55,6 +59,26 @@ export class SingleQuizComponent implements OnInit {
   }
 
   ngOnInit() {
+    const onSuccess = (stream: any) => {
+      this.mediaRecorder = new MediaRecorder(stream);
+      this.mediaRecorder.onstop = (e: any) => {
+        const audio = new Audio();
+        const blob = new Blob(this.mediaChunks, { 'type': 'audio/ogg; codecs=opus' });
+        this.mediaChunks.length = 0;
+        audio.src = window.URL.createObjectURL(blob);
+        audio.load();
+        audio.play();
+      };
+
+      this.mediaRecorder.ondataavailable = (e: any) => this.mediaChunks.push(e.data);
+    };
+
+    navigator.getUserMedia = (navigator.getUserMedia ||
+      navigator.webkitGetUserMedia ||
+      navigator.mozGetUserMedia ||
+      navigator.msGetUserMedia);
+
+    navigator.getUserMedia({ audio: true }, onSuccess, (e: any) => console.log(e));
   }
 
   ngOnDestroy() {
@@ -272,5 +296,13 @@ export class SingleQuizComponent implements OnInit {
 
   onAudioFinished(step: string) {
     this.goToStep(step);
+  }
+
+  startRecord() {
+    this.mediaRecorder.start();
+  }
+
+  stopRecord() {
+    this.mediaRecorder.stop();
   }
 }

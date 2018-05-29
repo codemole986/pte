@@ -117,6 +117,8 @@
       *ngIf="quiz.type === 'SAL'"
       [quiz]="quiz"
       [step]="step"
+      (startRecord)="startRecord()"
+      (stopRecord)="stopRecord()"
     >
     </app-exercise-single-sal>
     <app-exercise-single-srs
