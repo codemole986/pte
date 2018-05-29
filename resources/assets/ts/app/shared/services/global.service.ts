@@ -227,7 +227,8 @@ export class GlobalService {
       case 'LWS':
       case 'LSA':
       case 'LSB':
-      case 'SRS': {
+      case 'SRS':
+      case 'SRL': {
         steps.push(this.STEP_LISTENING);
         break;
       }
