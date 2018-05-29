@@ -59,15 +59,19 @@ export class SingleQuizComponent implements OnInit {
   }
 
   ngOnInit() {
-    const onSuccess = (stream: any) => {
+    let onSuccess = (stream: any) => {
       this.mediaRecorder = new MediaRecorder(stream);
       this.mediaRecorder.onstop = (e: any) => {
-        const audio = new Audio();
-        const blob = new Blob(this.mediaChunks, { 'type': 'audio/ogg; codecs=opus' });
+        let audio = new Audio();
+        let blob = new Blob(this.mediaChunks, { 'type': 'audio/ogg; codecs=opus' });
+        let formData = new FormData();
+        formData.append('file', blob);
         this.mediaChunks.length = 0;
-        audio.src = window.URL.createObjectURL(blob);
-        audio.load();
-        audio.play();
+        this.http.post('/api/upload', formData)
+          .map((response) => response.json())
+          .subscribe(({ path }: { path: string }) => {
+            console.log(path);
+          });
       };
 
       this.mediaRecorder.ondataavailable = (e: any) => this.mediaChunks.push(e.data);
