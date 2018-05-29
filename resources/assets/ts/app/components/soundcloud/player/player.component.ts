@@ -108,12 +108,27 @@ export class PlayerCmp implements OnInit, OnDestroy {
 
 	get trackId(): string { return this._trackId; };
 	@Input() set trackId(value: string) {
-		this._trackId = value;
+		let patternIframe = new RegExp('^<iframe(.+)</iframe>$');
+		let patternTrackId = new RegExp('\/tracks\/[1-9][0-9]*');
+
+		if (value && patternIframe.test(value)) {
+      let matches = value.match(patternTrackId);
+      let trackId = '';
+
+      if (matches.length > 0) {
+        trackId = matches[0].replace('/tracks/', '');
+      }
+
+      this._trackId = trackId;
+    } else {
+      this._trackId = value;
+    }
+
 		this.isLoading = true;
 
 		if (this.song) this.soundManager.stop(this.song);
 
-    this.http.get(`/api/soundcloud/track/${value}`)
+    this.http.get(`/api/soundcloud/track/${this._trackId}`)
       .map((response: Response) => response.json())
       .subscribe((song: Song) => {
         this.song = song;
