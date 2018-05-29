@@ -1,0 +1,65 @@
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { includes, indexOf, map, remove, slice, words } from 'lodash';
+
+import { Problem } from './../../../model/problem';
+import { Answer } from './../../../model/answer';
+import { GlobalService } from './../../../shared';
+
+@Component({
+  selector: 'app-exercise-single-rfb',
+  template: require('./rfb.component.html'),
+  styles: [`${require('./rfb.component.css')}`]
+})
+
+export class RFBComponent {
+  private _step: string;
+  private _quiz: Problem;
+
+  get step(): string {
+    return this._step;
+  }
+  @Input() set step(step: string) {
+    this._step = step;
+  }
+  get quiz(): Problem {
+    return this._quiz;
+  }
+  @Input() set quiz(quiz: Problem) {
+    this.onChangeQuiz(quiz);
+  }
+
+  @Output() updateAnswer = new EventEmitter<{ optionno: number[] }>();
+
+  count: number = 0;
+  options: string[];
+  selectedOptions: number[] = [];
+
+  constructor(
+    private globalService: GlobalService,
+    private domSanitizer: DomSanitizer
+  ) {
+  }
+
+  isPreStep(step: string): boolean {
+    return step === this.globalService.STEP_PRE;
+  }
+
+  isMainStep(step: string): boolean {
+    return step === this.globalService.STEP_MAIN;
+  }
+
+  isListeningStep(step: string): boolean {
+    return step === this.globalService.STEP_LISTENING;
+  }
+
+  isPostStep(step: string): boolean {
+    return step === this.globalService.STEP_POST;
+  }
+
+  onChangeQuiz(quiz: Problem) {
+    let _quiz = { ...quiz };
+    _quiz.content.text = this.domSanitizer.bypassSecurityTrustHtml(_quiz.content.text.replace(/{{}}/g, '<input >'));
+    this._quiz = _quiz;
+  }
+}
