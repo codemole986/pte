@@ -8,8 +8,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-ran',
-  template: require('./ran.component.html'),
-  styles: [`${require('./ran.component.css')}`]
+  template: require('./RAN.component.html'),
+  styles: [`${require('./RAN.component.css')}`]
 })
 
 export class RANComponent {

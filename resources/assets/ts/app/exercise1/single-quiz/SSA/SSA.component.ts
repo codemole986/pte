@@ -5,8 +5,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-ssa',
-  template: require('./ssa.component.html'),
-  styles: [`${require('./ssa.component.css')}`]
+  template: require('./SSA.component.html'),
+  styles: [`${require('./SSA.component.css')}`]
 })
 
 export class SSAComponent implements OnInit {

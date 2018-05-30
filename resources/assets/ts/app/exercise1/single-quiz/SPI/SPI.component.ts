@@ -5,8 +5,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-spi',
-  template: require('./spi.component.html'),
-  styles: [`${require('./spi.component.css')}`]
+  template: require('./SPI.component.html'),
+  styles: [`${require('./SPI.component.css')}`]
 })
 
 export class SPIComponent implements OnInit {

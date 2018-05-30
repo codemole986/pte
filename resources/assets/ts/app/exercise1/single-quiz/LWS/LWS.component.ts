@@ -7,8 +7,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-lws',
-  template: require('./lws.component.html'),
-  styles: [`${require('./lws.component.css')}`]
+  template: require('./LWS.component.html'),
+  styles: [`${require('./LWS.component.css')}`]
 })
 
 export class LWSComponent {

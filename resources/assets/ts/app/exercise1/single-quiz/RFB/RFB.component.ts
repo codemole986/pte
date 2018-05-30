@@ -8,8 +8,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-rfb',
-  template: require('./rfb.component.html'),
-  styles: [`${require('./rfb.component.css')}`]
+  template: require('./RFB.component.html'),
+  styles: [`${require('./RFB.component.css')}`]
 })
 
 export class RFBComponent {

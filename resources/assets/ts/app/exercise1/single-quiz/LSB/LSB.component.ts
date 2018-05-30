@@ -7,8 +7,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-lsb',
-  template: require('./lsb.component.html'),
-  styles: [`${require('./lsb.component.css')}`]
+  template: require('./LSB.component.html'),
+  styles: [`${require('./LSB.component.css')}`]
 })
 
 export class LSBComponent {

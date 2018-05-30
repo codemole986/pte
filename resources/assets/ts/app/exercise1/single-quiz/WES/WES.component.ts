@@ -7,8 +7,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-wes',
-  template: require('./wes.component.html'),
-  styles: [`${require('./wes.component.css')}`]
+  template: require('./WES.component.html'),
+  styles: [`${require('./WES.component.css')}`]
 })
 
 export class WESComponent implements OnInit {

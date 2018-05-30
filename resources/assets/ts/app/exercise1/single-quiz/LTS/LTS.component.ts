@@ -8,8 +8,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-lts',
-  template: require('./lts.component.html'),
-  styles: [`${require('./lts.component.css')}`]
+  template: require('./LTS.component.html'),
+  styles: [`${require('./LTS.component.css')}`]
 })
 
 export class LTSComponent {

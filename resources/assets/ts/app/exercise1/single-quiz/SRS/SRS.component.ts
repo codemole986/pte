@@ -5,8 +5,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-srs',
-  template: require('./srs.component.html'),
-  styles: [`${require('./srs.component.css')}`]
+  template: require('./SRS.component.html'),
+  styles: [`${require('./SRS.component.css')}`]
 })
 
 export class SRSComponent implements OnInit {

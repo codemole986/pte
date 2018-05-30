@@ -5,8 +5,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-sal',
-  template: require('./sal.component.html'),
-  styles: [`${require('./sal.component.css')}`]
+  template: require('./SAL.component.html'),
+  styles: [`${require('./SAL.component.css')}`]
 })
 
 export class SALComponent implements OnInit {

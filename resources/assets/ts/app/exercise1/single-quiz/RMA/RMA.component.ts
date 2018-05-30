@@ -7,8 +7,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-rma',
-  template: require('./rma.component.html'),
-  styles: [`${require('./rma.component.css')}`]
+  template: require('./RMA.component.html'),
+  styles: [`${require('./RMA.component.css')}`]
 })
 
 export class RMAComponent {

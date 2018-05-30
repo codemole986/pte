@@ -8,8 +8,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-lcd',
-  template: require('./lcd.component.html'),
-  styles: [`${require('./lcd.component.css')}`]
+  template: require('./LCD.component.html'),
+  styles: [`${require('./LCD.component.css')}`]
 })
 
 export class LCDComponent {

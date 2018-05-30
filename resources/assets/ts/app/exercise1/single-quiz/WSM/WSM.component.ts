@@ -7,8 +7,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-wsm',
-  template: require('./wsm.component.html'),
-  styles: [`${require('./wsm.component.css')}`]
+  template: require('./WSM.component.html'),
+  styles: [`${require('./WSM.component.css')}`]
 })
 
 export class WSMComponent implements OnInit {

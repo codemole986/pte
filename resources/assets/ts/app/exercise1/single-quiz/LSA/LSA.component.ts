@@ -7,8 +7,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-lsa',
-  template: require('./lsa.component.html'),
-  styles: [`${require('./lsa.component.css')}`]
+  template: require('./LSA.component.html'),
+  styles: [`${require('./LSA.component.css')}`]
 })
 
 export class LSAComponent {

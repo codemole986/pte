@@ -7,8 +7,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-rro',
-  template: require('./rro.component.html'),
-  styles: [`${require('./rro.component.css')}`]
+  template: require('./RRO.component.html'),
+  styles: [`${require('./RRO.component.css')}`]
 })
 
 export class RROComponent {

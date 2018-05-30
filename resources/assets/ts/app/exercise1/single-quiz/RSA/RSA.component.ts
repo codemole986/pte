@@ -7,8 +7,8 @@ import { GlobalService } from './../../../shared';
 
 @Component({
   selector: 'app-exercise-single-rsa',
-  template: require('./rsa.component.html'),
-  styles: [`${require('./rsa.component.css')}`]
+  template: require('./RSA.component.html'),
+  styles: [`${require('./RSA.component.css')}`]
 })
 
 export class RSAComponent {
