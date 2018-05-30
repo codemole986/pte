@@ -87,6 +87,8 @@ export class ExerciseComponent implements OnInit {
 
           if (this.list.length > 0 && isEmpty(this.currentQuiz)) {
             this.selectQuiz(this.list[0]);
+          } else {
+            this.router.navigate(['/dashboard']);
           }
         }
       );
