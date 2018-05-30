@@ -177,4 +177,4 @@ Route::post('/api/upload', 'UploadController@post');
 
 Route::get('/api/quiz', 'ProblemController@getproblems');
 
-Route::get('/api/soundcloud/track/{id}', 'SoundCloudController@get');
+Route::get('/api/soundcloud/track/{id}', 'SoundcloudController@get');
