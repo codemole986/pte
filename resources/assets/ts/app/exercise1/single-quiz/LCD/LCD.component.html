@@ -9,5 +9,5 @@
   </div>
 </div>
 <div class="step-main" *ngIf="isMainStep(step)">
-  <div class="quiz-content-text" *ngIf="quiz.content.text" [innerHTML]="quiz.content.text"></div>
+  <div class="quiz-content-text" *ngIf="quiz.content.text"><span *ngFor="let span of spans;let i = index"><span *ngIf="!span.isBR" [innerHtml]="span.text" (click)="span.clickable && onToggleSpan(i)" [ngClass]="{'selected' : span.selected}"></span><br *ngIf="span.isBR"></span></div>
 </div>

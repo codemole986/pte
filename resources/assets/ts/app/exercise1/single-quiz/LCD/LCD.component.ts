@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { includes, indexOf, map, remove, slice, words } from 'lodash';
+import { each, includes, indexOf, join, map, remove, slice, words } from 'lodash';
 
 import { Problem } from './../../../model/problem';
 import { Answer } from './../../../model/answer';
@@ -42,6 +42,7 @@ export class LCDComponent {
   playAudio: boolean = false;
   options: string[];
   selectedOptions: number[] = [];
+  spans: { text: any, clickable: boolean, selected: boolean, isBR: boolean }[];
 
   constructor(
     private globalService: GlobalService,
@@ -66,9 +67,56 @@ export class LCDComponent {
   }
 
   onChangeQuiz(quiz: Problem) {
+    this.spans = [];
+    let bracePattern = new RegExp(/\{\{\}\}/);
+    let linebreakPattern = new RegExp(/(\r\n|\r|\n)/);
+    let alphanumericPattern = new RegExp(/^[a-zA-Z\d_]*$/);
     let _quiz = { ...quiz };
-    _quiz.content.text = this.domSanitizer.bypassSecurityTrustHtml(_quiz.content.text.replace(/{{}}/g, '<input >'));
+    _quiz.content.text = _quiz.content.text.replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/&nbsp;/g, ' ');
+
+    let i = 0;
+    while(bracePattern.test(_quiz.content.text)) {
+      _quiz.content.text = _quiz.content.text.replace(bracePattern, _quiz.content.select.options[i]);
+      i ++;
+    }
+
+    let str = '';
+    each(_quiz.content.text, (ch: string) => {
+      if (alphanumericPattern.test(ch)) {
+        str += ch;
+      } else {
+        this.spans.push({
+          text: str,
+          clickable: true,
+          selected: false,
+          isBR: false
+        });
+
+        str = '';
+
+        if (linebreakPattern.test(ch)) {
+          this.spans.push({
+            text: '',
+            clickable: false,
+            selected: false,
+            isBR: true
+          });
+        } else {
+          this.spans.push({
+            text: ch,
+            clickable: false,
+            selected: false,
+            isBR: false
+          });
+        }
+      }
+    });
+
     this._quiz = _quiz;
     this.playAudio = false;
+  }
+
+  onToggleSpan(index: number) {
+    this.spans[index].selected = !this.spans[index].selected;
   }
 }
