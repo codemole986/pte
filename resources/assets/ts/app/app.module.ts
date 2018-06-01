@@ -27,8 +27,6 @@ import { ExerciselistComponent } from './exerciselist/exerciselist.component';
 import { ExamineeComponent } from './examinee/examinee.component';
 import { EvalexamComponent } from './evalexam/evalexam.component';
 import { EvalstatusRenderComponent } from './evalexam/evalstatus-render.component';
-import { EditorComponent } from './examinee/editor/editor.component';
-import { ProblemComponent } from './examinee/problem/problem.component';
 import { FileUploadDirective } from './dashboard/file-upload.directive';
 import { NumberprintPipe } from './dashboard/numberprint';
 
@@ -114,8 +112,6 @@ export function createTranslateLoader(http: HttpClient) {
         ExamineeComponent,
         EvalexamComponent,
         EvalstatusRenderComponent,
-        EditorComponent,
-        ProblemComponent,
         TimelineComponent,        
         NotificationComponent,
         ChatComponent
