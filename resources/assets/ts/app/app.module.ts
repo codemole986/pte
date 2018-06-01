@@ -22,7 +22,7 @@ import { StatusRenderComponent } from './test/status-render.component';
 import { TypeRenderComponent } from './test/type-render.component';
 import { ManageComponent } from './manage/manage.component';
 import { PermissionRenderComponent } from './manage/permission-render.component';
-import { ExerciseComponent } from './exercise1/exercise.component';
+import { ExerciseComponent } from './exercise/exercise.component';
 import { ExerciselistComponent } from './exerciselist/exerciselist.component';
 import { ExamineeComponent } from './examinee/examinee.component';
 import { EvalexamComponent } from './evalexam/evalexam.component';
@@ -32,7 +32,7 @@ import { ProblemComponent } from './examinee/problem/problem.component';
 import { FileUploadDirective } from './dashboard/file-upload.directive';
 import { NumberprintPipe } from './dashboard/numberprint';
 
-import { ExerciseModule } from './exercise1/exercise.module';
+import { ExerciseModule } from './exercise/exercise.module';
 
 import {
     HeaderComponent, HeaderTeacherComponent, HeaderOverviewComponent, HeaderStudentComponent, HeaderManageComponent, 

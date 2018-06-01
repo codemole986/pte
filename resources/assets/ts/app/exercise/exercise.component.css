@@ -45,3 +45,11 @@ a.eraser {
     display: none;
   }
 }
+
+app-exercise .ngx-datatable .datatable-footer .datatable-pager .pager li.pages {
+  display: none;
+}
+
+app-exercise .quiz-container .portlet-body {
+  font-size: 16px;
+}
