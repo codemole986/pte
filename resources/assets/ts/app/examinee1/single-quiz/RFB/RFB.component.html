@@ -1,0 +1,4 @@
+<div class="quiz-guide">{{quiz.guide}}</div>
+<div class="step-main" *ngIf="isMainStep(step)">
+  <div class="quiz-content-text" *ngIf="quiz.content.text" [innerHTML]="quiz.content.text"></div>
+</div>

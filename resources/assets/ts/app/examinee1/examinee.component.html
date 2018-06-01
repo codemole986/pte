@@ -1,0 +1,49 @@
+<div *ngIf="active_menu=='teacher'">
+     <app-header-teacher [default]="'quizlist'"></app-header-teacher>         
+</div>
+<div *ngIf="active_menu=='manage'">
+     <app-header-manage [default]="'quizlist'"></app-header-manage>         
+</div>
+<div class="page-container">
+    <!-- BEGIN PAGE HEAD -->
+    <div class="page-head">
+        <div class="container">
+            <!-- BEGIN PAGE TITLE -->
+            <div class="page-title">
+                <h1>{{ 'Preview' | translate }} <small>preview quiz</small></h1>
+            </div>
+            <!-- END PAGE TITLE -->
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="container">
+            <!-- BEGIN PAGE BREADCRUMB -->
+            <ul class="page-breadcrumb breadcrumb">
+                <li>
+                    <a href="#" [routerLink]="['/']">{{ 'Home' | translate }}</a>
+                </li>
+                <li>
+                    {{ 'Edit Quiz' | translate }}
+                </li>
+                <li class="active">
+                    {{ 'Preview' | translate }}
+                </li>
+            </ul>
+            <!-- END PAGE BREADCRUMB -->
+            <div class="row">
+                <!-- BEGIN QUIZ CONTENTS -->
+                <div class="col-sm-12">
+                    <div *ngIf="currentQuiz" class="quiz-container">
+                        <app-examinee-single
+                            [quiz]="currentQuiz"
+                            (exit)="onExitexaminee($event)"
+                        >
+                        </app-examinee-single>
+                    </div>
+                </div>
+                <!-- END QUIZ CONTENTS -->
+            </div>
+        </div>
+    </div>
+</div>

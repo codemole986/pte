@@ -176,5 +176,6 @@ Route::get('/auth0/callback', '\Auth0\Login\Auth0Controller@callback');
 Route::post('/api/upload', 'UploadController@post');
 
 Route::get('/api/quiz', 'ProblemController@getproblems');
+Route::get('/api/quiz/{id}', 'ProblemController@getproblem');
 
 Route::get('/api/soundcloud/track/{id}', 'SoundcloudController@get');

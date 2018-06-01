@@ -1,0 +1,6 @@
+<div class="quiz-guide">{{quiz.guide}}</div>
+<div class="step-main" *ngIf="isPreStep(step) || isMainStep(step)">
+  <div class="quiz-content-image" *ngIf="quiz.content.picture">
+    <img [src]="quiz.content.picture" [alt]="quiz.title" />
+  </div>
+</div>

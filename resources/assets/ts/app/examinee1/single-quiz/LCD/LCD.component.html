@@ -1,0 +1,13 @@
+<div class="quiz-guide">{{quiz.guide}}</div>
+<div class="step-listening">
+  <div class="quiz-content-audio" [hidden]="!playAudio">
+    <player
+      [trackId]="quiz.content.audio"
+      [play]="playAudio"
+    >
+    </player>
+  </div>
+</div>
+<div class="step-main" *ngIf="isMainStep(step)">
+  <div class="quiz-content-text" *ngIf="quiz.content.text"><span *ngFor="let span of spans;let i = index"><span *ngIf="!span.isBR" [innerHtml]="span.text" (click)="span.clickable && onToggleSpan(i)" [ngClass]="{'selected' : span.selected}"></span><br *ngIf="span.isBR"></span></div>
+</div>

@@ -1,0 +1,176 @@
+<div class="portlet light">
+  <div class="portlet-title">
+    <div class="caption" style="width: 100%;">
+      <div class="row">
+        <div class="col-md-3">
+          <h5 style="color:#6CF;">{{ 'Category' | translate }}: {{ quiz.category }}</h5>
+        </div>
+        <div class="col-md-3">
+          <h5 style="color:#6CF;">{{ 'Type' | translate }}: {{ getTypeName(quiz.category, quiz.type) }}</h5>
+        </div>
+        <div class="col-md-3">
+          <h5 style="color:#6CF;">{{ 'Degree' | translate }}: {{ quiz.degree }}</h5>
+        </div>
+        <div class="col-md-3" *ngIf="isPreStep(step)">
+          <h5 style="color:#09F;">{{ 'Preparation Time' | translate }}: {{remainingTime | converttimestamp }}</h5>
+        </div>
+        <div class="col-md-3" *ngIf="isMainStep(step)">
+          <h5 style="color:#09F;">{{ 'Remain Time' | translate }}: {{remainingTime | converttimestamp }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="portlet-body">
+    <app-exercise-single-wsm
+      *ngIf="quiz.type === 'WSM'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+    >
+    </app-exercise-single-wsm>
+    <app-exercise-single-wes
+      *ngIf="quiz.type === 'WES'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+    >
+    </app-exercise-single-wes>
+    <app-exercise-single-lws
+      *ngIf="quiz.type === 'LWS'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-lws>
+    <app-exercise-single-lsa
+      *ngIf="quiz.type === 'LSA'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-lsa>
+    <app-exercise-single-ltw
+      *ngIf="quiz.type === 'LTW'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-ltw>
+    <app-exercise-single-lsb
+      *ngIf="quiz.type === 'LSB'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-lsb>
+    <app-exercise-single-lcd
+      *ngIf="quiz.type === 'LCD'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-lcd>
+    <app-exercise-single-lts
+      *ngIf="quiz.type === 'LTS'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-lts>
+    <app-exercise-single-rsa
+      *ngIf="quiz.type === 'RSA'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+    >
+    </app-exercise-single-rsa>
+    <app-exercise-single-rma
+      *ngIf="quiz.type === 'RMA'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+    >
+    </app-exercise-single-rma>
+    <app-exercise-single-rro
+      *ngIf="quiz.type === 'RRO'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+    >
+    </app-exercise-single-rro>
+    <app-exercise-single-rfb
+      *ngIf="quiz.type === 'RFB'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+    >
+    </app-exercise-single-rfb>
+    <app-exercise-single-ran
+      *ngIf="quiz.type === 'RAN'"
+      [quiz]="quiz"
+      [step]="step"
+      (updateAnswer)="updateAnswer($event)"
+    >
+    </app-exercise-single-ran>
+    <app-exercise-single-sal
+      *ngIf="quiz.type === 'SAL'"
+      [quiz]="quiz"
+      [step]="step"
+      (startRecord)="startRecord()"
+      (stopRecord)="stopRecord()"
+    >
+    </app-exercise-single-sal>
+    <app-exercise-single-srs
+      *ngIf="quiz.type === 'SRS'"
+      [quiz]="quiz"
+      [step]="step"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-srs>
+    <app-exercise-single-spi
+      *ngIf="quiz.type === 'SPI'"
+      [quiz]="quiz"
+      [step]="step"
+    >
+    </app-exercise-single-spi>
+    <app-exercise-single-srl
+      *ngIf="quiz.type === 'SRL'"
+      [quiz]="quiz"
+      [step]="step"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-srl>
+    <app-exercise-single-ssa
+      *ngIf="quiz.type === 'SSA'"
+      [quiz]="quiz"
+      [step]="step"
+      (finishAudio)="onAudioFinished($event)"
+    >
+    </app-exercise-single-ssa>
+  </div>
+  <div class="portlet-footer clearfix">
+    <div class="pull-right">
+      <button class="btn btn-sm btn-pill-left yellow-gold" type="button" [disabled]="!isPostStep(step)" (click)="toggleSolution()" ><i class="fa fa-file-text-o fa-fw"></i> {{ (showSolution ? 'Hide' : 'Show') + ' Solution' | translate }} </button>
+      <button class="btn btn-sm btn-primary" type="button" *ngIf="!started" (click)="startExercise()"><i class="fa fa-play fa-fw"></i> {{ 'Start' | translate }} </button>
+      <button class="btn btn-sm btn-pill-right btn-primary" type="button" (click)="onExit(quiz)"> {{ 'Exit' | translate }} <i class="fa fa-mail-reply-all fa-fw"></i> </button>
+    </div>
+  </div>
+</div>
+<div class="portlet light" *ngIf="showSolution">
+  <div class="portlet-title">
+    <div class="caption" style="width: 100%;">
+      <span class="caption-subject font-green-sharp bold uppercase">{{ 'Solution' | translate }}</span>
+    </div>
+  </div>
+  <div class="portlet-body">
+    <div class="row" style="padding: 0 15px;">
+      <div class="col-md-12"></div>
+    </div>
+  </div>
+</div>

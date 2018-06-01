@@ -1,0 +1,20 @@
+<div class="quiz-guide">{{quiz.guide}}</div>
+<div class="step-main" *ngIf="isMainStep(step)">
+  <ul>
+    <li *ngFor="let option of quiz.content.select.options; let i = index" class="radio">
+      <label>
+        <input type="radio" name="optionsChecks" (change)="toggleOption(i)"> {{option}}
+      </label>
+    </li>
+  </ul>
+</div>
+<div class="step-listening">
+  <div class="quiz-content-audio" [hidden]="!playAudio">
+    <player
+      [trackId]="quiz.content.audio"
+      [play]="playAudio"
+      (finish)="onFinish($event)"
+    >
+    </player>
+  </div>
+</div>

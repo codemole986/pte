@@ -1,0 +1,14 @@
+<div class="quiz-guide">{{quiz.guide}}</div>
+<div class="step-main" *ngIf="isMainStep(step)">
+  <div class="quiz-content-text" *ngIf="quiz.content.text" [innerHTML]="quiz.content.text"></div>
+  <div class="quiz-content-image" *ngIf="quiz.content.picture">
+    <img [src]="quiz.content.picture" [alt]="quiz.title" />
+  </div>
+  <ul>
+    <li *ngFor="let option of quiz.content.select.options; let i = index" class="radio">
+      <label>
+        <input type="radio" name="optionsChecks" (change)="toggleOption(i)"> {{option}}
+      </label>
+    </li>
+  </ul>
+</div>

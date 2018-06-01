@@ -1,0 +1,15 @@
+app-examinee-single .quiz-guide {
+  font-weight: bold;
+  padding: 0 0 10px;
+}
+
+app-examinee-single .step-main {
+  padding: 15px;
+}
+
+app-examinee-single .quiz-answer,
+app-examinee-single .quiz-content-audio,
+app-examinee-single .quiz-content-image,
+app-examinee-single .quiz-content-text {
+  margin-bottom: 16px;
+}
