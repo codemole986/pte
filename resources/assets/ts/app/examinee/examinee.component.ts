@@ -12,8 +12,6 @@ import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
 import { Problem } from '../model/problem';
 import { Answer } from '../model/answer';
 import { Testevent } from '../model/testevent';
-import {EditorComponent} from './editor/editor.component';
-import {ProblemComponent} from './problem/problem.component';
 import { TranslateService } from '@ngx-translate/core';
 
 declare var $:any;
