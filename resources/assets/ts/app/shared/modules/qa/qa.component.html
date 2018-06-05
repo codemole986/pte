@@ -1,0 +1,132 @@
+<app-qa-wsm
+  *ngIf="quiz.type === 'WSM'"
+  [quiz]="quiz"
+  [step]="step"
+  (updateAnswer)="updateAnswer($event)"
+>
+</app-qa-wsm>
+<app-qa-wes
+  *ngIf="quiz.type === 'WES'"
+  [quiz]="quiz"
+  [step]="step"
+  (updateAnswer)="updateAnswer($event)"
+>
+</app-qa-wes>
+<app-qa-lws
+  *ngIf="quiz.type === 'LWS'"
+  [quiz]="quiz"
+  [step]="step"
+  (updateAnswer)="updateAnswer($event)"
+  (finishAudio)="onAudioFinished($event)"
+>
+</app-qa-lws>
+<app-qa-lsa
+  *ngIf="quiz.type === 'LSA'"
+  [quiz]="quiz"
+  [step]="step"
+  (updateAnswer)="updateAnswer($event)"
+  (finishAudio)="onAudioFinished($event)"
+>
+</app-qa-lsa>
+<app-qa-ltw
+  *ngIf="quiz.type === 'LTW'"
+  [quiz]="quiz"
+  [step]="step"
+  (updateAnswer)="updateAnswer($event)"
+  (finishAudio)="onAudioFinished($event)"
+>
+</app-qa-ltw>
+<app-qa-lsb
+  *ngIf="quiz.type === 'LSB'"
+  [quiz]="quiz"
+  [step]="step"
+  (updateAnswer)="updateAnswer($event)"
+  (finishAudio)="onAudioFinished($event)"
+>
+</app-qa-lsb>
+<app-qa-lcd
+  *ngIf="quiz.type === 'LCD'"
+  [quiz]="quiz"
+  [step]="step"
+  (updateAnswer)="updateAnswer($event)"
+  (finishAudio)="onAudioFinished($event)"
+>
+</app-qa-lcd>
+<app-qa-lts
+  *ngIf="quiz.type === 'LTS'"
+  [quiz]="quiz"
+  [step]="step"
+  (updateAnswer)="updateAnswer($event)"
+  (finishAudio)="onAudioFinished($event)"
+>
+</app-qa-lts>
+<app-qa-rsa
+  *ngIf="quiz.type === 'RSA'"
+  [quiz]="quiz"
+  [step]="step"
+  (updateAnswer)="updateAnswer($event)"
+>
+</app-qa-rsa>
+<app-qa-rma
+  *ngIf="quiz.type === 'RMA'"
+  [quiz]="quiz"
+  [step]="step"
+  (updateAnswer)="updateAnswer($event)"
+>
+</app-qa-rma>
+<app-qa-rro
+  *ngIf="quiz.type === 'RRO'"
+  [quiz]="quiz"
+  [step]="step"
+  (updateAnswer)="updateAnswer($event)"
+>
+</app-qa-rro>
+<app-qa-rfb
+  *ngIf="quiz.type === 'RFB'"
+  [quiz]="quiz"
+  [step]="step"
+  (updateAnswer)="updateAnswer($event)"
+>
+</app-qa-rfb>
+<app-qa-ran
+  *ngIf="quiz.type === 'RAN'"
+  [quiz]="quiz"
+  [step]="step"
+  (updateAnswer)="updateAnswer($event)"
+>
+</app-qa-ran>
+<app-qa-sal
+  *ngIf="quiz.type === 'SAL'"
+  [quiz]="quiz"
+  [step]="step"
+  (startRecord)="startRecord()"
+  (stopRecord)="stopRecord()"
+>
+</app-qa-sal>
+<app-qa-srs
+  *ngIf="quiz.type === 'SRS'"
+  [quiz]="quiz"
+  [step]="step"
+  (finishAudio)="onAudioFinished($event)"
+>
+</app-qa-srs>
+<app-qa-spi
+  *ngIf="quiz.type === 'SPI'"
+  [quiz]="quiz"
+  [step]="step"
+>
+</app-qa-spi>
+<app-qa-srl
+  *ngIf="quiz.type === 'SRL'"
+  [quiz]="quiz"
+  [step]="step"
+  (finishAudio)="onAudioFinished($event)"
+>
+</app-qa-srl>
+<app-qa-ssa
+  *ngIf="quiz.type === 'SSA'"
+  [quiz]="quiz"
+  [step]="step"
+  (finishAudio)="onAudioFinished($event)"
+>
+</app-qa-ssa>

@@ -1,91 +1,132 @@
 <div *ngIf="active_menu=='overview'">
-    <app-header-overview [default]="'exercise'"></app-header-overview>
+  <app-header-overview [default]="'exercise'"></app-header-overview>
 </div>
 <div *ngIf="active_menu=='student'">
-    <app-header-student [default]="'exercise'"></app-header-student>
+  <app-header-student [default]="'exercise'"></app-header-student>
 </div>
 <div *ngIf="active_menu=='teacher'">
-    <app-header-teacher [default]="'exercise'"></app-header-teacher>
+  <app-header-teacher [default]="'exercise'"></app-header-teacher>
 </div>
 <div *ngIf="active_menu=='manage'">
-    <app-header-manage [default]="'exercise'"></app-header-manage>
+  <app-header-manage [default]="'exercise'"></app-header-manage>
 </div>
 <div class="page-container">
-    <!-- BEGIN PAGE HEAD -->
-    <div class="page-head">
-        <div class="container">
-            <!-- BEGIN PAGE TITLE -->
-            <div class="page-title">
-                <h1>{{ 'Exercise' | translate }} <small>exercise quiz</small></h1>
-            </div>
-            <!-- END PAGE TITLE -->
-        </div>
-    </div>
+  <!-- BEGIN PAGE HEAD -->
+  <div class="page-head">
+      <div class="container">
+          <!-- BEGIN PAGE TITLE -->
+          <div class="page-title">
+              <h1>{{ 'Exercise' | translate }} <small>exercise quiz</small></h1>
+          </div>
+          <!-- END PAGE TITLE -->
+      </div>
+  </div>
 
-    <div class="page-content">
-        <div class="container">
-            <!-- BEGIN PAGE BREADCRUMB -->
-            <ul class="page-breadcrumb breadcrumb">
-                <li>
-                    <a href="#" [routerLink]="['/']">{{ 'Home' | translate }}</a>
-                </li>
-                <li class="active">
-                    {{ 'Exercise' | translate }}
-                </li>
-            </ul>
-            <!-- END PAGE BREADCRUMB -->
-            <div class="row">
-                <!-- BEGIN QUIZ LIST -->
-                <div class="col-md-4">
-                    <div class="portlet light">
-                        <div class="portlet-title">
-                            <div class="caption">
-                                <i class="fa fa-table fa-fw"></i><span class="caption-subject font-green-sharp bold uppercase">{{ 'Quiz List' | translate }}</span>
-                            </div>
-                        </div>
-                        <div class="portlet-body">
-                            <ngx-datatable
-                                class="material"
-                                [rows]="list"
-                                [columns]="[{name:'No'},{name:'Title'},{name:'LimitTime(s)', prop: 'limit_time'}]"
-                                [headerHeight]="50"
-                                [footerHeight]="50"
-                                [rowHeight]="'auto'"
-                                [externalPaging]="true"
-                                [externalSorting]="true"
-                                [draggable]="false"
-                                [columnMode]="'force'"
-                                [count]="count"
-                                [offset]="offset"
-                                [limit]="limit"
-                                [selected]="[currentQuiz]"
-                                [selectionType]="'single'"
-                                (select)="selectQuizRow($event)"
-                                (page)="setPage($event)">
-                                <ngx-datatable-column name="No" [width]="1" [resizeable]="false"></ngx-datatable-column>
-                                <ngx-datatable-column name="Title" [resizeable]="true"></ngx-datatable-column>
-                                <ngx-datatable-column name="LimitTime(s)" prop="limit_time" [width]="40" [resizeable]="false"></ngx-datatable-column>
-                            </ngx-datatable>
-                        </div>
-                    </div>
-                </div>
-                <!-- END QUIZ LIST -->
-                <!-- BEGIN QUIZ CONTENTS -->
-                <div class="col-md-8 col-sm-12">
-                    <div *ngIf="currentQuiz" class="quiz-container">
-                        <app-exercise-single
-                            [quiz]="currentQuiz"
-                            [nextQuiz]="nextQuiz"
-                            [prevQuiz]="prevQuiz"
-                            (goToPrev)="onSelectPrevQuiz($event)"
-                            (goToNext)="onSelectNextQuiz($event)"
-                            (exit)="onExitExercise($event)"
-                        >
-                        </app-exercise-single>
-                    </div>
-                </div>
-                <!-- END QUIZ CONTENTS -->
+  <div class="page-content">
+    <div class="container">
+      <!-- BEGIN PAGE BREADCRUMB -->
+      <ul class="page-breadcrumb breadcrumb">
+        <li>
+          <a href="#" [routerLink]="['/']">{{ 'Home' | translate }}</a>
+        </li>
+        <li class="active">
+          {{ 'Exercise' | translate }}
+        </li>
+      </ul>
+      <!-- END PAGE BREADCRUMB -->
+      <div class="row">
+        <!-- BEGIN QUIZ LIST -->
+        <div class="col-md-4">
+          <div class="portlet light">
+            <div class="portlet-title">
+              <div class="caption">
+                <i class="fa fa-table fa-fw"></i><span class="caption-subject font-green-sharp bold uppercase">{{ 'Quiz List' | translate }}</span>
+              </div>
             </div>
+            <div class="portlet-body">
+              <ngx-datatable
+                class="material"
+                [rows]="list"
+                [columns]="[{name:'No'},{name:'Title'},{name:'LimitTime(s)', prop: 'limit_time'}]"
+                [headerHeight]="50"
+                [footerHeight]="50"
+                [rowHeight]="'auto'"
+                [externalPaging]="true"
+                [externalSorting]="true"
+                [draggable]="false"
+                [columnMode]="'force'"
+                [count]="count"
+                [offset]="offset"
+                [limit]="limit"
+                [selected]="[currentQuiz]"
+                [selectionType]="'single'"
+                (select)="selectQuizRow($event)"
+                (page)="setPage($event)">
+                <ngx-datatable-column name="No" [width]="1" [resizeable]="false"></ngx-datatable-column>
+                <ngx-datatable-column name="Title" [resizeable]="true"></ngx-datatable-column>
+                <ngx-datatable-column name="LimitTime(s)" prop="limit_time" [width]="40" [resizeable]="false"></ngx-datatable-column>
+              </ngx-datatable>
+            </div>
+          </div>
         </div>
+        <!-- END QUIZ LIST -->
+        <!-- BEGIN QUIZ CONTENTS -->
+        <div class="col-md-8 col-sm-12">
+          <div *ngIf="currentQuiz" class="quiz-container">
+            <div class="portlet light">
+              <div class="portlet-title">
+                <div class="caption" style="width: 100%;">
+                  <div class="row">
+                    <div class="col-md-8">
+                      <span class="caption-subject font-green-sharp bold uppercase">{{ currentQuiz.category | translate }}: {{ getTypeName(currentQuiz.category, currentQuiz.type) }}</span>
+                      <span class="font-blue-sharp bold">No: {{currentQuiz.no}}</span>
+                    </div>
+                    <div class="col-md-4" *ngIf="isPreStep(step)">
+                      <h5 style="color:#09F;">{{ 'Preparation Time' | translate }}: {{remainingTime | converttimestamp }}</h5>
+                    </div>
+                    <div class="col-md-4" *ngIf="isMainStep(step)">
+                      <h5 style="color:#09F;">{{ 'Remain Time' | translate }}: {{remainingTime | converttimestamp }}</h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="portlet-body">
+                <app-qa
+                  *ngIf="currentQuiz"
+                  [quiz]="currentQuiz"
+                  [started]="started"
+                  (exit)="onExitExercise($event)"
+                  (onUpdateStep)="onUpdateStep($event)"
+                  (onUpdateRemainingTime)="onUpdateRemainingTime($event)"
+                ></app-qa>
+              </div>
+              <div class="portlet-footer clearfix">
+                <div class="pull-right">
+                  <button class="btn btn-sm btn-pill-left yellow-gold" type="button" [disabled]="!isPostStep(step)" (click)="onToggleSolution()" ><i class="fa fa-file-text-o fa-fw"></i> {{ (showSolution ? 'Hide' : 'Show') + ' Solution' | translate }} </button>
+                  <button class="btn btn-sm btn-pill-left btn-primary" type="button" [disabled]="!prevQuiz" (click)="onSelectPrevQuiz(prevQuiz)" ><i class="fa fa-arrow-left fa-fw"></i> {{ 'Previous' | translate }} </button>
+                  <button class="btn btn-sm btn-primary" type="button" *ngIf="started" [disabled]="!isPostStep(step)" (click)="restartExercise()"><i class="fa fa-stop fa-fw"></i> {{ 'Again' | translate }} </button>
+                  <button class="btn btn-sm btn-primary" type="button" *ngIf="!started" (click)="onStartExercise()"><i class="fa fa-play fa-fw"></i> {{ 'Start' | translate }} </button>
+                  <button class="btn btn-sm btn-pill-right btn-primary" type="button" [disabled]="!nextQuiz" (click)="onSelectNextQuiz(nextQuiz)">{{ 'Next' | translate }} <i class="fa fa-arrow-right fa-fw"></i> </button>
+                  <button class="btn btn-sm btn-pill-right btn-primary" type="button" (click)="onExitExercise(quiz)"> {{ 'Exit' | translate }} <i class="fa fa-mail-reply-all fa-fw"></i> </button>
+                </div>
+              </div>
+            </div>
+            <div class="portlet light" *ngIf="showSolution">
+              <div class="portlet-title">
+                <div class="caption" style="width: 100%;">
+                  <span class="caption-subject font-green-sharp bold uppercase">{{ 'Solution' | translate }}</span>
+                </div>
+              </div>
+              <div class="portlet-body">
+                <div class="row" style="padding: 0 15px;">
+                  <div class="col-md-12"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- END QUIZ CONTENTS -->
+      </div>
     </div>
+  </div>
 </div>

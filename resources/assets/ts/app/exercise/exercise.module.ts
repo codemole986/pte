@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { SingleQuizModule } from './single-quiz/single-quiz.module';
+// import { SingleQuizModule } from './single-quiz/single-quiz.module';
+import { QAModule } from './../shared/modules';
 
 @NgModule({
   imports: [
@@ -10,7 +11,7 @@ import { SingleQuizModule } from './single-quiz/single-quiz.module';
   declarations: [
   ],
   exports: [
-    SingleQuizModule
+    QAModule
   ]
 })
 export class ExerciseModule { }

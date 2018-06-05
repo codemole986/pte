@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Component, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute, ActivationEnd  } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -37,6 +37,10 @@ export class ExerciseComponent implements OnInit {
   currentQuiz: Problem;
   prevQuiz: Problem;
   nextQuiz: Problem;
+  started: boolean = false;
+  step: string = '';
+  remainingTime: number = 0;
+  showSolution: boolean = false;
 
   private frequency: number = 1000;
 
@@ -47,6 +51,7 @@ export class ExerciseComponent implements OnInit {
     private translate: TranslateService,
     private sanitizer: DomSanitizer,
     private globalService: GlobalService,
+    private changeDetector: ChangeDetectorRef
   ) {
   }
 
@@ -67,6 +72,26 @@ export class ExerciseComponent implements OnInit {
         this.getQuizList(this.type);
       }
     });
+  }
+
+  ngAfterViewChecked(){
+    this.changeDetector.detectChanges();
+  }
+
+  isPreStep(step: string): boolean {
+    return step === this.globalService.STEP_PRE;
+  }
+
+  isMainStep(step: string): boolean {
+    return step === this.globalService.STEP_MAIN;
+  }
+
+  isListeningStep(step: string): boolean {
+    return step === this.globalService.STEP_LISTENING;
+  }
+
+  isPostStep(step: string): boolean {
+    return step === this.globalService.STEP_POST;
   }
 
   getQuizList(type: string, offset: number = 0, limit: number = 15) {
@@ -132,6 +157,7 @@ export class ExerciseComponent implements OnInit {
     }
 
     this.currentQuiz = quiz;
+    this.started = false;
 
     const indexOfCurrentQuiz = findIndex(this.list, ['id', quiz.id]);
 
@@ -142,6 +168,10 @@ export class ExerciseComponent implements OnInit {
     if (indexOfCurrentQuiz < this.list.length - 1) {
       this.nextQuiz = this.list[indexOfCurrentQuiz + 1];
     }
+  }
+
+  onStartExercise() {
+    this.started = true;
   }
 
   onExitExercise(quiz: Problem) {
@@ -155,5 +185,17 @@ export class ExerciseComponent implements OnInit {
 
   onSelectNextQuiz(quiz: Problem) {
     this.selectQuiz(quiz);
+  }
+
+  onToggleSolution() {
+    this.showSolution = !this.showSolution;
+  }
+
+  onUpdateStep(step: string) {
+    this.step = step;
+  }
+
+  onUpdateRemainingTime(remainingTime: number) {
+    this.remainingTime = remainingTime;
   }
 }

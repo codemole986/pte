@@ -1,0 +1,15 @@
+app-qa .quiz-guide {
+  font-weight: bold;
+  padding: 0 0 10px;
+}
+
+app-qa .step-main {
+  padding: 15px;
+}
+
+app-qa .quiz-answer,
+app-qa .quiz-content-audio,
+app-qa .quiz-content-image,
+app-qa .quiz-content-text {
+  margin-bottom: 16px;
+}
