@@ -30,8 +30,7 @@ import { EvalstatusRenderComponent } from './evalexam/evalstatus-render.componen
 import { FileUploadDirective } from './dashboard/file-upload.directive';
 import { NumberprintPipe } from './dashboard/numberprint';
 
-import { ExerciseModule } from './exercise/exercise.module';
-import { ExamineeModule } from './examinee1/examinee.module';
+import { QAModule } from './shared/modules';
 
 import {
     HeaderComponent, HeaderTeacherComponent, HeaderOverviewComponent, HeaderStudentComponent, HeaderManageComponent, 
@@ -139,8 +138,7 @@ export function createTranslateLoader(http: HttpClient) {
         NgbAccordionModule.forRoot(),
         PipesModule,
 
-        ExerciseModule,
-        ExamineeModule,
+        QAModule,
         
         TranslateModule.forRoot({
             loader: {

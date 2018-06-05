@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, EventEmitter } from '@angular/core';
+﻿import { Component, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute, ActivationEnd  } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -38,6 +38,10 @@ export class ExamineeComponent implements OnInit {
   currentQuiz: Problem;
   prevQuiz: Problem;
   nextQuiz: Problem;
+  remainingTime: number = 0;
+  showSolution: boolean = false;
+  step: string = '';
+  started: boolean = false;
 
   private frequency: number = 1000;
 
@@ -48,6 +52,7 @@ export class ExamineeComponent implements OnInit {
     private translate: TranslateService,
     private sanitizer: DomSanitizer,
     private globalService: GlobalService,
+    private changeDetector: ChangeDetectorRef
   ) {
   }
 
@@ -68,6 +73,26 @@ export class ExamineeComponent implements OnInit {
         this.getQuiz(this.id);
       }
     });
+  }
+
+  ngAfterViewChecked(){
+    this.changeDetector.detectChanges();
+  }
+
+  isPreStep(step: string): boolean {
+    return step === this.globalService.STEP_PRE;
+  }
+
+  isMainStep(step: string): boolean {
+    return step === this.globalService.STEP_MAIN;
+  }
+
+  isListeningStep(step: string): boolean {
+    return step === this.globalService.STEP_LISTENING;
+  }
+
+  isPostStep(step: string): boolean {
+    return step === this.globalService.STEP_POST;
   }
 
   getQuiz(id: number) {
@@ -119,8 +144,29 @@ export class ExamineeComponent implements OnInit {
     this.currentQuiz = quiz;
   }
 
+  onStartExaminee() {
+    this.started = true;
+  }
+
+  onExitExaminee(quiz: Problem) {
+    this.currentQuiz = undefined;
+    this.router.navigate(['/quizlist']);
+  }
+
   onExitexaminee(quiz: Problem) {
     this.currentQuiz = undefined;
     this.router.navigate(['/quizlist']);
+  }
+
+  onToggleSolution() {
+    this.showSolution = !this.showSolution;
+  }
+
+  onUpdateStep(step: string) {
+    this.step = step;
+  }
+
+  onUpdateRemainingTime(remainingTime: number) {
+    this.remainingTime = remainingTime;
   }
 }
