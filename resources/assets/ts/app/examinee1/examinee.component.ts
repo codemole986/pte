@@ -42,6 +42,7 @@ export class ExamineeComponent implements OnInit {
   showSolution: boolean = false;
   step: string = '';
   started: boolean = false;
+  finished: boolean = false;
 
   private frequency: number = 1000;
 
@@ -128,12 +129,6 @@ export class ExamineeComponent implements OnInit {
     return '';
   }
 
-  selectQuizRow({ selected }: { selected: Problem[]}) {
-    if (selected.length > 0) {
-      this.selectQuiz(selected[0]);
-    }
-  }
-
   selectQuiz(quiz: Problem) {
     const { id } = quiz;
 
@@ -144,16 +139,20 @@ export class ExamineeComponent implements OnInit {
     this.currentQuiz = quiz;
   }
 
-  onStartExaminee() {
+  startExaminee() {
     this.started = true;
+    this.finished = false;
+  }
+
+  onStartExaminee() {
+    this.startExaminee();
+  }
+
+  onRestartExaminee() {
+    this.startExaminee();
   }
 
   onExitExaminee(quiz: Problem) {
-    this.currentQuiz = undefined;
-    this.router.navigate(['/quizlist']);
-  }
-
-  onExitexaminee(quiz: Problem) {
     this.currentQuiz = undefined;
     this.router.navigate(['/quizlist']);
   }
@@ -164,6 +163,10 @@ export class ExamineeComponent implements OnInit {
 
   onUpdateStep(step: string) {
     this.step = step;
+
+    if (this.isPostStep(this.step)) {
+      this.finished = true;
+    }
   }
 
   onUpdateRemainingTime(remainingTime: number) {

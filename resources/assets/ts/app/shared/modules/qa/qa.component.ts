@@ -42,6 +42,7 @@ export class QAComponent implements OnInit {
   }
   @Input() set started(started: boolean) {
     if (started) this.startQA();
+    else this.exitQA();
   }
 
   @Input() prevQuiz: Problem;
@@ -253,6 +254,10 @@ export class QAComponent implements OnInit {
   startQA() {
     this._started = true;
     this.goToPreStep();
+  }
+
+  exitQA() {
+    this._started = false;
   }
 
   restartQA() {

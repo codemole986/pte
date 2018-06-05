@@ -38,6 +38,7 @@ export class ExerciseComponent implements OnInit {
   prevQuiz: Problem;
   nextQuiz: Problem;
   started: boolean = false;
+  finished: boolean = false;
   step: string = '';
   remainingTime: number = 0;
   showSolution: boolean = false;
@@ -170,8 +171,17 @@ export class ExerciseComponent implements OnInit {
     }
   }
 
-  onStartExercise() {
+  startExercise() {
     this.started = true;
+    this.finished = false;
+  }
+
+  onStartExercise() {
+    this.startExercise();
+  }
+
+  onRestartExercise() {
+    this.startExercise();
   }
 
   onExitExercise(quiz: Problem) {
@@ -193,6 +203,10 @@ export class ExerciseComponent implements OnInit {
 
   onUpdateStep(step: string) {
     this.step = step;
+
+    if (this.isPostStep(this.step)) {
+      this.finished = true;
+    }
   }
 
   onUpdateRemainingTime(remainingTime: number) {
