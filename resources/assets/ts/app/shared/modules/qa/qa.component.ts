@@ -260,22 +260,6 @@ export class QAComponent implements OnInit {
     this._started = false;
   }
 
-  restartQA() {
-    this.startQA();
-  }
-
-  onExit(quiz: Problem) {
-    this.exit.emit(quiz);
-  }
-
-  selectPrevQuiz(quiz: Problem) {
-    this.goToPrev.emit(quiz);
-  }
-
-  selectNextQuiz(quiz: Problem) {
-    this.goToNext.emit(quiz);
-  }
-
   playDingSound(cb: Function) {
     let audio = new Audio();
     audio.src = this.globalService.dingSoundPath;
