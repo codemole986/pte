@@ -116,22 +116,6 @@ export class QAComponent implements OnInit {
 
   private onChangeQuiz(quiz: Problem) {
     let { preparation_time, limit_time, id, content } = quiz;
-    let { audio } = content;
-    let patternIframe = new RegExp('^<iframe(.+)</iframe>$');
-    let patternSrc = new RegExp('(?<=src=").*?(?=["])');
-    let patternAutoPlay = new RegExp('auto_play=(true|false)');
-    let patternTrackId = new RegExp('\/tracks\/[1-9][0-9]*');
-
-    if (audio && patternIframe.test(audio)) {
-      let matches = audio.match(patternTrackId);
-      let trackId = '';
-
-      if (matches.length > 0) {
-        trackId = matches[0].replace('/tracks/', '');
-      }
-
-      quiz.content.audio = trackId;
-    }
 
     this._quiz = quiz;
     this.steps = this.globalService.getSteps(quiz.type);
