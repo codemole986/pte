@@ -10,7 +10,6 @@
     <meta content="" name="author"/>
     
     <!-- <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css"/> -->
-    <script src="http://looptube.net/soundcloud/soundmanager2/script/soundmanager2.js"></script>
 
     <!-- <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css"> -->
     <link href="assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -105,6 +104,7 @@
     <script type="text/javascript" src="{{asset('js/ckeditor/ckeditor.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/recordmp3.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/audio.js')}}"></script>
+    <script type="text/javascript" src="{{asset('js/sd-widget.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/dropzone.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/ng-dropzone.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/bootbox/bootbox.min.js')}}"></script>
