@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy, AfterViewChecked, Input, Output, EventEmitter} from '@angular/core';
 
-declare var SC: any;
+var SoundcloudWidget = require('soundcloud-widget');
 
 @Component({
   selector: 'player',
@@ -55,16 +55,16 @@ export class PlayerCmp implements OnInit, OnDestroy {
   ngAfterViewChecked() {
     if (this.show) {
       let _self = this;
-      this.scWidget = SC.Widget(this.scAudioPlayerId);
+      this.scWidget = new SoundcloudWidget(this.scAudioPlayerId);
 
-      this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+      this.scWidget.on(SoundcloudWidget.events.PLAY, () => {
         console.log('play');
-        _self.scWidget.unbind(SC.Widget.Events.PLAY);
+        _self.scWidget.removeListener(SoundcloudWidget.events.PLAY);
       });
 
-      this.scWidget.bind(SC.Widget.Events.FINISH, function(e: any) {
+      this.scWidget.on(SoundcloudWidget.events.FINISH, function(e: any) {
         console.log('finish');
-        _self.scWidget.unbind(SC.Widget.Events.FINISH);
+        _self.scWidget.removeListener(SoundcloudWidget.events.FINISH);
         _self.finish.emit();
       });
     }
