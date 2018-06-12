@@ -13,6 +13,8 @@ import {SongImageCmp} from './player/song-image.component';
 import {TimeSeekerCmp} from './player/time-seeker.component';
 import {TimeInfoCmp} from './player/time-info.component';
 
+import { PipesModule } from './../../shared/pipes/';
+
 import 'rxjs/Rx';
 
 
@@ -27,6 +29,7 @@ import 'rxjs/Rx';
   ],
   imports: [
     BrowserModule,
+    PipesModule
   ],
   exports: [
     PlayerCmp
