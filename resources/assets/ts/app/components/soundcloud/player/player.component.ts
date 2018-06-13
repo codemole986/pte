@@ -15,6 +15,7 @@ export class PlayerCmp implements OnInit, OnDestroy {
 
   src: string = '';
   show: boolean = false;
+  finished: boolean = false;
   scWidget: any;
 
   scAudioPlayerId: string = 'sc-audio-player';
@@ -44,29 +45,35 @@ export class PlayerCmp implements OnInit, OnDestroy {
   @Output() finish = new EventEmitter<void>();
 
   constructor() {
+    this.receiveMessage = this.receiveMessage.bind(this);
   }
 
   ngOnInit() {
+    this.finished = false;
+
+    window.addEventListener('message', this.receiveMessage, false);
   }
 
   ngOnDestroy() {
+    window.removeEventListener('message', this.receiveMessage);
   }
 
   ngAfterViewChecked() {
     if (this.show) {
-      let _self = this;
-      this.scWidget = new SoundcloudWidget(this.scAudioPlayerId);
+      let scWidget = new SoundcloudWidget(this.scAudioPlayerId);
 
-      this.scWidget.on(SoundcloudWidget.events.PLAY, () => {
-        console.log('play');
-        _self.scWidget.removeListener(SoundcloudWidget.events.PLAY);
+      scWidget.on(SoundcloudWidget.events.FINISH, () => {
+        scWidget.removeListener(SoundcloudWidget.events.FINISH);
+        window.postMessage(SoundcloudWidget.events.FINISH, '*');
       });
+    }
+  }
 
-      this.scWidget.on(SoundcloudWidget.events.FINISH, function(e: any) {
-        console.log('finish');
-        _self.scWidget.removeListener(SoundcloudWidget.events.FINISH);
-        _self.finish.emit();
-      });
+  receiveMessage(event: MessageEvent) {
+    const { data } = event;
+    if (data === SoundcloudWidget.events.FINISH && !this.finished) {
+      this.finished = true;
+      this.finish.emit();
     }
   }
 }

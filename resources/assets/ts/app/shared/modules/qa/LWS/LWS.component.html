@@ -3,7 +3,7 @@
   <div class="quiz-content-text" *ngIf="quiz.content.text" [innerHTML]="quiz.content.text"></div>
 </div>
 <div class="step-listening">
-  <div class="quiz-content-audio" [hidden]="!playAudio">
+  <div class="quiz-content-audio" *ngIf="playAudio">
     <player
       [trackId]="quiz.content.audio"
       [play]="playAudio"
