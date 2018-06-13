@@ -1,11 +1,11 @@
 <div class="quiz-guide">{{quiz.guide}}</div>
 <div class="step-listening">
   <div class="quiz-content-audio" *ngIf="playAudio">
-    <player
+    <soundcloud-player
       [iframeCode]="quiz.content.audio"
       [play]="playAudio"
     >
-    </player>
+    </soundcloud-player>
   </div>
 </div>
 <div class="step-main" *ngIf="isMainStep(step)">

@@ -3,7 +3,7 @@ import {Component, OnInit, OnDestroy, AfterViewChecked, Input, Output, EventEmit
 var SoundcloudWidget = require('soundcloud-widget');
 
 @Component({
-  selector: 'player',
+  selector: 'soundcloud-player',
   template: require('./soundcloud-player.component.html')
 })
 export class SoundcloudPlayerComponent implements OnInit, OnDestroy {
