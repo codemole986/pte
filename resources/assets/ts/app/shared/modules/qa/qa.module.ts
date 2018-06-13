@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { PipesModule } from './../../pipes/';
-import { SoundCloudModule } from './../../../components';
+import { SoundcloudPlayerModule } from './../../../components';
 
 import { QAComponent } from './qa.component';
 import { WSMComponent } from './WSM/WSM.component';
@@ -30,7 +30,7 @@ import { SSAComponent } from './SSA/SSA.component';
     CommonModule,
     TranslateModule,
     PipesModule,
-    SoundCloudModule
+    SoundcloudPlayerModule
   ],
   declarations: [
     QAComponent,

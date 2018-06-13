@@ -4,13 +4,9 @@ var SoundcloudWidget = require('soundcloud-widget');
 
 @Component({
   selector: 'player',
-  template: `
-  <section *ngIf="show">
-    <iframe [id]="scAudioPlayerId" [src]="src | safe" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay"></iframe>
-  </section>
-  `
+  template: require('./soundcloud-player.component.html')
 })
-export class PlayerCmp implements OnInit, OnDestroy {
+export class SoundcloudPlayerComponent implements OnInit, OnDestroy {
   private _iframeCode: string = '';
 
   src: string = '';
