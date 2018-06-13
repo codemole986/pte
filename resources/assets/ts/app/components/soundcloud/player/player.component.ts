@@ -11,7 +11,7 @@ var SoundcloudWidget = require('soundcloud-widget');
   `
 })
 export class PlayerCmp implements OnInit, OnDestroy {
-  private _trackId: string = '';
+  private _iframeCode: string = '';
 
   src: string = '';
   show: boolean = false;
@@ -20,8 +20,8 @@ export class PlayerCmp implements OnInit, OnDestroy {
 
   scAudioPlayerId: string = 'sc-audio-player';
 
-  @Input() set trackId(value: string) {
-    this._trackId = value;
+  @Input() set iframeCode(value: string) {
+    this._iframeCode = value;
 
     let patternIframe = new RegExp('^<iframe(.+)</iframe>$');
     let patternSrc = new RegExp('(?<=src=").*?(?=["])');
