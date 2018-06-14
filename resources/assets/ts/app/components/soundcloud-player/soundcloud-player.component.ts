@@ -52,7 +52,7 @@ export class SoundcloudPlayerComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     window.removeEventListener('message', this.receiveMessage);
-    this.scWidget.removeListener(SoundcloudWidget.events.FINISH);
+    if (this.scWidget) this.scWidget.removeListener(SoundcloudWidget.events.FINISH);
   }
 
   ngAfterViewChecked() {
