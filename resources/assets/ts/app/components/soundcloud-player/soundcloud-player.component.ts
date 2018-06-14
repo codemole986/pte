@@ -52,14 +52,14 @@ export class SoundcloudPlayerComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     window.removeEventListener('message', this.receiveMessage);
+    this.scWidget.removeListener(SoundcloudWidget.events.FINISH);
   }
 
   ngAfterViewChecked() {
     if (this.show) {
-      let scWidget = new SoundcloudWidget(this.scAudioPlayerId);
+      this.scWidget = new SoundcloudWidget(this.scAudioPlayerId);
 
-      scWidget.on(SoundcloudWidget.events.FINISH, () => {
-        scWidget.removeListener(SoundcloudWidget.events.FINISH);
+      this.scWidget.on(SoundcloudWidget.events.FINISH, () => {
         window.postMessage(SoundcloudWidget.events.FINISH, '*');
       });
     }
@@ -67,9 +67,16 @@ export class SoundcloudPlayerComponent implements OnInit, OnDestroy {
 
   receiveMessage(event: MessageEvent) {
     const { data } = event;
-    if (data === SoundcloudWidget.events.FINISH && !this.finished) {
-      this.finished = true;
-      this.finish.emit();
+
+    switch (data) {
+      case SoundcloudWidget.events.FINISH:
+        if (!this.finished) {
+          this.finished = true;
+          this.finish.emit();
+        }
+        break;
+
+      default:
     }
   }
 }
