@@ -60,11 +60,16 @@ export class RANComponent {
   onChangeQuiz(quiz: Problem) {
     let _quiz = { ...quiz };
 
-    _quiz.content.selectlist.forEach(({ options }: { options: string[] }) => {
-      _quiz.content.text = _quiz.content.text.replace(/{{}}/, `<select>${join(map(options, (option: string) => (`<option>${option}</option>`)))}</select>`);
-    });
+    if (typeof _quiz.content.text === 'string') {
+      _quiz.solution.text = _quiz.content.text;
 
-    _quiz.content.text = this.domSanitizer.bypassSecurityTrustHtml(_quiz.content.text);
+      _quiz.content.selectlist.forEach(({ options }: { options: string[] }) => {
+        _quiz.content.text = _quiz.content.text.replace(/{{}}/, `<select>${join(map(options, (option: string) => (`<option>${option}</option>`)))}</select>`);
+      });
+
+      _quiz.content.text = this.domSanitizer.bypassSecurityTrustHtml(_quiz.content.text);
+    }
+
     this._quiz = _quiz;
   }
 }

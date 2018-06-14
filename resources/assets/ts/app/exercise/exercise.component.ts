@@ -159,6 +159,7 @@ export class ExerciseComponent implements OnInit {
 
     this.currentQuiz = quiz;
     this.started = false;
+    this.showSolution = false;
 
     const indexOfCurrentQuiz = findIndex(this.list, ['id', quiz.id]);
 

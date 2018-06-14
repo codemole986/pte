@@ -33,8 +33,13 @@ import { NumberprintPipe } from './dashboard/numberprint';
 import { QAModule } from './shared/modules';
 
 import {
-    HeaderComponent, HeaderTeacherComponent, HeaderOverviewComponent, HeaderStudentComponent, HeaderManageComponent, 
-    FooterComponent
+    HeaderComponent,
+    HeaderTeacherComponent,
+    HeaderOverviewComponent,
+    HeaderStudentComponent,
+    HeaderManageComponent,
+    FooterComponent,
+    SolutionModule
 } from './components';
 
 import {
@@ -139,6 +144,7 @@ export function createTranslateLoader(http: HttpClient) {
         PipesModule,
 
         QAModule,
+        SolutionModule,
         
         TranslateModule.forRoot({
             loader: {

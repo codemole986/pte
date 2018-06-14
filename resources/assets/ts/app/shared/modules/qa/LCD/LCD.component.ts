@@ -70,6 +70,7 @@ export class LCDComponent {
     let linebreakPattern = new RegExp(/(\r\n|\r|\n)/);
     let alphanumericPattern = new RegExp(/^[a-zA-Z\d_]*$/);
     let _quiz = { ...quiz };
+    _quiz.solution.text = _quiz.content.text;
     _quiz.content.text = _quiz.content.text.replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/&nbsp;/g, ' ');
 
     let i = 0;

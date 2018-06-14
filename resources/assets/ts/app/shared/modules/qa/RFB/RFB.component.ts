@@ -59,7 +59,12 @@ export class RFBComponent {
 
   onChangeQuiz(quiz: Problem) {
     let _quiz = { ...quiz };
-    _quiz.content.text = this.domSanitizer.bypassSecurityTrustHtml(_quiz.content.text.replace(/{{}}/g, '<input >'));
+
+    if (typeof _quiz.content.text === 'string') {
+      _quiz.solution.text = _quiz.content.text;
+      _quiz.content.text = this.domSanitizer.bypassSecurityTrustHtml(_quiz.content.text.replace(/{{}}/g, '<input >'));
+    }
+
     this._quiz = _quiz;
   }
 }
