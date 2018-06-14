@@ -245,6 +245,4 @@ export class GlobalService {
     const blob = new Blob([data], { type });
     saveAs(blob, filename);
   }
-
-  dingSoundPath: string = '/assets/snd/ding.mp3';
 }

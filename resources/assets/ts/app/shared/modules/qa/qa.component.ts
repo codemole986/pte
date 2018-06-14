@@ -22,7 +22,6 @@ declare const MediaRecorder: any;
 export class QAComponent implements OnInit {
   private _quiz: Problem;
   private _started: boolean;
-  private dingPeriod: number = 1000;
   private subject: Subject<boolean>;
   private startTime: number;
   private endTime: number;
@@ -186,20 +185,16 @@ export class QAComponent implements OnInit {
         return;
 
       case this.globalService.STEP_MAIN:
-        this.playDingSound(() => {
-          this.updateRemainingTime(limit_time);
-          this.updateStep(step);
-          this.initAnswer();
-          this.startTimer();
-        });
+        this.updateRemainingTime(limit_time);
+        this.updateStep(step);
+        this.initAnswer();
+        this.startTimer();
         return;
 
       case this.globalService.STEP_POST:
         this.endTime = +new Date();
-        this.playDingSound(() => {
-          this.saveAnswer(this.answer, () => {
-            this.updateStep(step);
-          });
+        this.saveAnswer(this.answer, () => {
+          this.updateStep(step);
         });
         return;
 
@@ -242,21 +237,6 @@ export class QAComponent implements OnInit {
 
   exitQA() {
     this._started = false;
-  }
-
-  playDingSound(cb: Function) {
-    let audio = new Audio();
-    audio.src = this.globalService.dingSoundPath;
-    audio.load();
-
-    audio.addEventListener('canplaythrough', () => {
-      audio.play();
-
-      setTimeout(() => {
-        audio.pause();
-        cb();
-      }, this.dingPeriod);
-    }, false);
   }
 
   initAnswer() {
