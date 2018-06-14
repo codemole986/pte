@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { SolutionComponent } from './solution.component';
+import { SoundcloudPlayerModule } from './../soundcloud-player/soundcloud-player.module';
 
 import 'rxjs/Rx';
 
@@ -10,7 +11,8 @@ import 'rxjs/Rx';
     SolutionComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    SoundcloudPlayerModule
   ],
   exports: [
     SolutionComponent

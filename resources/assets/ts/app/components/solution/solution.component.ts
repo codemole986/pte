@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { join, map } from 'lodash';
 
@@ -9,8 +9,9 @@ import { Problem } from './../../model/problem';
   template: require('./solution.component.html'),
   styles: [`${require('./solution.component.css')}`]
 })
-export class SolutionComponent implements OnInit, OnDestroy {
+export class SolutionComponent {
   html: SafeHtml;
+  audio: string = '';
 
   @Input() set problem(value: Problem) {
     this.makeHtml(value);
@@ -19,10 +20,6 @@ export class SolutionComponent implements OnInit, OnDestroy {
   constructor(
     private domSanitizer: DomSanitizer
   ) {}
-
-  ngOnInit() {}
-
-  ngOnDestroy() {}
 
   makeHtml(problem: Problem) {
     const { type, solution, content } = problem;
@@ -83,6 +80,15 @@ export class SolutionComponent implements OnInit, OnDestroy {
         }
 
         this.html = this.domSanitizer.bypassSecurityTrustHtml(solutionText);
+
+        break;
+      }
+
+      case 'SAL':
+      case 'SRS':
+      case 'SPI':
+      case 'SRL': {
+        this.audio = solution.audio;
 
         break;
       }
