@@ -24,7 +24,7 @@ import { ManageComponent } from './manage/manage.component';
 import { PermissionRenderComponent } from './manage/permission-render.component';
 import { ExerciseComponent } from './exercise/exercise.component';
 import { ExerciselistComponent } from './exerciselist/exerciselist.component';
-import { ExamineeComponent } from './examinee1/examinee.component';
+import { ExamineeComponent } from './examinee/examinee.component';
 import { EvalexamComponent } from './evalexam/evalexam.component';
 import { EvalstatusRenderComponent } from './evalexam/evalstatus-render.component';
 import { FileUploadDirective } from './dashboard/file-upload.directive';
