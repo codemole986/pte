@@ -24,8 +24,6 @@ export class LTSComponent {
 
     if (this.isListeningStep(step) || this.isMainStep(step)) {
       this.playAudio = true;
-    } else {
-      this.playAudio = false;
     }
   }
   get quiz(): Problem {

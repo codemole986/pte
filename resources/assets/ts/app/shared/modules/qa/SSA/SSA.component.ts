@@ -21,8 +21,6 @@ export class SSAComponent implements OnInit {
 
     if (this.isListeningStep(step)) {
       this.playAudio = true;
-    } else {
-      this.playAudio = false;
     }
   }
   get quiz(): Problem {

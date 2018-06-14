@@ -23,8 +23,6 @@ export class LWSComponent {
 
     if (this.isListeningStep(step)) {
       this.playAudio = true;
-    } else {
-      this.playAudio = false;
     }
   }
   get quiz(): Problem {
