@@ -102,7 +102,7 @@
               </div>
               <div class="portlet-footer clearfix">
                 <div class="pull-right">
-                  <button class="btn btn-sm btn-pill-left yellow-gold" type="button" [disabled]="!isPostStep(step)" (click)="onToggleSolution()" ><i class="fa fa-file-text-o fa-fw"></i> {{ (showSolution ? 'Hide' : 'Show') + ' Solution' | translate }} </button>
+                  <button class="btn btn-sm btn-pill-left yellow-gold" type="button" (click)="onToggleSolution()" ><i class="fa fa-file-text-o fa-fw"></i> {{ (showSolution ? 'Hide' : 'Show') + ' Solution' | translate }} </button>
                   <button class="btn btn-sm btn-pill-left btn-primary" type="button" [disabled]="!prevQuiz" (click)="onSelectPrevQuiz(prevQuiz)" ><i class="fa fa-arrow-left fa-fw"></i> {{ 'Previous' | translate }} </button>
                   <button class="btn btn-sm btn-primary" type="button" *ngIf="started" [disabled]="!isPostStep(step)" (click)="onRestartExercise()"><i class="fa fa-stop fa-fw"></i> {{ 'Again' | translate }} </button>
                   <button class="btn btn-sm btn-primary" type="button" *ngIf="!started" (click)="onStartExercise()"><i class="fa fa-play fa-fw"></i> {{ 'Start' | translate }} </button>
