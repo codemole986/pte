@@ -88,10 +88,6 @@ export class ExamineeComponent implements OnInit {
     return step === this.globalService.STEP_MAIN;
   }
 
-  isListeningStep(step: string): boolean {
-    return step === this.globalService.STEP_LISTENING;
-  }
-
   isPostStep(step: string): boolean {
     return step === this.globalService.STEP_POST;
   }

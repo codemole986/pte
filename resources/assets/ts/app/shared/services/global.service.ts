@@ -216,30 +216,8 @@ export class GlobalService {
 	}
 
   get STEP_PRE(): string { return 'STEP_PRE'; };
-  get STEP_LISTENING(): string { return 'STEP_LISTENING'; };
   get STEP_MAIN(): string { return 'STEP_MAIN'; };
   get STEP_POST(): string { return 'STEP_POST'; };
-
-  getSteps(type: string): string[] {
-    let steps = [this.STEP_PRE];
-
-    switch (type) {
-      case 'LWS':
-      case 'LSA':
-      case 'LSB':
-      case 'SRS':
-      case 'SRL':
-      case 'SSA': {
-        steps.push(this.STEP_LISTENING);
-        break;
-      }
-      default:
-    }
-
-    steps.push(this.STEP_MAIN, this.STEP_POST);
-
-    return steps;
-  }
 
   downloadFile(data: any, filename: string = '', type: string = 'text/plain'){
     const blob = new Blob([data], { type });

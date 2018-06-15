@@ -117,7 +117,6 @@ export class QAComponent implements OnInit {
 
   private onChangeQuiz(quiz: Problem) {
     this._quiz = quiz;
-    this.steps = this.globalService.getSteps(quiz.type);
     this.showSolution = false;
     this.started = false;
     this.updateStep('');
@@ -129,10 +128,6 @@ export class QAComponent implements OnInit {
 
   isMainStep(): boolean {
     return this.step === this.globalService.STEP_MAIN;
-  }
-
-  isListeningStep(): boolean {
-    return this.step === this.globalService.STEP_LISTENING;
   }
 
   isPostStep(): boolean {
@@ -151,34 +146,10 @@ export class QAComponent implements OnInit {
     this.goToStep(this.globalService.STEP_POST);
   }
 
-  goToNextStep() {
-    if (isEmpty(this.steps)) return;
-
-    let index = indexOf(this.steps, this.step);
-
-    if (index < this.steps.length - 1) {
-      this.goToStep(this.steps[index + 1]);
-    }
-  }
-
-  goToPrevStep() {
-    if (isEmpty(this.steps)) return;
-
-    let index = indexOf(this.steps, this.step);
-
-    if (index > 0) {
-      this.goToStep(this.steps[index - 1]);
-    }
-  }
-
   goToStep(step: string) {
     if (isEmpty(this._quiz)) return;
 
     switch (step) {
-      case this.globalService.STEP_LISTENING:
-        this.updateStep(step);
-        return;
-
       case this.globalService.STEP_MAIN:
         this.updateStep(step);
         this.initAnswer();
