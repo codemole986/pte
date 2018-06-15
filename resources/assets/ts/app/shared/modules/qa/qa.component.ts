@@ -116,6 +116,10 @@ export class QAComponent implements OnInit {
   }
 
   private onChangeQuiz(quiz: Problem) {
+    if (this.started) {
+      this.saveAnswer(this.answer);
+    }
+
     this._quiz = quiz;
     this.showSolution = false;
     this.started = false;
@@ -153,13 +157,6 @@ export class QAComponent implements OnInit {
       case this.globalService.STEP_MAIN:
         this.updateStep(step);
         this.initAnswer();
-        return;
-
-      case this.globalService.STEP_POST:
-        this.endTime = +new Date();
-        this.saveAnswer(this.answer, () => {
-          this.updateStep(step);
-        });
         return;
 
       case this.globalService.STEP_PRE:
@@ -216,12 +213,13 @@ export class QAComponent implements OnInit {
     this.answer.answer = answer;
   }
 
-  saveAnswer(answer: Answer, cb: Function) {
-    this.http.post('/answer/insert', { ...answer, examine_uptime: (this.endTime - this.startTime) / 1000 })
+  saveAnswer(answer: Answer) {
+    let endTime = +new Date();
+
+    this.http.post('/answer/insert', { ...answer, examine_uptime: (endTime - this.startTime) / 1000 })
       .map((response: Response) => response.json())
       .subscribe((data: { state: string, message: string }) => {
         if (data.state === 'error') Metronic.showErrMsg(data.message);
-        if (cb) cb();
       });
   }
 
