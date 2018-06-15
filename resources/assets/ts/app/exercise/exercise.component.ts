@@ -1,5 +1,4 @@
 import { Component, OnInit, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { Router, ActivatedRoute, ActivationEnd  } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
@@ -13,12 +12,6 @@ import { Answer } from '../model/answer';
 import { TypeRenderComponent } from '../test/type-render.component';
 
 import { GlobalService } from '../shared/services';
-
-declare var $:any;
-declare function startRecording(a: any, b: any, c: any, d: any): any;
-declare function stopRecording(): any;
-declare var bootbox: any;
-declare var Metronic: any;
 
 @Component({
   selector: 'app-exercise',
@@ -50,15 +43,12 @@ export class ExerciseComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private translate: TranslateService,
-    private sanitizer: DomSanitizer,
     private globalService: GlobalService,
     private changeDetector: ChangeDetectorRef
   ) {
   }
 
   ngOnInit() {
-    Metronic.init();
-
     switch(window.sessionStorage.getItem('permission')) {
       case 'A' : this.active_menu = 'manage'; break;
       case 'B' : this.active_menu = 'teacher'; break;
