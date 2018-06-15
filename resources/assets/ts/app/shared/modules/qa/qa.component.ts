@@ -267,11 +267,15 @@ export class QAComponent implements OnInit {
   }
 
   startRecord() {
-    this.mediaRecorder.start();
+    if (this.mediaRecorder) {
+      this.mediaRecorder.start();
+    } else {
+      alert('Please enable mic!');
+    }
   }
 
   stopRecord() {
-    this.mediaRecorder.stop();
+    if (this.mediaRecorder) this.mediaRecorder.stop();
   }
 
   updateStep(step: string) {
