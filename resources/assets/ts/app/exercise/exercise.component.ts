@@ -31,7 +31,6 @@ export class ExerciseComponent implements OnInit {
   prevQuiz: Problem;
   nextQuiz: Problem;
   started: boolean = false;
-  finished: boolean = false;
   step: string = '';
   elapsedTime: number = 0;
   showSolution: boolean = false;
@@ -158,20 +157,15 @@ export class ExerciseComponent implements OnInit {
     }
   }
 
-  startExercise() {
-    this.started = true;
-    this.finished = false;
-  }
-
   onStartExercise() {
-    this.startExercise();
+    this.started = true;
   }
 
-  onRestartExercise() {
-    this.startExercise();
+  onExitExercise() {
+    this.started = false;
   }
 
-  onExitExercise(quiz: Problem) {
+  onBack() {
     this.currentQuiz = undefined;
     this.router.navigate(['/exerciselist']);
   }
@@ -190,10 +184,6 @@ export class ExerciseComponent implements OnInit {
 
   onUpdateStep(step: string) {
     this.step = step;
-
-    if (this.isPostStep(this.step)) {
-      this.finished = true;
-    }
   }
 
   onUpdateElapsedTime(elapsedTime: number) {

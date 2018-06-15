@@ -121,9 +121,7 @@ export class QAComponent implements OnInit {
     }
 
     this._quiz = quiz;
-    this.showSolution = false;
-    this.started = false;
-    this.updateStep('');
+    this.exitQA();
   }
 
   isPreStep(): boolean {
@@ -196,7 +194,13 @@ export class QAComponent implements OnInit {
   }
 
   exitQA() {
+    if (this.started) {
+      this.saveAnswer(this.answer);
+    }
+
+    this.showSolution = false;
     this._started = false;
+    this.updateStep('');
   }
 
   initAnswer() {
