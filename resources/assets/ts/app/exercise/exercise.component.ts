@@ -33,7 +33,7 @@ export class ExerciseComponent implements OnInit {
   started: boolean = false;
   finished: boolean = false;
   step: string = '';
-  remainingTime: number = 0;
+  elapsedTime: number = 0;
   showSolution: boolean = false;
 
   private frequency: number = 1000;
@@ -200,7 +200,7 @@ export class ExerciseComponent implements OnInit {
     }
   }
 
-  onUpdateRemainingTime(remainingTime: number) {
-    this.remainingTime = remainingTime;
+  onUpdateElapsedTime(elapsedTime: number) {
+    this.elapsedTime = elapsedTime;
   }
 }

@@ -51,11 +51,11 @@ export class QAComponent implements OnInit {
   @Output() goToNext = new EventEmitter<Problem>();
   @Output() exit = new EventEmitter<Problem>();
   @Output() onUpdateStep = new EventEmitter<string>();
-  @Output() onUpdateRemainingTime = new EventEmitter<number>();
+  @Output() onUpdateElapsedTime = new EventEmitter<number>();
 
   step: string;
   steps: string[];
-  remainingTime: number = 0;
+  elapsedTime: number = 0;
   showSolution: boolean = false;
   answer: Answer;
 
@@ -102,9 +102,9 @@ export class QAComponent implements OnInit {
     Observable.timer(1000, 1000)
       .takeUntil(this.subject)
       .subscribe(t => {
-        if (this.started && this.remainingTime > 0) {
-          this.updateRemainingTime(this.remainingTime - 1);
-          if (this.remainingTime === 0) this.goToNextStep();
+        if (this.started && this.elapsedTime > 0) {
+          this.updateElapsedTime(this.elapsedTime - 1);
+          if (this.elapsedTime === 0) this.goToNextStep();
         }
       });
   }
@@ -120,7 +120,7 @@ export class QAComponent implements OnInit {
     this.steps = this.globalService.getSteps(quiz.type);
     this.showSolution = false;
     this.started = false;
-    this.updateRemainingTime(quiz.preparation_time);
+    this.updateElapsedTime(quiz.preparation_time);
     this.updateStep('');
   }
 
@@ -185,7 +185,7 @@ export class QAComponent implements OnInit {
         return;
 
       case this.globalService.STEP_MAIN:
-        this.updateRemainingTime(limit_time);
+        this.updateElapsedTime(limit_time);
         this.updateStep(step);
         this.initAnswer();
         this.startTimer();
@@ -199,7 +199,7 @@ export class QAComponent implements OnInit {
         return;
 
       case this.globalService.STEP_PRE:
-        this.updateRemainingTime(preparation_time);
+        this.updateElapsedTime(preparation_time);
         this.updateStep(step);
         this.startTimer();
         return;
@@ -283,8 +283,8 @@ export class QAComponent implements OnInit {
     this.onUpdateStep.emit(this.step);
   }
 
-  updateRemainingTime(remainingTime: number) {
-    this.remainingTime = remainingTime;
-    this.onUpdateRemainingTime.emit(this.remainingTime);
+  updateElapsedTime(elapsedTime: number) {
+    this.elapsedTime = elapsedTime;
+    this.onUpdateElapsedTime.emit(this.elapsedTime);
   }
 }

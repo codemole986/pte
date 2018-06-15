@@ -82,10 +82,10 @@
                       <span class="font-blue-sharp bold">No: {{currentQuiz.no}}</span>
                     </div>
                     <div class="col-md-4" *ngIf="isPreStep(step)">
-                      <h5 style="color:#09F;">{{ 'Preparation Time' | translate }}: {{remainingTime | converttimestamp }}</h5>
+                      <h5 style="color:#09F;">{{ 'Preparation Time' | translate }}: {{elapsedTime | converttimestamp }}</h5>
                     </div>
                     <div class="col-md-4" *ngIf="isMainStep(step)">
-                      <h5 style="color:#09F;">{{ 'Remain Time' | translate }}: {{remainingTime | converttimestamp }}</h5>
+                      <h5 style="color:#09F;">{{ 'Elapsed Time' | translate }}: {{elapsedTime | converttimestamp }}</h5>
                     </div>
                   </div>
                 </div>
@@ -97,7 +97,7 @@
                   [started]="started && !finished"
                   (exit)="onExitExercise($event)"
                   (onUpdateStep)="onUpdateStep($event)"
-                  (onUpdateRemainingTime)="onUpdateRemainingTime($event)"
+                  (onUpdateElapsedTime)="onUpdateElapsedTime($event)"
                 ></app-qa>
               </div>
               <div class="portlet-footer clearfix">

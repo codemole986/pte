@@ -38,7 +38,7 @@ export class ExamineeComponent implements OnInit {
   currentQuiz: Problem;
   prevQuiz: Problem;
   nextQuiz: Problem;
-  remainingTime: number = 0;
+  elapsedTime: number = 0;
   showSolution: boolean = false;
   step: string = '';
   started: boolean = false;
@@ -169,7 +169,7 @@ export class ExamineeComponent implements OnInit {
     }
   }
 
-  onUpdateRemainingTime(remainingTime: number) {
-    this.remainingTime = remainingTime;
+  onUpdateElapsedTime(elapsedTime: number) {
+    this.elapsedTime = elapsedTime;
   }
 }
