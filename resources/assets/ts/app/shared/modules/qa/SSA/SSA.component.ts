@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { Problem } from './../../../../model/problem';
 import { GlobalService } from './../../../../shared';
@@ -9,26 +9,9 @@ import { GlobalService } from './../../../../shared';
   styles: [`${require('./SSA.component.css')}`]
 })
 
-export class SSAComponent implements OnInit {
-  private _step: string;
-  private _quiz: Problem;
-
-  get step(): string {
-    return this._step;
-  }
-  @Input() set step(step: string) {
-    this._step = step;
-
-    if (this.isListeningStep(step)) {
-      this.playAudio = true;
-    }
-  }
-  get quiz(): Problem {
-    return this._quiz;
-  }
-  @Input() set quiz(quiz: Problem) {
-    this.onChangeQuiz(quiz);
-  }
+export class SSAComponent {
+  @Input() step: string;
+  @Input() quiz: Problem;
 
   @Output() finishAudio = new EventEmitter<string>();
 
@@ -37,9 +20,6 @@ export class SSAComponent implements OnInit {
   constructor(
     private globalService: GlobalService
   ) {
-  }
-
-  ngOnInit() {
   }
 
   isPreStep(step: string): boolean {
@@ -56,11 +36,6 @@ export class SSAComponent implements OnInit {
 
   isPostStep(step: string): boolean {
     return step === this.globalService.STEP_POST;
-  }
-
-  onChangeQuiz(quiz: Problem) {
-    this._quiz = { ...quiz };
-    this.playAudio = false;
   }
 
   onFinish(song: any) {

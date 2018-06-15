@@ -12,32 +12,13 @@ import { GlobalService } from './../../../../shared';
 })
 
 export class LSAComponent {
-  private _step: string;
-  private _quiz: Problem;
-
-  get step(): string {
-    return this._step;
-  }
-  @Input() set step(step: string) {
-    this._step = step;
-
-    if (this.isListeningStep(step)) {
-      this.playAudio = true;
-    }
-  }
-  get quiz(): Problem {
-    return this._quiz;
-  }
-  @Input() set quiz(quiz: Problem) {
-    this._quiz = quiz;
-    this.playAudio = false;
-  }
+  @Input() step: string;
+  @Input() quiz: Problem;
 
   @Output() updateAnswer = new EventEmitter<{ optionno: number[] }>();
   @Output() finishAudio = new EventEmitter<string>();
 
   count: number = 0;
-  playAudio: boolean = false;
   options: string[];
   selectedOptions: number[] = [];
 

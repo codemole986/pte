@@ -13,19 +13,9 @@ import { GlobalService } from './../../../../shared';
 })
 
 export class LTWComponent {
-  private _step: string;
   private _quiz: Problem;
 
-  get step(): string {
-    return this._step;
-  }
-  @Input() set step(step: string) {
-    this._step = step;
-
-    if (this.isListeningStep(step) || this.isMainStep(step)) {
-      this.playAudio = true;
-    }
-  }
+  @Input() step: string;
   get quiz(): Problem {
     return this._quiz;
   }
@@ -37,7 +27,6 @@ export class LTWComponent {
   @Output() finishAudio = new EventEmitter<string>();
 
   count: number = 0;
-  playAudio: boolean = false;
   options: string[];
   selectedOptions: number[] = [];
 
@@ -68,6 +57,5 @@ export class LTWComponent {
     _quiz.solution.text = _quiz.content.text;
     _quiz.content.text = this.domSanitizer.bypassSecurityTrustHtml(_quiz.content.text.replace(/{{}}/g, '<input >'));
     this._quiz = _quiz;
-    this.playAudio = false;
   }
 }

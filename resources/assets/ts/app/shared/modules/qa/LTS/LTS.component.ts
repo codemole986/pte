@@ -13,31 +13,13 @@ import { GlobalService } from './../../../../shared';
 })
 
 export class LTSComponent {
-  private _step: string;
-  private _quiz: Problem;
-
-  get step(): string {
-    return this._step;
-  }
-  @Input() set step(step: string) {
-    this._step = step;
-
-    if (this.isListeningStep(step) || this.isMainStep(step)) {
-      this.playAudio = true;
-    }
-  }
-  get quiz(): Problem {
-    return this._quiz;
-  }
-  @Input() set quiz(quiz: Problem) {
-    this.onChangeQuiz(quiz);
-  }
+  @Input() step: string;
+  @Input() quiz: Problem;
 
   @Output() updateAnswer = new EventEmitter<{ text: string }>();
   @Output() finishAudio = new EventEmitter<string>();
 
   count: number = 0;
-  playAudio: boolean = false;
   options: string[];
   selectedOptions: number[] = [];
 
@@ -70,10 +52,5 @@ export class LTSComponent {
 
   onClickDownloadAnswerText(value: string) {
     this.globalService.downloadFile(value, `${snakeCase(this.quiz.title)}.txt`);
-  }
-
-  onChangeQuiz(quiz: Problem) {
-    this._quiz = { ...quiz };
-    this.playAudio = false;
   }
 }

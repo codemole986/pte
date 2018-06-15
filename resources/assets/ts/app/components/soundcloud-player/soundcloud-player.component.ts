@@ -10,7 +10,6 @@ export class SoundcloudPlayerComponent implements OnInit, OnDestroy {
   private _iframeCode: string = '';
 
   src: string = '';
-  show: boolean = false;
   finished: boolean = false;
   scWidget: any;
 
@@ -34,9 +33,6 @@ export class SoundcloudPlayerComponent implements OnInit, OnDestroy {
       this.src = src;
     }
   }
-  @Input() set play(value: boolean) {
-    this.show = value;
-  }
 
   @Output() finish = new EventEmitter<void>();
 
@@ -55,7 +51,7 @@ export class SoundcloudPlayerComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewChecked() {
-    if (this.show && this.finish) {
+    if (this.finish) {
       this.scWidget = new SoundcloudWidget(this.scAudioPlayerId);
 
       this.scWidget.on(SoundcloudWidget.events.FINISH, () => {

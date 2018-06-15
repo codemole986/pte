@@ -99,12 +99,14 @@ export class QAComponent implements OnInit {
   }
 
   startTimer() {
+    this.stopTimer();
+    this.updateElapsedTime(0);
+
     Observable.timer(1000, 1000)
       .takeUntil(this.subject)
       .subscribe(t => {
-        if (this.started && this.elapsedTime > 0) {
-          this.updateElapsedTime(this.elapsedTime - 1);
-          if (this.elapsedTime === 0) this.goToNextStep();
+        if (this.started) {
+          this.updateElapsedTime(this.elapsedTime + 1);
         }
       });
   }
@@ -114,30 +116,27 @@ export class QAComponent implements OnInit {
   }
 
   private onChangeQuiz(quiz: Problem) {
-    let { preparation_time, limit_time, id, content } = quiz;
-
     this._quiz = quiz;
     this.steps = this.globalService.getSteps(quiz.type);
     this.showSolution = false;
     this.started = false;
-    this.updateElapsedTime(quiz.preparation_time);
     this.updateStep('');
   }
 
-  isPreStep(step: string): boolean {
-    return step === this.globalService.STEP_PRE;
+  isPreStep(): boolean {
+    return this.step === this.globalService.STEP_PRE;
   }
 
-  isMainStep(step: string): boolean {
-    return step === this.globalService.STEP_MAIN;
+  isMainStep(): boolean {
+    return this.step === this.globalService.STEP_MAIN;
   }
 
-  isListeningStep(step: string): boolean {
-    return step === this.globalService.STEP_LISTENING;
+  isListeningStep(): boolean {
+    return this.step === this.globalService.STEP_LISTENING;
   }
 
-  isPostStep(step: string): boolean {
-    return step === this.globalService.STEP_POST;
+  isPostStep(): boolean {
+    return this.step === this.globalService.STEP_POST;
   }
 
   goToPreStep() {
@@ -175,20 +174,14 @@ export class QAComponent implements OnInit {
   goToStep(step: string) {
     if (isEmpty(this._quiz)) return;
 
-    this.stopTimer();
-
-    let { preparation_time, limit_time, id } = this._quiz;
-
     switch (step) {
       case this.globalService.STEP_LISTENING:
         this.updateStep(step);
         return;
 
       case this.globalService.STEP_MAIN:
-        this.updateElapsedTime(limit_time);
         this.updateStep(step);
         this.initAnswer();
-        this.startTimer();
         return;
 
       case this.globalService.STEP_POST:
@@ -199,7 +192,6 @@ export class QAComponent implements OnInit {
         return;
 
       case this.globalService.STEP_PRE:
-        this.updateElapsedTime(preparation_time);
         this.updateStep(step);
         this.startTimer();
         return;
@@ -284,7 +276,13 @@ export class QAComponent implements OnInit {
   }
 
   updateElapsedTime(elapsedTime: number) {
+    const { preparation_time } = this.quiz;
     this.elapsedTime = elapsedTime;
+
+    if (this.isPreStep() && this.elapsedTime > preparation_time) {
+      this.goToMainStep();
+    }
+
     this.onUpdateElapsedTime.emit(this.elapsedTime);
   }
 }

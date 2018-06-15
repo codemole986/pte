@@ -13,19 +13,9 @@ import { GlobalService } from './../../../../shared';
 })
 
 export class LCDComponent {
-  private _step: string;
   private _quiz: Problem;
 
-  get step(): string {
-    return this._step;
-  }
-  @Input() set step(step: string) {
-    this._step = step;
-
-    if (this.isListeningStep(step) || this.isMainStep(step)) {
-      this.playAudio = true;
-    }
-  }
+  @Input() step: string;
   get quiz(): Problem {
     return this._quiz;
   }
@@ -37,7 +27,6 @@ export class LCDComponent {
   @Output() finishAudio = new EventEmitter<string>();
 
   count: number = 0;
-  playAudio: boolean = false;
   options: string[];
   selectedOptions: number[] = [];
   spans: { text: any, clickable: boolean, selected: boolean, isBR: boolean }[];
@@ -112,7 +101,6 @@ export class LCDComponent {
     });
 
     this._quiz = _quiz;
-    this.playAudio = false;
   }
 
   onToggleSpan(index: number) {

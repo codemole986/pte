@@ -1,14 +1,13 @@
 <div class="quiz-guide">{{quiz.guide}}</div>
-<div class="step-listening">
-  <div class="quiz-content-audio" *ngIf="playAudio">
+<div class="step-main" *ngIf="isMainStep(step)">
+  <div class="quiz-content-audio">
     <soundcloud-player
       [iframeCode]="quiz.content.audio"
-      [play]="playAudio"
     >
     </soundcloud-player>
   </div>
-</div>
-<div class="quiz-answer">
-  <textarea name="content" #elAnswer class="form-control" [disabled]="!isMainStep(step)" placeholder="Problem Sentences" title="Problem Sentences" rows="10" (keyup)="onChangeAnswerText(elAnswer.value)"></textarea>
-  <div class="quiz-answer-footer">{{ 'Word count' | translate }}: <span>{{count}}</span><a (click)="onClickDownloadAnswerText(elAnswer.value)" style="float: right;">{{ 'Download answer text' | translate }}</a></div>
+  <div class="quiz-answer">
+    <textarea name="content" #elAnswer class="form-control" placeholder="Problem Sentences" title="Problem Sentences" rows="10" (keyup)="onChangeAnswerText(elAnswer.value)"></textarea>
+    <div class="quiz-answer-footer">{{ 'Word count' | translate }}: <span>{{count}}</span><a (click)="onClickDownloadAnswerText(elAnswer.value)" style="float: right;">{{ 'Download answer text' | translate }}</a></div>
+  </div>
 </div>
