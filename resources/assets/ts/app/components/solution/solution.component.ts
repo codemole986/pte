@@ -84,6 +84,11 @@ export class SolutionComponent {
         break;
       }
 
+      case 'RRO': {
+        this.html = map(content.select.options, o => `<p>${o}</p>`).join('');
+        break;
+      }
+
       case 'SAL':
       case 'SRS':
       case 'SPI':
