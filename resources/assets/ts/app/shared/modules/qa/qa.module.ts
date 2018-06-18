@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { NestableModule } from 'ngx-nestable';
 
 import { PipesModule } from './../../pipes/';
 import { SoundcloudPlayerModule } from './../../../components';
@@ -28,6 +29,7 @@ import { SSAComponent } from './SSA/SSA.component';
 @NgModule({
   imports: [
     CommonModule,
+    NestableModule,
     TranslateModule,
     PipesModule,
     SoundcloudPlayerModule

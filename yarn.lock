@@ -5345,6 +5345,12 @@ ngx-dropzone-wrapper@^5.3.5:
   dependencies:
     dropzone "^5.4.0"
 
+ngx-nestable@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/ngx-nestable/-/ngx-nestable-0.3.3.tgz#445b4c7b326d8dea2f828d0ea1b746e01afd61ee"
+  dependencies:
+    tslib "^1.7.1"
+
 nice-try@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.4.tgz#d93962f6c52f2c1558c0fbda6d512819f1efe1c4"

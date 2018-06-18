@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { concat, remove } from 'lodash';
+import { NestableSettings } from 'ngx-nestable/src/nestable.models';
+import { concat, map, remove, shuffle } from 'lodash';
 
 import { Problem } from './../../../../model/problem';
 import { Answer } from './../../../../model/answer';
@@ -18,7 +19,7 @@ export class RROComponent {
   }
   @Input() set quiz(quiz: Problem) {
     this._quiz = quiz;
-    this.options = quiz.content.select.options;
+    this.options = shuffle(map(quiz.content.select.options, option => ({ value: option })));
     this.selectedOptionNo = -1;
   }
   @Input() step: string;
@@ -26,49 +27,23 @@ export class RROComponent {
   @Output() updateAnswer = new EventEmitter<{ select: { options: string[] } }>();
 
   count: number = 0;
-  options: string[];
+  options: { value: string }[];
   selectedOptionNo: number = -1;
+
+  public ngxNestableOptions = {
+    fixedDepth: true
+  } as NestableSettings;
 
   constructor(
     private globalService: GlobalService
   ) {
   }
 
-  isPreStep(step: string): boolean {
-    return step === this.globalService.STEP_PRE;
-  }
-
   isMainStep(step: string): boolean {
     return step === this.globalService.STEP_MAIN;
   }
 
-  isPostStep(step: string): boolean {
-    return step === this.globalService.STEP_POST;
-  }
-
-  onSelectOption(no: number) {
-    this.selectedOptionNo = no;
-  }
-
-  onUpOption(no: number) {
-    if (no > 0) {
-      this.options.splice(no - 1, 0, this.options[no]);
-      this.options.splice(no + 1, 1);
-      this.selectedOptionNo = no - 1;
-
-      this.updateAnswer.emit({ select: { options: this.options } });
-    }
-  }
-
-  onDownOption(no: number) {
-    if (no === -1) return;
-
-    if (no < this.options.length - 1) {
-      this.options.splice(no + 2, 0, this.options[no]);
-      this.options.splice(no, 1);
-      this.selectedOptionNo = no + 1;
-
-      this.updateAnswer.emit({ select: { options: this.options } });
-    }
+  onDropOption() {
+    this.updateAnswer.emit({ select: { options: map(this.options, o => o.value) } });
   }
 }

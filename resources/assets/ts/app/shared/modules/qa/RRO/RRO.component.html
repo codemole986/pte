@@ -1,30 +1,13 @@
 <div class="quiz-guide">{{quiz.guide}}</div>
 <div class="step-main" *ngIf="isMainStep(step)">
-  <table>
-    <tbody>
-      <tr>
-        <td style="width: 100%;">
-          <div class="quiz-options">
-            <div *ngFor="let option of options; let i = index" (click)="onSelectOption(i)" class="quiz-option" [ngClass]="{'selected' : selectedOptionNo === i}">{{option}}</div>
-          </div>
-        </td>
-        <td>
-          <table>
-            <tbody>
-              <tr>
-                <td style="padding: 5px;">
-                  <button class="btn btn-sm btn-success" (click)="onUpOption(selectedOptionNo)"><i class="fa fa-chevron-up fa-fw"></i></button>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding: 5px;">
-                  <button class="btn btn-sm btn-success" (click)="onDownOption(selectedOptionNo)"><i class="fa fa-chevron-down fa-fw"></i></button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <ngx-nestable [(list)]="options" [options]="ngxNestableOptions" [template]="itemTemplate" (drop)="onDropOption()">
+  </ngx-nestable>
+
+  <ng-template #itemTemplate let-row>
+    <p [ngxNestableDragHandle]="row">{{row.item.value}}</p>
+  </ng-template>
+
+  <ng-template #empty_item>
+    <span style="width: 40px"></span>
+  </ng-template>
 </div>
