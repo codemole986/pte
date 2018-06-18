@@ -24,7 +24,6 @@
     <link href="assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css" rel="stylesheet" type="text/css">
     <link href="assets/global/plugins/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css">
     <link href="assets/global/plugins/datatables/examples/resources/jqueryui/dataTables.jqueryui.css" rel="stylesheet" type="text/css">
-    <link href="assets/global/plugins/jquery-nestable/jquery.nestable.css" rel="stylesheet" type="text/css"/>
     <!-- END PAGE LEVEL PLUGIN STYLES -->
     <!-- BEGIN PAGE STYLES -->
     <link href="assets/pages/css/tasks.css" rel="stylesheet" type="text/css"/>
@@ -95,7 +94,6 @@
     <script type="text/javascript" src="{{asset('assets/global/plugins/jquery-validation/js/jquery.validate.min.js')}}"></script>
     <script type="text/javascript" src="{{asset('assets/global/plugins/jquery-validation/js/additional-methods.min.js')}}"></script>
     <script type="text/javascript" src="{{asset('assets/global/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js')}}"></script>
-    <script type="text/javascript" src="{{asset('assets/global/plugins/jquery-nestable/jquery.nestable.js')}}"></script>
     <!-- <script type="text/javascript" src="{{asset('js/jquery-2.2.4.min.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/bootstrap.js')}}"></script> -->
     <script type="text/javascript" src="{{asset('js/angular.min.js')}}"></script>

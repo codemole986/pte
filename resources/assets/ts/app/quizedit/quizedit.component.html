@@ -209,16 +209,11 @@
                                             </div>
                                             <div *ngIf="editedProblem.type == 'RRO'">
                                                 <label> {{ 'List of target' | translate }} </label>
-                                                <div class="dd" id="rro_list">
-                                                    <ol class="dd-list">
-                                                        <li *ngFor="let op of editedProblem.content.select.options; let i = index" class="dd-item" data-id="{{i}}">
-                                                            <div class="dd-handle">
-                                                                {{op}}
-                                                            </div>
-                                                        </li>
-                                                    </ol>
-                                                </div>
-                                                {{createRRONestable()}}
+                                                <ngx-nestable class="rro-list" [(list)]="nestedList" [options]="ngxNestableOptions" [template]="templateRROOption" (drop)="onDropNestedItem()">
+                                                </ngx-nestable>
+                                                <ng-template #templateRROOption let-row>
+                                                    <div [ngxNestableDragHandle]="row" class="rro-option">{{row.item.value}}</div>
+                                                </ng-template>
                                                 <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeProbSelect()" rows="10" [(ngModel)]="select_problem_values" style="min-height: 150px; width: 100%;" multiple>
                                                     <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}">{{op}}</option>
                                                 </select>
@@ -573,34 +568,26 @@
                                         </div>
                                         <div *ngIf="editedProblem.type == 'RRO'">
                                             <label> {{ 'List of target' | translate }} </label>
-                                                <table>
-                                                <tr><td style="width: 100%;">
-                                                    <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeProbSelect()" rows="10" [(ngModel)]="select_problem_values" style="height: 150px; width: 100%;" multiple>
-                                                        <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}">{{op}}</option>
-                                                    </select>
-                                                </td><td>
-                                                <table>
-                                                <tr><td style="padding: 5px;">
-                                            <button class="btn btn-sm btn-success" type="button" (click)="onUpOption()"><i class="fa fa-chevron-up fa-fw"></i></button>
-                                        </td></tr>
-                                                        <tr><td style="padding: 5px;">
-                                            <button class="btn btn-sm btn-success" type="button" (click)="onDownOption()"><i class="fa fa-chevron-down fa-fw"></i></button>
-                                        </td></tr>
-                                        </table>
-                                        </td></tr>
-                                        </table>
-                                            <div class="row" style="margin-right: 47px;">
+                                            <ngx-nestable class="rro-list" [(list)]="nestedList" [options]="ngxNestableOptions" [template]="templateRROOption" (drop)="onDropNestedItem()">
+                                            </ngx-nestable>
+                                            <ng-template #templateRROOption let-row>
+                                                <div [ngxNestableDragHandle]="row" class="rro-option">{{row.item.value}}</div>
+                                            </ng-template>
+                                            <select id="select_options" name="list_sentences" class="form-control" (change)="onChangeProbSelect()" rows="10" [(ngModel)]="select_problem_values" style="min-height: 150px; width: 100%;" multiple>
+                                                <option *ngFor="let op of editedProblem.content.select.options" value="{{op}}">{{op}}</option>
+                                            </select>
+                                            <div class="row">
                                                 <div class="col-md-8 col-sm-7 col-xs-12">
-                                                    <input id="optionsentence" name="optionsentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence">
+                                                    <textarea id="optionsentence" name="optionsentence" #optionsentence class="form-control" placeholder="{{ 'Sentence' | translate }}" title="Sentence" [(ngModel)]="strOptionSentence"></textarea>
                                                 </div>
                                                 <div class="col-md-4 col-sm-5 col-xs-12 right-btn">
                                                     <button class="btn btn-sm btn-success btn-group" type="button" (click)="onAddOption()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
                                                     <button id="btnEditOption" class="btn btn-sm btn-success btn-group" type="button" (click)="onEditOption()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
                                                     <button id="btnChangeOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onChangeOption()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
                                                     <button id="btnDeleteOption" type="button" class="btn btn-sm btn-success btn-group" (click)="onDeleteOption()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
-                                    </div>
-                                    </div>
-                                </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                 <div *ngIf="editedProblem.type == 'SRL'">
                                     <hr/>
                                     <label> {{ 'List of lecture' | translate }} </label>

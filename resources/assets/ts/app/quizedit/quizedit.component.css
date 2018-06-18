@@ -19,18 +19,37 @@ td select.form-control {
 	width: 40px;
 	height: 40px;
 }
-.dd-handle {
-	word-wrap: break-word;
-	height: auto;
+
+app-quizedit ngx-nestable.rro-list > .dd-list {
+  min-height: 250px;
+  border: 1px solid #eee;
+  margin: 0px;
 }
-.dd-empty {
-	min-height: 200px;
+
+app-quizedit ngx-nestable.rro-list > .dd-list li.dd-item {
+  padding: 0 5px;
 }
-.dd {
-    min-height: 250px;
-    border: 1px solid #eee;
-    margin: 0px;
-    padding: 0 5px;
+
+app-quizedit ngx-nestable.rro-list > .dd-list .nestable-item-container {
+  display: block;
+  height: 30px;
+  margin: 5px 0;
+  cursor: move;
+  padding: 5px 10px;
+  color: #333;
+  text-decoration: none;
+  font-weight: 400;
+  border: 1px solid #ccc;
+  background: #fafafa;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+app-quizedit ngx-nestable.rro-list > .dd-list .nestable-item-container:hover {
+  color: #2ea8e5;
+  background: #fff;
 }
 /*.cke_reset_all.cke_1.cke_editor_ck_editor_dialog {
 	display: none !important;

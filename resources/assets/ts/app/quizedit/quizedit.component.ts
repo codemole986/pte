@@ -4,8 +4,9 @@ import { NgForm } from "@angular/forms";
 import { Router, ActivatedRoute, ActivationEnd } from '@angular/router';
 import { Http, Response, Headers, RequestOptions } from "@angular/http";
 import { TranslateService } from '@ngx-translate/core';
-import { every, isObject, last, remove } from 'lodash';
+import { every, isObject, last, map, remove } from 'lodash';
 import { v4 as uuid } from 'uuid';
+import { NestableSettings } from 'ngx-nestable/src/nestable.models';
 import 'rxjs/add/operator/map';
 import { routerTransition } from '../router.animations';
 import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
@@ -99,6 +100,12 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         path: string,
         uuid: string
     }[];
+
+    ngxNestableOptions = {
+        fixedDepth: true
+    } as NestableSettings;
+
+    nestedList: { value: string }[] = [];
     
     constructor(private http: Http, private route: ActivatedRoute, private router: Router, private globalService: GlobalService, private translate: TranslateService) { 
         Dropzone.autoDiscover = false;
@@ -139,6 +146,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                                 uuid: uuid()
                             }];
                             _self.showEditProblemForm();
+                            _self.updateNestedList();
                         }
                     );
                 }
@@ -282,7 +290,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
 
         this.ck_flag = false;
         this.wizard_flag = false;
-        this.nestable_flag = false;
 
         var that = this;
         setTimeout(function(){
@@ -397,7 +404,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         this.str_blank = "";
         
         this.ck_flag = false;
-        this.nestable_flag = false;
         
         var that = this;
         setTimeout(function(){
@@ -936,10 +942,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         }
     	this.editedProblem.content.select.options.push(this.strOptionSentence);
         if (this.editedProblem.type == 'RRO') {
-            var that = this;
-            setTimeout(function(){
-                that.updateOutput();
-            }, 100);
+            this.updateNestedList();
         }
         this.optionsentence.nativeElement.value='';
         this.optionsentence.nativeElement.focus();
@@ -966,6 +969,9 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 this._CKEDITOR.instances.ck_editor.setData(str_data);
             }
             this.editedProblem.content.select.options.splice(i, 1, this.strOptionSentence);
+            if (this.editedProblem.type == 'RRO') {
+                this.updateNestedList();
+            }
         }
         
         this.show_editoption = true;
@@ -988,6 +994,8 @@ export class QuizeditComponent implements OnInit, OnDestroy {
 
         if (this.editedProblem.type == 'RFB') {
             this.checkCkEditorInfo();
+        } else if (this.editedProblem.type == 'RRO') {
+            this.updateNestedList();
         }
     }
     onUpOption() {
@@ -1615,26 +1623,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         Metronic.scrollTo($('.page-title'));
     }
 
-    updateOutput() {
-        var lis = $('#rro_list ol.dd-list li.dd-item');
-        for (var i = 0;  i < lis.length;  i++) {
-            this.editedProblem.content.select.options[i] = $(lis[i]).find('div.dd-handle').html().trim();
-        }
-    }
-
-    nestable_flag: boolean = false;
-
-    createRRONestable() {
-        if (this.nestable_flag)
-            return;
-        var that = this;
-        $('#rro_list').nestable().on('change', function(e: any) {
-            that.updateOutput();
-        });
-        
-        this.nestable_flag = true;
-    }
-
     onUploadSuccess(event: any) {
         this.uploadedFiles.push({
             uuid: event[0].upload.uuid,
@@ -1644,5 +1632,13 @@ export class QuizeditComponent implements OnInit, OnDestroy {
 
     onRemoveFile(event: any) {
         remove(this.uploadedFiles, ['uuid', event.upload.uuid]);
+    }
+
+    onDropNestedItem() {
+        this.editedProblem.content.select.options = map(this.nestedList, o => o.value);
+    }
+
+    updateNestedList() {
+        this.nestedList = map(this.editedProblem.content.select.options, option => ({ value: option }))
     }
 }
