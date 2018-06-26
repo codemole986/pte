@@ -6,5 +6,5 @@
     >
     </soundcloud-player>
   </div>
-  <div class="quiz-content-text" *ngIf="quiz.content.text"><span *ngFor="let span of spans;let i = index"><span *ngIf="!span.isBR" [innerHtml]="span.text" (click)="span.clickable && onToggleSpan(i)" [ngClass]="{'selected' : span.selected}"></span><br *ngIf="span.isBR"></span></div>
+  <div class="quiz-content-text" *ngIf="quiz.content.text"><span *ngFor="let span of spans;let i = index"><span *ngIf="!span.isBR" unselectable="on" class="unselectable" [innerHtml]="span.text" (click)="span.clickable && onToggleSpan(i)" [ngClass]="{'selected' : span.selected}"></span><br *ngIf="span.isBR"></span></div>
 </div>
