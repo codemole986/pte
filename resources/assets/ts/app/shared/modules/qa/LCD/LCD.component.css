@@ -1,3 +1,4 @@
-app-qa-lcd .quiz-content-text span.selected {
+app-qa-lcd .quiz-content-text span.selected,
+app-solution span.selected {
   background-color: yellow;
 }

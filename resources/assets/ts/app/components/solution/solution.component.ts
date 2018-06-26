@@ -60,7 +60,7 @@ export class SolutionComponent {
         let index = 0;
 
         while (bracePattern.test(solutionText)) {
-          solutionText = solutionText.replace(bracePattern, content.select.options[index]);
+          solutionText = solutionText.replace(bracePattern, `<span unselectable="on" class="selected">${content.select.options[index]}</span>`);
           index ++;
         }
 
