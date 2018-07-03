@@ -106,6 +106,8 @@ export class QuizeditComponent implements OnInit, OnDestroy {
     } as NestableSettings;
 
     nestedList: { value: string }[] = [];
+
+    quillText: string = '';
     
     constructor(private http: Http, private route: ActivatedRoute, private router: Router, private globalService: GlobalService, private translate: TranslateService) { 
         Dropzone.autoDiscover = false;
@@ -276,6 +278,10 @@ export class QuizeditComponent implements OnInit, OnDestroy {
             Dropzone.autoDiscover = false;
             this.create_solutiondropzone();
             */
+        }
+
+        if (this.editedProblem.type === 'LTW') {
+            this.quillText = this.convertContentToQuillData(this.editedProblem);
         }
 
 		this.show_editoption = true;
@@ -499,7 +505,10 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                     this.editedProblem.content.audio = this.thisDropzone.files[0].name;     
                 } */               
                 break;              
-            case 'LTW':  
+            case 'LTW': {
+                this.convertQuillDataToContent();
+                break;
+            }
             case 'LCD':     
                 /*console.log(this.thisDropzone); 
                 if(this.thisDropzone.files.length>0) {
@@ -662,7 +671,10 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                     this.editedProblem.content.audio = this.thisDropzone.files[0].name;     
                 } */               
                 break;              
-            case 'LTW':  
+            case 'LTW': {
+                this.convertQuillDataToContent();
+                break;
+            }
             case 'LCD':      
                 /*if(this.thisDropzone.files.length>0) {
                     this.editedProblem.content.audio = this.thisDropzone.files[0].name;     
@@ -1205,23 +1217,23 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 }
                 this.editedProblem.content.text = str_data;
                 break;
-            case 'LTW':
-                this.editedProblem.content.select.options = [];
-                var str_data = this._CKEDITOR.instances.ck_editor.getData();
-                str_data = str_data.replace("<p>", "");
-                str_data = str_data.replace("</p>", "");
-                var reg = /(<input type=\"text\" value=\")([a-z, ,|]*)(\" \/>)/;
-                var found = reg.test(str_data);
-                var chngflag = false;
-                while (found) {
-                    var matches = reg.exec(str_data);
-                    var blank = matches[2];
-                    str_data = str_data.replace(reg, "{{}}");
-                    this.editedProblem.content.select.options.push(blank);
-                    found = reg.test(str_data);
-                }
-                this.editedProblem.content.text = str_data;
-                break;
+            // case 'LTW':
+            //     this.editedProblem.content.select.options = [];
+            //     var str_data = this._CKEDITOR.instances.ck_editor.getData();
+            //     str_data = str_data.replace("<p>", "");
+            //     str_data = str_data.replace("</p>", "");
+            //     var reg = /(<input type=\"text\" value=\")([a-z, ,|]*)(\" \/>)/;
+            //     var found = reg.test(str_data);
+            //     var chngflag = false;
+            //     while (found) {
+            //         var matches = reg.exec(str_data);
+            //         var blank = matches[2];
+            //         str_data = str_data.replace(reg, "{{}}");
+            //         this.editedProblem.content.select.options.push(blank);
+            //         found = reg.test(str_data);
+            //     }
+            //     this.editedProblem.content.text = str_data;
+            //     break;
             case 'LCD':
                 this.editedProblem.content.select.options = [];
                 var str_data = this._CKEDITOR.instances.ck_editor.getData();
@@ -1333,16 +1345,16 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 this._CKEDITOR.instances.ck_editor.setData(content);
                 break;
             case 'LTW':
-                var reg = /\{\{\}\}/;
-                var index = 0;
-                var found = reg.test(content);
-                while (found) {
-                    var matches = reg.exec(content);
-                    var text = this.editedProblem.content.select.options[index++];
-                    content = content.replace(reg, "<input type='text' value='" + text + "'>");
-                    found = reg.test(content);
-                }
-                this._CKEDITOR.instances.ck_editor.setData(content);
+                // var reg = /\{\{\}\}/;
+                // var index = 0;
+                // var found = reg.test(content);
+                // while (found) {
+                //     var matches = reg.exec(content);
+                //     var text = this.editedProblem.content.select.options[index++];
+                //     content = content.replace(reg, "<input type='text' value='" + text + "'>");
+                //     found = reg.test(content);
+                // }
+                // this._CKEDITOR.instances.ck_editor.setData(content);
                 break;
             case 'LCD':
                 var reg = /\{\{\}\}/;
@@ -1640,5 +1652,194 @@ export class QuizeditComponent implements OnInit, OnDestroy {
 
     updateNestedList() {
         this.nestedList = map(this.editedProblem.content.select.options, option => ({ value: option }))
+    }
+
+    convertQuillDataToContent() {
+        const { type } = this.editedProblem;
+
+        switch (type) {
+            case 'WSM':
+                // var str_data = this._CKEDITOR.instances.ck_editor.getData();
+                // str_data = str_data.replace("&nbsp;", " ");
+                // str_data = str_data.replace("&#8203;", "");
+                // this.editedProblem.content.text = str_data;
+                break;
+            case 'RFB':
+                // this.editedProblem.solution.optionno = [];
+                // var str_data = this._CKEDITOR.instances.ck_editor.getData();
+                // str_data = str_data.replace("<p>", "");
+                // str_data = str_data.replace("</p>", "");
+                // var reg = /(<input type=\"text\" value=\")([a-z, ,|]*)(\" \/>)/;
+                // var found = reg.test(str_data);
+                // var chngflag = false;
+                // while (found) {
+                //     var matches = reg.exec(str_data);
+                //     var blank = matches[2];
+                //     var index = this.globalService.getIndexFromArray(this.editedProblem.content.select.options, blank);
+                //     if (index < 0) {
+                //         str_data = str_data.replace(reg, "");
+                //     } else {
+                //         str_data = str_data.replace(reg, "{{}}");
+                //         this.editedProblem.solution.optionno.push(index);
+                //     }
+                //     found = reg.test(str_data);
+                // }
+                // this.editedProblem.content.text = str_data;
+                break;
+            case 'LTW':
+                this.editedProblem.content.select.options = [];
+                let str_data = this.quillText;
+                let reg = /(<u>)([^<]*)(<\/u>)/;
+                let found = reg.test(str_data);
+                let chngflag = false;
+                while (found) {
+                    let matches = reg.exec(str_data);
+                    let blank = matches[2];
+                    str_data = str_data.replace(reg, '{{}}');
+                    this.editedProblem.content.select.options.push(blank);
+                    found = reg.test(str_data);
+                }
+                this.editedProblem.content.text = str_data;
+                break;
+            case 'LCD':
+                // this.editedProblem.content.select.options = [];
+                // var str_data = this._CKEDITOR.instances.ck_editor.getData();
+                // str_data = str_data.replace("<p>", "");
+                // str_data = str_data.replace("</p>", "");
+                // var reg = /(<span style=\"background-color:\#ff0\">)([a-z, ,|]*)(<\/span>)/;
+                // var found = reg.test(str_data);
+                // var chngflag = false;
+                // while (found) {
+                //     var matches = reg.exec(str_data);
+                //     var blank = matches[2];
+                //     str_data = str_data.replace(reg, "{{}}");
+                //     this.editedProblem.content.select.options.push(blank);
+                //     found = reg.test(str_data);
+                //     chngflag = true;
+                // }
+                // if (chngflag == false) {
+                //     reg = /(<span style=\"background-color:rgb\(255, 255, 0\)\">)([a-z, ,|]*)(<\/span>)/;
+                //     found = reg.test(str_data);
+                //     while (found) {
+                //         var matches = reg.exec(str_data);
+                //         var blank = matches[2];
+                //         str_data = str_data.replace(reg, "{{}}");
+                //         this.editedProblem.content.select.options.push(blank);
+                //         found = reg.test(str_data);
+                //     }
+                // }
+                // this.editedProblem.content.text = str_data;
+                break;
+            case 'RAN':
+                // this.solution_selectlist = {};
+                // this.solution_selectlist.optionno = [];
+                // var str_data = this._CKEDITOR.instances.ck_editor.getData();
+                // str_data = str_data.replace("<p>", "");
+                // str_data = str_data.replace("</p>", "");
+                // var reg = /(<select name=\"sel_)([0-9]*)(\">)((<option[a-z,A-Z, ,\",\=,0-9,_]*>[a-z,A-Z, ,\",\=,0-9,_]*<\/option>)*)[^]{0,1}(<\/select>)/;
+                // var found = reg.test(str_data);
+                // var chngflag = false;
+                // while (found) {
+                //     var matches = reg.exec(str_data);
+                //     var blank_id = matches[2];
+
+                //     var index = -1;
+                //     for (var i = 0;  i < this.blank_selectlist.length;  i++) {
+                //         if (blank_id == this.blank_selectlist[i].id) {
+                //             index = i;
+                //             break;
+                //         }
+                //     }
+                //     var sel_id = -1;
+                //     if (this.blank_selectlist[index] == null) {
+                //         index = -1;
+                //     } else {
+                //         for (var j = 0;  j < this.blank_selectlist[index].options.length;  j++) {
+                //             if (this.blank_selectlist[index].select_value == this.blank_selectlist[index].options[j])
+                //                 sel_id = j;
+                //         }
+                //     }
+                //     if (index < 0) {
+                //         str_data = str_data.replace(reg, "");
+                //     } else {
+                //         str_data = str_data.replace(reg, "{{}}");
+                //         var obj = { id: 0, option: 0 };
+                //         obj.id = index; obj.option = sel_id;
+                //         this.solution_selectlist.optionno.push(obj);
+                //     }
+                //     found = reg.test(str_data);
+                    
+                // }
+                // this.editedProblem.content.text = str_data;
+                break;
+        }
+    }
+
+    convertContentToQuillData(problem: Problem): string {
+        const { content, type } = problem;
+        let problemText = content.text;
+
+        switch (type) {
+            case 'RFB':
+                // var reg = /\{\{\}\}/;
+                // var index = 0;
+                // var found = reg.test(problemText);
+                // while (found) {
+                //     var matches = reg.exec(problemText);
+                //     var text = this.editedProblem.problemText.select.options[this.editedProblem.solution.optionno[index++]];
+                //     problemText = problemText.replace(reg, "<input type='text' value='" + text + "'>");
+                //     found = reg.test(problemText);
+                // }
+                // this._CKEDITOR.instances.ck_editor.setData(problemText);
+                // break;
+            case 'RAN':
+                // var reg = /\{\{\}\}/;
+                // var index = 0;
+                // var found = reg.test(problemText);
+                // while (found) {
+                //     var matches = reg.exec(problemText);
+                //     var sel_index = this.solution_selectlist.optionno[index].id;
+                //     var html = "<select name=\"sel_" + this.blank_selectlist[sel_index].id + "\"";
+                //     html = html + ">";
+                //     for (var j = 0;  j < this.blank_selectlist[sel_index].options.length;  j++) {
+                //         html = html + "<option value=\"" + this.blank_selectlist[sel_index].options[j] + "\"";
+                //         if (j == this.solution_selectlist.optionno[index].option)
+                //             html = html + " selected=\"1\"";
+                //         html = html + ">" + this.blank_selectlist[sel_index].options[j] + "</option>";
+                //     }
+                //     html = html + "</select>";
+                //     problemText = problemText.replace(reg, html);
+                //     found = reg.test(problemText);
+                //     index++;
+                // }
+                // this._CKEDITOR.instances.ck_editor.setData(problemText);
+                break;
+            case 'LTW':
+                let reg = /\{\{\}\}/;
+                let index = 0;
+                let found = reg.test(problemText);
+                while (found) {
+                    let matches = reg.exec(problemText);
+                    let text = content.select.options[index++];
+                    problemText = problemText.replace(reg, `<u>${text}</u>`);
+                    found = reg.test(problemText);
+                }
+                return problemText;
+            case 'LCD':
+                // var reg = /\{\{\}\}/;
+                // var index = 0;
+                // var found = reg.test(problemText);
+                // while (found) {
+                //     var matches = reg.exec(problemText);
+                //     var text = this.editedProblem.problemText.select.options[index++];
+                //     problemText = problemText.replace(reg, "<span style='background-color:#ff0'>" + text + "</span>");
+                //     found = reg.test(problemText);
+                // }
+                // this._CKEDITOR.instances.ck_editor.setData(problemText);
+                break;
+
+            default:
+                return '';
+        }
     }
 }
