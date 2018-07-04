@@ -145,8 +145,12 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                                 path: data.content.picture,
                                 uuid: uuid()
                             }];
+
                             _self.showEditProblemForm();
-                            _self.updateNestedList();
+
+                            if (_self.editedProblem.type == 'RRO') {
+                                _self.updateNestedList();
+                            }
                         }
                     );
                 }
