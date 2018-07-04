@@ -44,8 +44,6 @@ import {
 } from './components';
 
 import {
-    AboutusComponent,
-    ContactusComponent,
     InboxComponent,
     ProfileComponent
 } from './pages';
@@ -95,8 +93,6 @@ export function createTranslateLoader(http: HttpClient) {
         HeaderStudentComponent, 
         HeaderManageComponent, 
         FooterComponent,
-        AboutusComponent,
-        ContactusComponent,
         InboxComponent,
         ProfileComponent,
         DashboardComponent,
@@ -233,14 +229,6 @@ export function createTranslateLoader(http: HttpClient) {
                 path: 'eval',
                 component: EvalexamComponent,
                 canActivate: [AuthGuard]
-            },
-            {
-                path: 'aboutus',
-                component: AboutusComponent
-            },
-            {
-                path: 'contactus',
-                component: ContactusComponent
             },
             {
                 path: 'inbox',

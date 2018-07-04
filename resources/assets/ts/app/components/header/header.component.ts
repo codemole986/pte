@@ -19,8 +19,6 @@ export class HeaderComponent implements OnInit {
     pushRightClass: string = 'push-right';
 
     menu_home: boolean;
-    menu_aboutus: boolean;
-    menu_contactus: boolean;
     user_name: string;
     user_id: string;
     user_photo: string;
