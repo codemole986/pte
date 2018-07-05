@@ -51,6 +51,20 @@ app-quizedit ngx-nestable.rro-list > .dd-list .nestable-item-container:hover {
   color: #2ea8e5;
   background: #fff;
 }
+
+#quizaudiofile {
+  margin-bottom: 16px;
+}
+
+.ql-editor p u {
+  border: 1px solid #000;
+  padding: 0 8px;
+  text-decoration: none;
+}
+
+.ql-editor p {
+  margin-bottom: 1em;
+}
 /*.cke_reset_all.cke_1.cke_editor_ck_editor_dialog {
 	display: none !important;
 }*/

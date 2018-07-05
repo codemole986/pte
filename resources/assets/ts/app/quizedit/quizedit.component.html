@@ -255,7 +255,7 @@
                           </div>
                           <hr/>
                         </div>
-                        <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LCD'">
+                        <div *ngIf="editedProblem.type == 'LCD'">
                           <textarea id="ck_editor" class="form-control" placeholder="{{ 'Sentences' | translate }}" title="Sentences" rows="5"></textarea>
                           <div class="row">
                             <div class="col-md-3"></div>
@@ -368,15 +368,20 @@
                           </table>
                           {{createCkEditor()}}
                         </div>
-                        <div *ngIf="editedProblem.type == 'LTW'">
-                          <label> {{ 'Put underline in words to be the blanks.' | translate }} </label>
-                          <quill-editor
-                            [(ngModel)]="quillText"
-                            name="quill"
-                            [style]="{height: '350px'}"
-                            [modules]="{toolbar: [['underline']]}"
-                          >
-                          </quill-editor>
+                        <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LTW'">
+                          <label> {{ 'Put outline in words to be the blanks.' | translate }} </label>
+                          <div class="quill-editor-wrapper">
+                            <quill-editor
+                              [(ngModel)]="quillText"
+                              name="quill"
+                              [style]="{height: '350px'}"
+                              (onSelectionChanged)="onSelectionChanged($event)"
+                            >
+                              <div quill-editor-toolbar>
+                                <span class="ql-formats"><button class="ql-blank" [ngClass]="{'ql-active': quillSelectionIsActive}" (click)="toggleBlank()"><svg viewBox="0 0 18 18"> <rect class="ql-stroke" height="10" width="12" x="3" y="4"></rect></svg></button></span>
+                              </div>
+                            </quill-editor>
+                          </div>
                         </div>
                       </div>
                       <div class="tab-pane" id="tab3">
@@ -632,17 +637,22 @@
                             <hr/>
                           </div>
                         </div>
-                        <div *ngIf="editedProblem.type == 'LTW'">
-                          <label> {{ 'Put underline in words to be the blanks.' | translate }} </label>
-                          <quill-editor
-                            [(ngModel)]="quillText"
-                            name="quill"
-                            [style]="{height: '350px'}"
-                            [modules]="{toolbar: [['underline']]}"
-                          >
-                          </quill-editor>
+                        <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LTW'">
+                          <label> {{ 'Put outline in words to be the blanks.' | translate }} </label>
+                          <div class="quill-editor-wrapper">
+                            <quill-editor
+                              [(ngModel)]="quillText"
+                              name="quill"
+                              [style]="{height: '350px'}"
+                              (onSelectionChanged)="onSelectionChanged($event)"
+                            >
+                              <div quill-editor-toolbar>
+                                <span class="ql-formats"><button class="ql-blank" [ngClass]="{'ql-active': quillSelectionIsActive}" (click)="toggleBlank()"><svg viewBox="0 0 18 18"> <rect class="ql-stroke" height="10" width="12" x="3" y="4"></rect></svg></button></span>
+                              </div>
+                            </quill-editor>
+                          </div>
                         </div>
-                        <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LCD'">
+                        <div *ngIf="editedProblem.type == 'LCD'">
                           <textarea id="ck_editor" class="form-control" placeholder="{{ 'Sentences' | translate }}" title="Sentences" rows="5"></textarea>
                           <div class="row">
                             <div class="col-md-3"></div>
