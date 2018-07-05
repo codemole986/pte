@@ -255,7 +255,7 @@
                           </div>
                           <hr/>
                         </div>
-                        <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LTW'  ||  editedProblem.type == 'LCD'">
+                        <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LCD'">
                           <textarea id="ck_editor" class="form-control" placeholder="{{ 'Sentences' | translate }}" title="Sentences" rows="5"></textarea>
                           <div class="row">
                             <div class="col-md-3"></div>
@@ -367,6 +367,16 @@
                             </tr>
                           </table>
                           {{createCkEditor()}}
+                        </div>
+                        <div *ngIf="editedProblem.type == 'LTW'">
+                          <label> {{ 'Put underline in words to be the blanks.' | translate }} </label>
+                          <quill-editor
+                            [(ngModel)]="quillText"
+                            name="quill"
+                            [style]="{height: '350px'}"
+                            [modules]="{toolbar: [['underline']]}"
+                          >
+                          </quill-editor>
                         </div>
                       </div>
                       <div class="tab-pane" id="tab3">
