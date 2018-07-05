@@ -8,6 +8,7 @@ import { every, isObject, last, map, remove } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { NestableSettings } from 'ngx-nestable/src/nestable.models';
 import 'rxjs/add/operator/map';
+
 import { routerTransition } from '../router.animations';
 import { LocalDataSource, ServerDataSource } from 'ng2-smart-table';
 import { GlobalService } from '../shared/services/global.service';
@@ -106,6 +107,11 @@ export class QuizeditComponent implements OnInit, OnDestroy {
     } as NestableSettings;
 
     nestedList: { value: string }[] = [];
+
+    quillText: string = '';
+    quillInstance: any;
+    quillSelectionIsActive: boolean = false;
+    quillSelectionRange: { index: number, length: number };
     
     constructor(private http: Http, private route: ActivatedRoute, private router: Router, private globalService: GlobalService, private translate: TranslateService) { 
         Dropzone.autoDiscover = false;
@@ -280,6 +286,10 @@ export class QuizeditComponent implements OnInit, OnDestroy {
             Dropzone.autoDiscover = false;
             this.create_solutiondropzone();
             */
+        }
+
+        if (this.editedProblem.type === 'LTW' || this.editedProblem.type === 'RFB') {
+            this.quillText = this.convertContentToQuillData(this.editedProblem);
         }
 
 		this.show_editoption = true;
@@ -502,8 +512,12 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 if(this.thisDropzone.files.length>0) {
                     this.editedProblem.content.audio = this.thisDropzone.files[0].name;     
                 } */               
-                break;              
-            case 'LTW':  
+                break;
+            case 'RFB':
+            case 'LTW': {
+                this.convertQuillDataToContent();
+                break;
+            }
             case 'LCD':     
                 /*console.log(this.thisDropzone); 
                 if(this.thisDropzone.files.length>0) {
@@ -518,9 +532,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                     const lastFile = last(this.uploadedFiles);
                     this.editedProblem.content.picture = lastFile.path;
                 }
-                break;
-            case 'RFB':
-                this.checkCkEditorInfo();
                 break;
             case 'RAN':
                 this.checkCkEditorInfo();
@@ -666,7 +677,11 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                     this.editedProblem.content.audio = this.thisDropzone.files[0].name;     
                 } */               
                 break;              
-            case 'LTW':  
+            case 'RFB':
+            case 'LTW': {
+                this.convertQuillDataToContent();
+                break;
+            }
             case 'LCD':      
                 /*if(this.thisDropzone.files.length>0) {
                     this.editedProblem.content.audio = this.thisDropzone.files[0].name;     
@@ -680,9 +695,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                     const lastFile = last(this.uploadedFiles);
                     this.editedProblem.content.picture = lastFile.path;
                 }
-                break;
-            case 'RFB':
-                this.checkCkEditorInfo();
                 break;
             case 'RAN':
                 this.checkCkEditorInfo();
@@ -916,21 +928,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
     	} else {
     		this.dis_deleteoption = false;
     	}
-
-        if (this.editedProblem.type == 'RFB') {
-            if (selCount == 1)
-                this.str_blank = this.select_problem_values[0];
-            else
-                this.str_blank = '';
-            this.checkCkEditorInfo();
-
-            for (var i = 0;  i < this.editedProblem.solution.optionno.length;  i++) {
-                if (this.editedProblem.content.select.options[this.editedProblem.solution.optionno[i]] == this.str_blank) {
-                    this.str_blank = '';
-                    return;
-                }
-            }
-        }
     }
     onChangeProbSelect1(index: number) {
         
@@ -965,13 +962,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
     	}
         var i = this.globalService.getIndexFromArray(this.editedProblem.content.select.options, this.select_problem_values[0]);
         if (i >= 0) {
-            if (this.editedProblem.type == 'RFB') {
-                var str_old = this.editedProblem.content.select.options[i];
-                var str_new = this.strOptionSentence;
-                var str_data = this._CKEDITOR.instances.ck_editor.getData();
-                str_data = str_data.replace("value=\"" + str_old + "\"", "value=\"" + str_new + "\"");
-                this._CKEDITOR.instances.ck_editor.setData(str_data);
-            }
             this.editedProblem.content.select.options.splice(i, 1, this.strOptionSentence);
             if (this.editedProblem.type == 'RRO') {
                 this.updateNestedList();
@@ -996,9 +986,7 @@ export class QuizeditComponent implements OnInit, OnDestroy {
         this.dis_editoption = true;
     	this.dis_deleteoption = true;
 
-        if (this.editedProblem.type == 'RFB') {
-            this.checkCkEditorInfo();
-        } else if (this.editedProblem.type == 'RRO') {
+        if (this.editedProblem.type == 'RRO') {
             this.updateNestedList();
         }
     }
@@ -1152,19 +1140,18 @@ export class QuizeditComponent implements OnInit, OnDestroy {
     			this.editedProblem.solution.optionno.push(j);
 		}
     }
-/* ================================= RFB & LTW & LCD ============================== */
+/* ================================= LCD ============================== */
     onBlankClick() {
-        if (this._CKEDITOR.instances.ck_editor == null)
-            return;
-        if (this.str_blank == null  ||  this.str_blank.length == 0)
-            return;
+        if (!this.str_blank) return;
 
         if (this.editedProblem.type == 'LCD') {
-            this._CKEDITOR.instances.ck_editor.insertHtml( "<span style='background-color:#ff0'>" + this.str_blank + "</span>&nbsp;" );
-            //this.checkCkEditorInfo();
+            if (this._CKEDITOR.instances.ck_editor) {
+                this._CKEDITOR.instances.ck_editor.insertHtml( "<span style='background-color:#ff0'>" + this.str_blank + "</span>&nbsp;" );
+            }
         } else {
-            this._CKEDITOR.instances.ck_editor.insertHtml( "<input type='text' value='" + this.str_blank + "'>" );
-            //this.checkCkEditorInfo();
+            if (this._CKEDITOR.instances.ck_editor) {
+                this._CKEDITOR.instances.ck_editor.insertHtml( "<input type='text' value='" + this.str_blank + "'>" );
+            }
         }
         this.str_blank = '';
     }
@@ -1185,45 +1172,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 var str_data = this._CKEDITOR.instances.ck_editor.getData();
                 str_data = str_data.replace("&nbsp;", " ");
                 str_data = str_data.replace("&#8203;", "");
-                this.editedProblem.content.text = str_data;
-                break;
-            case 'RFB':
-                this.editedProblem.solution.optionno = [];
-                var str_data = this._CKEDITOR.instances.ck_editor.getData();
-                str_data = str_data.replace("<p>", "");
-                str_data = str_data.replace("</p>", "");
-                var reg = /(<input type=\"text\" value=\")([a-z, ,|]*)(\" \/>)/;
-                var found = reg.test(str_data);
-                var chngflag = false;
-                while (found) {
-                    var matches = reg.exec(str_data);
-                    var blank = matches[2];
-                    var index = this.globalService.getIndexFromArray(this.editedProblem.content.select.options, blank);
-                    if (index < 0) {
-                        str_data = str_data.replace(reg, "");
-                    } else {
-                        str_data = str_data.replace(reg, "{{}}");
-                        this.editedProblem.solution.optionno.push(index);
-                    }
-                    found = reg.test(str_data);
-                }
-                this.editedProblem.content.text = str_data;
-                break;
-            case 'LTW':
-                this.editedProblem.content.select.options = [];
-                var str_data = this._CKEDITOR.instances.ck_editor.getData();
-                str_data = str_data.replace("<p>", "");
-                str_data = str_data.replace("</p>", "");
-                var reg = /(<input type=\"text\" value=\")([a-z, ,|]*)(\" \/>)/;
-                var found = reg.test(str_data);
-                var chngflag = false;
-                while (found) {
-                    var matches = reg.exec(str_data);
-                    var blank = matches[2];
-                    str_data = str_data.replace(reg, "{{}}");
-                    this.editedProblem.content.select.options.push(blank);
-                    found = reg.test(str_data);
-                }
                 this.editedProblem.content.text = str_data;
                 break;
             case 'LCD':
@@ -1302,18 +1250,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
     convertContentToCkData() {
         var content = this.editedProblem.content.text;
         switch (this.editedProblem.type) {
-            case 'RFB':
-                var reg = /\{\{\}\}/;
-                var index = 0;
-                var found = reg.test(content);
-                while (found) {
-                    var matches = reg.exec(content);
-                    var text = this.editedProblem.content.select.options[this.editedProblem.solution.optionno[index++]];
-                    content = content.replace(reg, "<input type='text' value='" + text + "'>");
-                    found = reg.test(content);
-                }
-                this._CKEDITOR.instances.ck_editor.setData(content);
-                break;
             case 'RAN':
                 var reg = /\{\{\}\}/;
                 var index = 0;
@@ -1337,16 +1273,16 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 this._CKEDITOR.instances.ck_editor.setData(content);
                 break;
             case 'LTW':
-                var reg = /\{\{\}\}/;
-                var index = 0;
-                var found = reg.test(content);
-                while (found) {
-                    var matches = reg.exec(content);
-                    var text = this.editedProblem.content.select.options[index++];
-                    content = content.replace(reg, "<input type='text' value='" + text + "'>");
-                    found = reg.test(content);
-                }
-                this._CKEDITOR.instances.ck_editor.setData(content);
+                // var reg = /\{\{\}\}/;
+                // var index = 0;
+                // var found = reg.test(content);
+                // while (found) {
+                //     var matches = reg.exec(content);
+                //     var text = this.editedProblem.content.select.options[index++];
+                //     content = content.replace(reg, "<input type='text' value='" + text + "'>");
+                //     found = reg.test(content);
+                // }
+                // this._CKEDITOR.instances.ck_editor.setData(content);
                 break;
             case 'LCD':
                 var reg = /\{\{\}\}/;
@@ -1644,5 +1580,67 @@ export class QuizeditComponent implements OnInit, OnDestroy {
 
     updateNestedList() {
         this.nestedList = map(this.editedProblem.content.select.options, option => ({ value: option }))
+    }
+
+    convertQuillDataToContent() {
+        const { type } = this.editedProblem;
+
+        switch (type) {
+            case 'RFB':
+            case 'LTW':
+                this.editedProblem.content.select.options = [];
+                let str_data = this.quillText;
+                let reg = /(<u>)([^<]*)(<\/u>)/;
+                let found = reg.test(str_data);
+                let chngflag = false;
+                while (found) {
+                    let matches = reg.exec(str_data);
+                    let blank = matches[2];
+                    str_data = str_data.replace(reg, '{{}}');
+                    this.editedProblem.content.select.options.push(blank);
+                    found = reg.test(str_data);
+                }
+                this.editedProblem.content.text = str_data;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    convertContentToQuillData(problem: Problem): string {
+        const { content, type } = problem;
+        let problemText = content.text;
+
+        switch (type) {
+            case 'RFB':
+            case 'LTW':
+                let reg = /\{\{\}\}/;
+                let index = 0;
+                let found = reg.test(problemText);
+                while (found) {
+                    let matches = reg.exec(problemText);
+                    let text = content.select.options[index++];
+                    problemText = problemText.replace(reg, `<u>${text}</u>`);
+                    found = reg.test(problemText);
+                }
+                return problemText;
+
+            default:
+                return '';
+        }
+    }
+
+    toggleBlank() {
+        let { index, length } = this.quillSelectionRange;
+        this.quillSelectionIsActive = !this.quillSelectionIsActive;
+        this.quillInstance.formatText(index, length, 'underline', this.quillSelectionIsActive);
+    }
+
+    onSelectionChanged(event: {editor: any, range: {index: number, length: number}}) {
+        this.quillInstance = event.editor;
+        this.quillSelectionRange = event.range;
+        let { underline } = this.quillInstance.getFormat();
+        this.quillSelectionIsActive = underline;
     }
 }

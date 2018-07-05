@@ -7,6 +7,7 @@ import { HttpModule } from '@angular/http';
 import { DropzoneModule, DROPZONE_CONFIG, DropzoneConfigInterface } from 'ngx-dropzone-wrapper';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { NestableModule } from 'ngx-nestable';
+import { QuillModule } from 'ngx-quill';
 
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -139,6 +140,7 @@ export function createTranslateLoader(http: HttpClient) {
         NgbCarouselModule.forRoot(),
         NgbAccordionModule.forRoot(),
         NestableModule,
+        QuillModule,
         PipesModule,
 
         QAModule,
