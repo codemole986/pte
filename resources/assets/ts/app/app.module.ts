@@ -41,7 +41,8 @@ import {
     HeaderStudentComponent,
     HeaderManageComponent,
     FooterComponent,
-    SolutionModule
+    SolutionModule,
+    FIBEditorModule
 } from './components';
 
 import {
@@ -145,6 +146,7 @@ export function createTranslateLoader(http: HttpClient) {
 
         QAModule,
         SolutionModule,
+        FIBEditorModule,
         
         TranslateModule.forRoot({
             loader: {

@@ -370,18 +370,7 @@
                         </div>
                         <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LTW'">
                           <label> {{ 'Put outline in words to be the blanks.' | translate }} </label>
-                          <div class="quill-editor-wrapper">
-                            <quill-editor
-                              [(ngModel)]="quillText"
-                              name="quill"
-                              [style]="{height: '350px'}"
-                              (onSelectionChanged)="onSelectionChanged($event)"
-                            >
-                              <div quill-editor-toolbar>
-                                <span class="ql-formats"><button class="ql-blank" [ngClass]="{'ql-active': quillSelectionIsActive}" (click)="toggleBlank()"><svg viewBox="0 0 18 18"> <rect class="ql-stroke" height="10" width="12" x="3" y="4"></rect></svg></button></span>
-                              </div>
-                            </quill-editor>
-                          </div>
+                          <fib-editor></fib-editor>
                         </div>
                       </div>
                       <div class="tab-pane" id="tab3">

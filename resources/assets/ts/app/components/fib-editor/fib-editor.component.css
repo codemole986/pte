@@ -1,0 +1,10 @@
+.fib-editor-header {
+  border: 1px solid #dbdbdb;
+  padding: 8px;
+}
+
+.fib-editor-body {
+  border: 1px solid #dbdbdb;
+  min-height: 600px;
+  padding: 8px;
+}

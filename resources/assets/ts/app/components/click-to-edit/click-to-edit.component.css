@@ -1,0 +1,52 @@
+.click-to-edit {
+  width: inherit;
+}
+
+.click-to-edit .selectable {
+  cursor: pointer;
+}
+
+.click-to-edit .ndv-comp {
+  position: relative;
+  overflow: hidden;
+  min-width: 20px;
+  border-radius: 3px;
+  cursor: default;
+}
+
+.click-to-edit .click-to-edit-value {
+  min-width: 33px;
+  padding: 0 2px 0 8px;
+  text-align: right;
+}
+
+.click-to-edit .active-ndv {
+  background-color: transparent;
+}
+
+.click-to-edit input {
+  border-radius: 5px;
+  box-shadow: none;
+  min-width: 5px;
+  color: #000;
+}
+
+.click-to-edit .ndv-buttons {
+  background-color: transparent;
+  border-top: none;
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 3px 6px rgba(111, 111, 111, 0.2);
+  outline: none;
+  padding: 3px;
+  position: absolute;
+  margin-left: 6px;
+  z-index: 1;
+}
+
+.click-to-edit .ndv-save {
+  margin-right: 3px;
+}
+
+.click-to-edit .ndv-active {
+  background-color: transparent;
+}

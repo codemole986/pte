@@ -1,0 +1,20 @@
+<div class="click-to-edit">
+  <div class="ndv-comp" [ngClass]="{'ndv-active': show}">
+    <input tabindex="-1" *ngIf="show && type === 'string'" type="text" [(ngModel)]="value" (keyup)="onKey($event)" />
+    <input tabindex="-1" *ngIf="show && type === 'number'" type="number" [min]="min" [max]="max" [(ngModel)]="value" (keyup)="onKey($event)" />
+
+    <div class="d-flex" *ngIf="!show">
+      <div class="d-flex" *ngIf="hideTrigger === false">
+        <div #ref class="click-to-edit-content selectable" (click)="makeEditable('trigger')"><ng-content></ng-content></div>
+        <button class="btn-x-sm" (click)="makeEditable('trigger')" *ngIf="ref.childNodes.length == 0"><i class="fa fa-pencil"></i></button>
+        <button class="btn-x-sm" (click)="makeEditable('trigger')" *ngIf="ref.childNodes.length == 0"><i class="fa fa-trash"></i></button>
+      </div>
+      <div class="click-to-edit-value" [class.selectable]="full === true || hideTrigger === true" (click)="makeEditable('value')" [innerHTML]="value || 'empty'"></div>
+      <div class="click-to-edit-unit" [class.selectable]="full === true || hideTrigger === true" (click)="makeEditable('unit')" *ngIf="unit !== ''" [innerHTML]="unit"></div>
+    </div>
+  </div>
+  <div class="ndv-buttons" *ngIf="show">
+    <button class="btn-x-sm" (click)="callSave()"><i class="fa fa-check"></i></button>
+    <button class="btn-x-sm" (click)="cancelEditable()"><i class="fa fa-times"></i></button>
+  </div>
+</div>
