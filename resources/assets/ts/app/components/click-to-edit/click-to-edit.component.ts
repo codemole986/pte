@@ -1,61 +1,47 @@
-import { Component, AfterViewInit, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'click-to-edit',
   template: require('./click-to-edit.component.html'),
   styles: [`${require('./click-to-edit.component.css')}`]
 })
-export class ClickToEditComponent implements AfterViewInit {
-  @Input() min: number;
-  @Input() max: number;
-  @Input() field: string = 'field';
-  @Input() unit: string = '';
-  @Input() full: boolean = false;
-  @Input() hideTrigger: boolean = false;
-  @Input() type: string = 'string';
-  @Input() show: boolean = false;
+export class ClickToEditComponent {
+  private theValue: string;
+  private original: string;
 
-  @Input() set value(value: any) {
-    this.theValue = value;
-    this.original = this.theValue;
-  }
+  @Input() full: boolean = false;
+  @Input() show: boolean = false;
 
   get value() {
     return this.theValue;
   }
 
-  private theValue: any;
-  private original: any;
+  @Input() set value(value: string) {
+    this.theValue = value;
+    this.original = this.theValue;
+  }
 
-  @Output() onSave = new EventEmitter<{ field: string, value: any }>();
+  @Input() set editable(value: boolean) {
+    if (!value) {
+      this.cancelEditable();
+    }
+  }
+
+  @Output() onSave = new EventEmitter<string>();
+  @Output() onCancel = new EventEmitter<void>();
+  @Output() onDelete = new EventEmitter<void>();
 
   constructor() {
   }
 
-  ngAfterViewInit(): void {
-    if (typeof this.value === 'string') {
-      this.type = 'string';
-    }
-    if (typeof this.value === 'number') {
-      this.type = 'number';
-    }
-  }
-
-  makeEditable(field: string): void {
-    if (this.hideTrigger === true) {
-      this.show = true;
-    }
-    if (this.full === false && field === 'trigger') {
-      this.show = true;
-    }
-    else if (this.full === true) {
-      this.show = true;
-    }
+  makeEditable(): void {
+    this.show = true;
   }
 
   cancelEditable(): void {
     this.show = false;
-    this.value = this.original;
+    this.theValue = this.original;
+    this.onCancel.emit();
   }
 
   onKey(event: KeyboardEvent): void {
@@ -68,7 +54,11 @@ export class ClickToEditComponent implements AfterViewInit {
   }
 
   callSave(): void {
-    this.onSave.emit({ field: this.field, value: this.value });
+    this.onSave.emit(this.value);
     this.show = false;
+  }
+
+  callDelete(): void {
+    this.onDelete.emit();
   }
 }

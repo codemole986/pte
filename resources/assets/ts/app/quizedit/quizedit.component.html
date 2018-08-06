@@ -369,8 +369,10 @@
                           {{createCkEditor()}}
                         </div>
                         <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LTW'">
-                          <label> {{ 'Put outline in words to be the blanks.' | translate }} </label>
-                          <fib-editor></fib-editor>
+                          <fib-editor
+                            [problem]="editedProblem"
+                          >
+                          </fib-editor>
                         </div>
                       </div>
                       <div class="tab-pane" id="tab3">
@@ -627,7 +629,6 @@
                           </div>
                         </div>
                         <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LTW'">
-                          <label> {{ 'Put outline in words to be the blanks.' | translate }} </label>
                           <div class="quill-editor-wrapper">
                             <quill-editor
                               [(ngModel)]="quillText"

@@ -1,15 +1,19 @@
 <div class="fib-editor">
-  <div class="fib-editor-header">
-    <div *ngIf="editingText; then editing else exitedEditing"></div>
-    <ng-template #editing>
-      <button (click)="exitEditingText()">Exit</button>
-    </ng-template>
-    <ng-template #exitedEditing>
-      <button (click)="startEditingText()">Insert Text</button>
-      <button (click)="startInsertBlank()">Insert Blank</button>
-    </ng-template>
-  </div>
   <div class="fib-editor-body">
-    <click-to-edit></click-to-edit>
+    <div class="paragraph" *ngFor="let paragraph of paragraphs; let indexParagraph = index">
+      <div class="paragraph-item" [ngClass]="item.type" *ngFor="let item of paragraph.items; let indexItem = index">
+        <click-to-edit
+          [value]="item.value"
+          (onDelete)="deleteItem(indexParagraph, indexItem)"
+          (onSave)="saveText($event, indexParagraph, indexItem)"
+        ></click-to-edit>
+      </div>
+      <div class="d-flex">
+        <button class="btn btn-xs blue" (click)="insertText(indexParagraph)" *ngIf="canInsertText(indexParagraph)">Insert Text</button>
+        <button class="btn btn-xs blue" (click)="insertBlank(indexParagraph)" *ngIf="canInsertBlank(indexParagraph)">Insert Blank</button>
+        <button class="btn btn-xs red" (click)="deleteParagraph(indexParagraph)">Delete Paragraph</button>
+      </div>
+    </div>
+    <button class="btn btn-xs blue" (click)="insertParagraph()">Insert Paragraph</button>
   </div>
 </div>

@@ -8,3 +8,19 @@
   min-height: 600px;
   padding: 8px;
 }
+
+.paragraph {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.paragraph-item {
+  margin-right: 8px;
+}
+
+.paragraph-item.blank:not(.editing) {
+  border: 1px solid #000;
+  padding: 0 8px;
+}

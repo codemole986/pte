@@ -14,12 +14,6 @@
   cursor: default;
 }
 
-.click-to-edit .click-to-edit-value {
-  min-width: 33px;
-  padding: 0 2px 0 8px;
-  text-align: right;
-}
-
 .click-to-edit .active-ndv {
   background-color: transparent;
 }
@@ -49,4 +43,8 @@
 
 .click-to-edit .ndv-active {
   background-color: transparent;
+}
+
+.click-to-edit-value {
+  white-space: nowrap;
 }
