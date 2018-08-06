@@ -25,7 +25,6 @@ export class FIBEditorComponent implements OnInit {
 
   ngOnInit() {
     this.paragraphs = this.parseProblemToParagraphs(this.problem);
-    console.log(this.paragraphs)
   }
 
   canInsertText(indexParagraph: number): boolean {

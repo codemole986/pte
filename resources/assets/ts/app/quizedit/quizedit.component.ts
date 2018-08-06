@@ -107,11 +107,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
     } as NestableSettings;
 
     nestedList: { value: string }[] = [];
-
-    quillText: string = '';
-    quillInstance: any;
-    quillSelectionIsActive: boolean = false;
-    quillSelectionRange: { index: number, length: number };
     
     constructor(private http: Http, private route: ActivatedRoute, private router: Router, private globalService: GlobalService, private translate: TranslateService) { 
         Dropzone.autoDiscover = false;
@@ -286,10 +281,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
             Dropzone.autoDiscover = false;
             this.create_solutiondropzone();
             */
-        }
-
-        if (this.editedProblem.type === 'LTW' || this.editedProblem.type === 'RFB') {
-            this.quillText = this.convertContentToQuillData(this.editedProblem);
         }
 
 		this.show_editoption = true;
@@ -515,7 +506,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 break;
             case 'RFB':
             case 'LTW': {
-                this.convertQuillDataToContent();
                 break;
             }
             case 'LCD':     
@@ -679,7 +669,6 @@ export class QuizeditComponent implements OnInit, OnDestroy {
                 break;              
             case 'RFB':
             case 'LTW': {
-                this.convertQuillDataToContent();
                 break;
             }
             case 'LCD':      
@@ -1580,67 +1569,5 @@ export class QuizeditComponent implements OnInit, OnDestroy {
 
     updateNestedList() {
         this.nestedList = map(this.editedProblem.content.select.options, option => ({ value: option }))
-    }
-
-    convertQuillDataToContent() {
-        const { type } = this.editedProblem;
-
-        switch (type) {
-            case 'RFB':
-            case 'LTW':
-                this.editedProblem.content.select.options = [];
-                let str_data = this.quillText;
-                let reg = /(<u>)([^<]*)(<\/u>)/;
-                let found = reg.test(str_data);
-                let chngflag = false;
-                while (found) {
-                    let matches = reg.exec(str_data);
-                    let blank = matches[2];
-                    str_data = str_data.replace(reg, '{{}}');
-                    this.editedProblem.content.select.options.push(blank);
-                    found = reg.test(str_data);
-                }
-                this.editedProblem.content.text = str_data;
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    convertContentToQuillData(problem: Problem): string {
-        const { content, type } = problem;
-        let problemText = content.text;
-
-        switch (type) {
-            case 'RFB':
-            case 'LTW':
-                let reg = /\{\{\}\}/;
-                let index = 0;
-                let found = reg.test(problemText);
-                while (found) {
-                    let matches = reg.exec(problemText);
-                    let text = content.select.options[index++];
-                    problemText = problemText.replace(reg, `<u>${text}</u>`);
-                    found = reg.test(problemText);
-                }
-                return problemText;
-
-            default:
-                return '';
-        }
-    }
-
-    toggleBlank() {
-        let { index, length } = this.quillSelectionRange;
-        this.quillSelectionIsActive = !this.quillSelectionIsActive;
-        this.quillInstance.formatText(index, length, 'underline', this.quillSelectionIsActive);
-    }
-
-    onSelectionChanged(event: {editor: any, range: {index: number, length: number}}) {
-        this.quillInstance = event.editor;
-        this.quillSelectionRange = event.range;
-        let { underline } = this.quillInstance.getFormat();
-        this.quillSelectionIsActive = underline;
     }
 }
