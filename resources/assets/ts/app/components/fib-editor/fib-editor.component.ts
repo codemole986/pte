@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { each, isEmpty, last, map } from 'lodash';
+import { compact, each, isEmpty, last, map } from 'lodash';
 import { Problem } from './../../model/problem';
 
 interface ParagraphItem {
@@ -127,7 +127,52 @@ export class FIBEditorComponent implements OnInit {
   }
 
   parseProblemToParagraphs(problem: Problem): Paragraph[] {
-    return this.paragraphs;
+    let paragraphs: Paragraph[] = [];
+    let selectlist: { options: string[] }[] = [];
+    let paragraphPattern = new RegExp(/<p>(.*?)<\/p>/g);
+    let textParagraphs = compact(problem.content.text.split(paragraphPattern));
+
+    each(textParagraphs, (p: string) => {
+      let items = p.split('{{}}');
+      let paragraph = this.initParagraph();
+
+      each(items, (item: string, index: number) => {
+        if (item) {
+          paragraph.items.push({
+            type: 'text',
+            value: item
+          });
+        }
+
+        if (index < items.length - 1) {
+          if (this.selectable) {
+            let options = problem.content.selectlist[index].options;
+            let lengthOptions = options.length;
+            let defaultOption = options.splice(0, 1);
+
+            paragraph.items.push({
+              type: 'blank',
+              value: defaultOption
+            });
+
+            selectlist.push({ options });
+          } else {
+            paragraph.items.push({
+              type: 'blank',
+              value: problem.content.select.options[index]
+            });
+          }
+        }
+      });
+
+      paragraphs.push(paragraph);
+    });
+
+    if (this.selectable) {
+      this.selectlist = selectlist;
+    }
+
+    return paragraphs;
   }
 
   parseParagraphsToProblem(): void {
