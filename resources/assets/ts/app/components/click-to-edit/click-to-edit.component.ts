@@ -59,6 +59,7 @@ export class ClickToEditComponent {
   }
 
   callDelete(): void {
+    this.cancelEditable();
     this.onDelete.emit();
   }
 }

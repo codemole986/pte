@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { ClickToEditModule } from './../';
+import { ClickToEditModule, ClickToEditSelectableModule } from './../';
 
 import { FIBEditorComponent } from './fib-editor.component';
 
@@ -13,7 +13,8 @@ import 'rxjs/Rx';
   ],
   imports: [
     BrowserModule,
-    ClickToEditModule
+    ClickToEditModule,
+    ClickToEditSelectableModule
   ],
   exports: [
     FIBEditorComponent

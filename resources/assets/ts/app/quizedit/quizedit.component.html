@@ -292,85 +292,17 @@
                           </div>
                           {{createCkEditor()}}
                         </div>
-                        <div *ngIf="editedProblem.type == 'RAN'">
-                          <textarea id="ck_editor" class="form-control" placeholder="{{ 'Sentences' | translate }}" title="Sentences" rows="5"></textarea>
-                          <table width="100%" anign="center" style="margin-top: 5px;">
-                            <tr>
-                              <td width="55%">
-                                <label> {{ 'Property of a select' | translate }} </label>
-                                <table>
-                                  <tr>
-                                    <td style="width: 100%;">
-                                      <select name="list_sentences" class="form-control" (change)="onChangeBlankSelect()" [(ngModel)]="select_blank_values" style="width: 100%; height: 150px" multiple>
-                                      <option *ngFor="let op of select_blank_options" value="{{op}}">{{op}}</option>
-                                      </select>
-                                    </td>
-                                    <td>
-                                      <table>
-                                        <tr>
-                                          <td style="padding: 5px;">
-                                            <button class="btn btn-sm btn-warning" type="button" (click)="onUpBlank()"><i class="fa fa-chevron-up fa-fw"></i></button>
-                                          </td>
-                                        </tr>
-                                        <tr>
-                                          <td style="padding: 5px;">
-                                            <button class="btn btn-sm btn-warning" type="button" (click)="onDownBlank()"><i class="fa fa-chevron-down fa-fw"></i></button>
-                                          </td>
-                                        </tr>
-                                      </table>
-                                    </td>
-                                  </tr>
-                                </table>
-                                <div class="row" style="margin-right: 47px;">
-                                  <div class="col-md-5 col-sm-4 col-xs-12">
-                                    <input name="optionsentence" id="optionsentence" #optionsentence class="form-control mr-2" placeholder="{{ 'Word' | translate }}" title="Word" [(ngModel)]="strOptionSentence">
-                                  </div>
-                                  <div class="col-md-7 col-sm-8 right-btn">
-                                    <button class="btn btn-sm btn-warning" type="button" (click)="onAddBlank()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
-                                    <button class="btn btn-sm btn-warning" type="button" (click)="onEditBlank()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
-                                    <button type="button" class="btn btn-sm btn-warning" (click)="onChangeBlank()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
-                                    <button type="button" class="btn btn-sm btn-warning" (click)="onDeleteBlank()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
-                                  </div>
-                                </div>
-                              </td>
-                              <td width="10%" align="center">
-                                <button class="btn btn-sm btn-success" type="button" (click)="onAddSelectToList()"> {{ 'Add' | translate }} <i class="fa fa-chevron-right fa-fw"></i></button>
-                              </td>
-                              <td width="35%">
-                                <label> {{ 'List of candidates' | translate }} </label>
-                                <table class="table table-bordered table-hover">
-                                  <thead>
-                                    <tr>
-                                      <th> {{ 'Select' | translate }}</th>
-                                      <th> {{ 'Action' | translate }}</th>
-                                    </tr>
-                                  </thead>
-                                  <tr *ngFor="let blank_select of blank_selectlist; let i = index">
-                                    <td>
-                                      <select name="list_sentences{{i}}" class="form-control" (change)="onChangeProbSelect()" [(ngModel)]="blank_select.select_value" style="width: 100%;">
-                                      <option *ngFor="let op of blank_select.options" value="{{op}}" selected="blank_select.select_value=={{op}}">{{op}}</option>
-                                      </select>
-                                    </td>
-                                    <td>
-                                      <button class="btn btn-sm btn-primary"
-                                        (click)="onAddSelect($event, i)">
-                                      <i class="fa fa-chevron-up fa-fw"></i> {{ 'Add' | translate }}
-                                      </button>
-                                      <button class="btn btn-sm primary"
-                                        (click)="onDeleteSelect(i)">
-                                      <i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}
-                                      </button>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-                          </table>
-                          {{createCkEditor()}}
-                        </div>
-                        <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LTW'">
+                        <div *ngIf="editedProblem.type === 'RFB'  ||  editedProblem.type === 'LTW'">
                           <fib-editor
                             [problem]="editedProblem"
+                            [selectable]="false"
+                          >
+                          </fib-editor>
+                        </div>
+                        <div *ngIf="editedProblem.type === 'RAN'">
+                          <fib-editor
+                            [problem]="editedProblem"
+                            [selectable]="true"
                           >
                           </fib-editor>
                         </div>
@@ -628,9 +560,17 @@
                             <hr/>
                           </div>
                         </div>
-                        <div *ngIf="editedProblem.type == 'RFB'  ||  editedProblem.type == 'LTW'">
+                        <div *ngIf="editedProblem.type === 'RFB'  ||  editedProblem.type === 'LTW'">
                           <fib-editor
                             [problem]="editedProblem"
+                            [selectable]="false"
+                          >
+                          </fib-editor>
+                        </div>
+                        <div *ngIf="editedProblem.type === 'RAN'">
+                          <fib-editor
+                            [problem]="editedProblem"
+                            [selectable]="true"
                           >
                           </fib-editor>
                         </div>
@@ -669,82 +609,6 @@
                             </div>
                             <div class="col-md-2"></div>
                           </div>
-                          {{createCkEditor()}}
-                        </div>
-                        <div *ngIf="editedProblem.type == 'RAN'">
-                          <textarea id="ck_editor" class="form-control" placeholder="{{ 'Sentences' | translate }}" title="Sentences" rows="5"></textarea>
-                          <table width="100%" anign="center" style="margin-top: 5px;">
-                            <tr>
-                              <td width="55%">
-                                <label> {{ 'Property of a select' | translate }} </label>
-                                <table>
-                                  <tr>
-                                    <td style="width: 100%;">
-                                      <select name="list_sentences" class="form-control" (change)="onChangeBlankSelect()" [(ngModel)]="select_blank_values" style="width: 100%; height: 150px" multiple>
-                                      <option *ngFor="let op of select_blank_options" value="{{op}}">{{op}}</option>
-                                      </select>
-                                    </td>
-                                    <td>
-                                      <table>
-                                        <tr>
-                                          <td style="padding: 5px;">
-                                            <button class="btn btn-sm btn-warning" type="button" (click)="onUpBlank()"><i class="fa fa-chevron-up fa-fw"></i></button>
-                                          </td>
-                                        </tr>
-                                        <tr>
-                                          <td style="padding: 5px;">
-                                            <button class="btn btn-sm btn-warning" type="button" (click)="onDownBlank()"><i class="fa fa-chevron-down fa-fw"></i></button>
-                                          </td>
-                                        </tr>
-                                      </table>
-                                    </td>
-                                  </tr>
-                                </table>
-                                <div class="row" style="margin-right: 47px;">
-                                  <div class="col-md-5 col-sm-4 col-xs-12">
-                                    <input name="optionsentence" id="optionsentence" #optionsentence class="form-control mr-2" placeholder="{{ 'Word' | translate }}" title="Word" [(ngModel)]="strOptionSentence">
-                                  </div>
-                                  <div class="col-md-7 col-sm-8 right-btn">
-                                    <button class="btn btn-sm btn-warning" type="button" (click)="onAddBlank()"><i class="fa fa-plus-square fa-fw"></i> {{ 'Add' | translate }}</button>
-                                    <button class="btn btn-sm btn-warning" type="button" (click)="onEditBlank()" *ngIf="show_editoption" [disabled]="dis_editoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Edit' | translate }}</button>
-                                    <button type="button" class="btn btn-sm btn-warning" (click)="onChangeBlank()" *ngIf="show_chngoption"><i class="fa fa-pencil-square fa-fw"></i> {{ 'Change' | translate }}</button>
-                                    <button type="button" class="btn btn-sm btn-warning" (click)="onDeleteBlank()" [disabled]="dis_deleteoption"><i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}</button>
-                                  </div>
-                                </div>
-                              </td>
-                              <td width="10%" align="center">
-                                <button class="btn btn-sm btn-success" type="button" (click)="onAddSelectToList()"> {{ 'Add' | translate }} <i class="fa fa-chevron-right fa-fw"></i></button>
-                              </td>
-                              <td width="35%">
-                                <label> {{ 'List of candidates' | translate }} </label>
-                                <table class="table table-bordered table-hover">
-                                  <thead>
-                                    <tr>
-                                      <th> {{ 'Select' | translate }}</th>
-                                      <th> {{ 'Action' | translate }}</th>
-                                    </tr>
-                                  </thead>
-                                  <tr *ngFor="let blank_select of blank_selectlist; let i = index">
-                                    <td>
-                                      <select name="list_sentences{{i}}" class="form-control" (change)="onChangeProbSelect()" [(ngModel)]="blank_select.select_value" style="width: 100%;">
-                                      <option *ngFor="let op of blank_select.options" value="{{op}}" selected="blank_select.select_value=={{op}}">{{op}}</option>
-                                      </select>
-                                    </td>
-                                    <td>
-                                      <button class="btn btn-sm btn-primary"
-                                        (click)="onAddSelect($event, i)">
-                                      <i class="fa fa-chevron-up fa-fw"></i> {{ 'Add' | translate }}
-                                      </button>
-                                      <button class="btn btn-sm primary"
-                                        (click)="onDeleteSelect(i)">
-                                      <i class="fa fa-minus-square fa-fw"></i> {{ 'Delete' | translate }}
-                                      </button>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-                          </table>
                           {{createCkEditor()}}
                         </div>
                       </div>

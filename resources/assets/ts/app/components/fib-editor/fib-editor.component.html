@@ -3,10 +3,18 @@
     <div class="paragraph" *ngFor="let paragraph of paragraphs; let indexParagraph = index">
       <div class="paragraph-item" [ngClass]="item.type" *ngFor="let item of paragraph.items; let indexItem = index">
         <click-to-edit
+          *ngIf="!selectable || item.type !== 'blank'"
           [value]="item.value"
           (onDelete)="deleteItem(indexParagraph, indexItem)"
-          (onSave)="saveText($event, indexParagraph, indexItem)"
+          (onSave)="saveItem($event, indexParagraph, indexItem)"
         ></click-to-edit>
+        <click-to-edit-selectable
+          *ngIf="selectable && item.type === 'blank'"
+          [value]="item.value"
+          [options]="selectlist[getBlankIndex(indexParagraph, indexItem)].options"
+          (onDelete)="deleteItem(indexParagraph, indexItem)"
+          (onSave)="saveItemWithOptions($event, indexParagraph, indexItem)"
+        ></click-to-edit-selectable>
       </div>
       <div class="d-flex">
         <button class="btn btn-xs blue" (click)="insertText(indexParagraph)" *ngIf="canInsertText(indexParagraph)">Insert Text</button>

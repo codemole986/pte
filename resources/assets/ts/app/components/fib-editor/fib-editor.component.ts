@@ -17,8 +17,11 @@ interface Paragraph {
   styles: [`${require('./fib-editor.component.css')}`]
 })
 export class FIBEditorComponent implements OnInit {
-  @Input() paragraphs: Paragraph[] = [this.initParagraph()];
   @Input() problem: Problem;
+  @Input() selectable: boolean = false;
+
+  paragraphs: Paragraph[] = [this.initParagraph()];
+  selectlist: { options: string[] }[] = [ { options: [''] }];
 
   constructor() {
   }
@@ -85,8 +88,20 @@ export class FIBEditorComponent implements OnInit {
     this.parseParagraphsToProblem();
   }
 
-  saveText(value: string, indexParagraph: number, indexItem: number): void {
+  saveItem(value: string, indexParagraph: number, indexItem: number): void {
     this.paragraphs[indexParagraph].items[indexItem].value = value;
+
+    this.parseParagraphsToProblem();
+  }
+
+  saveItemWithOptions({ value, options }: { value: string, options: string[] }, indexParagraph: number, indexItem: number): void {
+    this.paragraphs[indexParagraph].items[indexItem].value = value;
+
+    let blankIndex = this.getBlankIndex(indexParagraph, indexItem);
+
+    if (blankIndex > -1) {
+      this.selectlist[blankIndex].options = options;
+    }
 
     this.parseParagraphsToProblem();
   }
@@ -95,6 +110,20 @@ export class FIBEditorComponent implements OnInit {
     this.paragraphs[indexParagraph].items.splice(indexItem, 1);
 
     this.parseParagraphsToProblem();
+  }
+
+  getBlankIndex(indexParagraph: number, indexItem: number): number {
+    let blankIndex = -1;
+
+    for (let p = 0; p <= indexParagraph; p ++) {
+      for (let i = 0; i <= indexItem; i ++) {
+        if (this.paragraphs[p].items[i].type === 'blank') {
+          blankIndex ++;
+        }
+      }
+    }
+
+    return blankIndex;
   }
 
   parseProblemToParagraphs(problem: Problem): Paragraph[] {
@@ -129,6 +158,15 @@ export class FIBEditorComponent implements OnInit {
     });
 
     this.problem.content.text = text;
-    this.problem.content.select = { options };
+    if (this.selectable) {
+      this.problem.content.selectlist = [];
+      each(options, (option, index) => {
+        this.problem.content.selectlist.push({
+          options: [ option, ...this.selectlist[index].options]
+        });
+      });
+    } else {
+      this.problem.content.select = { options };
+    }
   }
 }
