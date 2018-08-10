@@ -1,8 +1,8 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { includes, indexOf, join, map, remove, slice, words } from 'lodash';
+import { each, join, map, shuffle } from 'lodash';
 
-import { Problem } from './../../../../model/problem';
+import { Problem, ParagraphItem, Paragraph } from './../../../../model';
 import { Answer } from './../../../../model/answer';
 import { GlobalService } from './../../../../shared';
 
@@ -31,13 +31,13 @@ export class RANComponent {
 
   @Output() updateAnswer = new EventEmitter<{ optionno: number[] }>();
 
-  count: number = 0;
-  options: string[];
+  options: {no: number, value: string}[] = [];
   selectedOptions: number[] = [];
+  paragraphs: Paragraph[];
 
   constructor(
     private globalService: GlobalService,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
   ) {
   }
 
@@ -58,14 +58,50 @@ export class RANComponent {
 
     if (typeof _quiz.content.text === 'string') {
       _quiz.solution.text = _quiz.content.text;
-
-      _quiz.content.selectlist.forEach(({ options }: { options: string[] }) => {
-        _quiz.content.text = _quiz.content.text.replace(/{{}}/, `<select>${join(map(options, (option: string) => (`<option>${option}</option>`)))}</select>`);
-      });
-
-      _quiz.content.text = this.domSanitizer.bypassSecurityTrustHtml(_quiz.content.text);
     }
 
     this._quiz = _quiz;
+    this.paragraphs = this.parseProblemToParagraphs(quiz);
+  }
+
+  selectOption(optionno: number) {
+    console.log(optionno);
+  }
+
+  parseProblemToParagraphs(problem: Problem): Paragraph[] {
+    let paragraphs: Paragraph[] = [];
+    let selectlist: { options: string[] }[] = [];
+    let paragraphPattern = new RegExp(/<p>(.*?)<\/p>/g);
+    let textParagraphs = problem.content.text.split(paragraphPattern);
+
+    each(textParagraphs, (p: string) => {
+      let items = p.split('{{}}');
+      let paragraph = new Paragraph();
+      paragraph.items = [];
+
+      each(items, (item: string, index: number) => {
+        if (item) {
+          paragraph.items.push({
+            type: 'text',
+            value: item
+          });
+        }
+
+        if (index < items.length - 1) {
+          let options = problem.content.selectlist[index].options;
+          let defaultOption = options[0];
+
+          paragraph.items.push({
+            type: 'blank',
+            value: defaultOption,
+            options: shuffle(map(options, (value, no) => ({ value, no })))
+          });
+        }
+      });
+
+      paragraphs.push(paragraph);
+    });
+
+    return paragraphs;
   }
 }

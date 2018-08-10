@@ -1,4 +1,15 @@
 <div class="quiz-guide">{{quiz.guide}}</div>
 <div class="step-main" *ngIf="isMainStep(step)">
-  <div class="quiz-content-text" *ngIf="quiz.content.text" [innerHTML]="quiz.content.text"></div>
+  <div class="quiz-content-text" *ngIf="quiz.content.text">
+    <p *ngFor="let paragraph of paragraphs">
+      <span *ngFor="let item of paragraph.items">
+        <span *ngIf="item.type === 'text'">{{item.value}}</span>
+        <span *ngIf="item.type === 'blank'">
+          <select #selectElem (change)="selectOption(selectElem.value)">
+            <option *ngFor="let option of item.options" [value]="option.no">{{option.value}}</option>
+          </select>
+        </span>
+      </span>
+    </p>
+  </div>
 </div>
