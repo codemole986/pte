@@ -74,7 +74,7 @@ export class SolutionComponent {
         let index = 0;
 
         while (bracePattern.test(solutionText)) {
-          let input = `<input value="${content.selectlist[index].options[solution.optionno[index].option]}" disabled />`;
+          let input = `<input value="${content.selectlist[index].options[0]}" disabled />`;
           solutionText = solutionText.replace(bracePattern, input);
           index ++;
         }
