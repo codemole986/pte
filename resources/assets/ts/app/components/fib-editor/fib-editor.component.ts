@@ -136,7 +136,7 @@ export class FIBEditorComponent implements OnInit {
 
             paragraph.items.push({
               type: 'blank',
-              value: defaultOption,
+              value: defaultOption[0],
               options
             });
           } else {
