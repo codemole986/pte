@@ -1,15 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { compact, each, isEmpty, last, map } from 'lodash';
-import { Problem } from './../../model/problem';
-
-interface ParagraphItem {
-  type: string,
-  value: any
-}
-
-interface Paragraph {
-  items: ParagraphItem[]
-}
+import { compact, concat, each, isEmpty, last, map } from 'lodash';
+import { Problem, ParagraphItem, Paragraph } from './../../model';
 
 @Component({
   selector: 'fib-editor',
@@ -21,7 +12,6 @@ export class FIBEditorComponent implements OnInit {
   @Input() selectable: boolean = false;
 
   paragraphs: Paragraph[] = [this.initParagraph()];
-  selectlist: { options: string[] }[] = [ { options: [''] }];
 
   constructor() {
   }
@@ -94,14 +84,8 @@ export class FIBEditorComponent implements OnInit {
     this.parseParagraphsToProblem();
   }
 
-  saveItemWithOptions({ value, options }: { value: string, options: string[] }, indexParagraph: number, indexItem: number): void {
-    this.paragraphs[indexParagraph].items[indexItem].value = value;
-
-    let blankIndex = this.getBlankIndex(indexParagraph, indexItem);
-
-    if (blankIndex > -1) {
-      this.selectlist[blankIndex].options = options;
-    }
+  saveItemWithOptions(item: ParagraphItem, indexParagraph: number, indexItem: number): void {
+    this.paragraphs[indexParagraph].items[indexItem] = item;
 
     this.parseParagraphsToProblem();
   }
@@ -152,10 +136,9 @@ export class FIBEditorComponent implements OnInit {
 
             paragraph.items.push({
               type: 'blank',
-              value: defaultOption
+              value: defaultOption,
+              options
             });
-
-            selectlist.push({ options });
           } else {
             paragraph.items.push({
               type: 'blank',
@@ -168,16 +151,13 @@ export class FIBEditorComponent implements OnInit {
       paragraphs.push(paragraph);
     });
 
-    if (this.selectable) {
-      this.selectlist = selectlist;
-    }
-
     return paragraphs;
   }
 
   parseParagraphsToProblem(): void {
     let text: string = '';
     let options: string[] = [];
+    let selectlist: { options: string[] }[] = [];
 
     each(this.paragraphs, (paragraph) => {
       text += '<p>';
@@ -190,11 +170,15 @@ export class FIBEditorComponent implements OnInit {
 
           case 'blank':
             text += '{{}}';
-            options.push(item.value);
+
+            if (this.selectable) {
+              selectlist.push({ options: concat(item.value, item.options) });
+            } else {
+              options.push(item.value);
+            }
             break;
 
           default:
-            text += item.value;
             break;
         }
       });
@@ -204,12 +188,7 @@ export class FIBEditorComponent implements OnInit {
 
     this.problem.content.text = text;
     if (this.selectable) {
-      this.problem.content.selectlist = [];
-      each(options, (option, index) => {
-        this.problem.content.selectlist.push({
-          options: [ option, ...this.selectlist[index].options]
-        });
-      });
+      this.problem.content.selectlist = selectlist;
     } else {
       this.problem.content.select = { options };
     }

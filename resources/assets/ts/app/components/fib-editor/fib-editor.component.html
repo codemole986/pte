@@ -10,8 +10,7 @@
         ></click-to-edit>
         <click-to-edit-selectable
           *ngIf="selectable && item.type === 'blank'"
-          [value]="item.value"
-          [options]="selectlist[getBlankIndex(indexParagraph, indexItem)].options"
+          [data]="item"
           (onDelete)="deleteItem(indexParagraph, indexItem)"
           (onSave)="saveItemWithOptions($event, indexParagraph, indexItem)"
         ></click-to-edit-selectable>

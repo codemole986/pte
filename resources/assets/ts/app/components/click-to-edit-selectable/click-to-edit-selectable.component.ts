@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { remove } from 'lodash';
+import { ParagraphItem } from './../../model';
 
 @Component({
   selector: 'click-to-edit-selectable',
@@ -7,30 +8,29 @@ import { remove } from 'lodash';
   styles: [`${require('./click-to-edit-selectable.component.css')}`]
 })
 export class ClickToEditSelectableComponent {
+  private theType: string;
   private theValue: string;
-  private originalValue: string;
   private theOptions: string[] = [];
+  private originalValue: string;
   private originalOptions: string[];
 
   @Input() full: boolean = false;
   @Input() show: boolean = false;
 
-  get value() {
-    return this.theValue;
+  get data() {
+    return {
+      type: this.theType,
+      value: this.theValue,
+      options: this.theOptions
+    };
   }
 
-  @Input() set value(value: string) {
-    this.theValue = value;
-    this.originalValue = this.theValue;
-  }
-
-  get options() {
-    return this.theOptions;
-  }
-
-  @Input() set options(value: string[]) {
-    this.theOptions = value;
+  @Input() set data(data: ParagraphItem) {
+    this.theType = data.type;
+    this.theOptions = data.options;
     this.originalOptions = this.theOptions;
+    this.theValue = data.value;
+    this.originalValue = this.theValue;
   }
 
   @Input() set editable(value: boolean) {
@@ -39,7 +39,7 @@ export class ClickToEditSelectableComponent {
     }
   }
 
-  @Output() onSave = new EventEmitter<{ value: string, options: string[] }>();
+  @Output() onSave = new EventEmitter<ParagraphItem>();
   @Output() onCancel = new EventEmitter<void>();
   @Output() onDelete = new EventEmitter<void>();
 
@@ -67,7 +67,7 @@ export class ClickToEditSelectableComponent {
   }
 
   callSave(): void {
-    this.onSave.emit({ value: this.value, options: this.theOptions });
+    this.onSave.emit(this.data);
     this.show = false;
   }
 

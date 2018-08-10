@@ -10,7 +10,7 @@
     <div class="d-flex flex-column">
       <div class="d-flex flex-column">
         <div class="d-flex flex-column">
-          <div class="option" *ngFor="let option of options; let indexOption = index;">
+          <div class="option" *ngFor="let option of theOptions; let indexOption = index;">
             <click-to-edit
               [value]="option"
               (onSave)="saveOption($event, indexOption)"
