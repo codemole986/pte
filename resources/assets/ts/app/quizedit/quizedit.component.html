@@ -418,7 +418,11 @@
                         </div>
                       </div>
                       <div class="tab-pane" id="tab2">
-                        <div *ngIf="editedProblem.type == 'WSM' || editedProblem.type =='WES' || editedProblem.type =='SAL' || editedProblem.type =='SRL'">
+                        <div *ngIf="editedProblem.type == 'WSM'">
+                          <textarea id="ck_editor" class="form-control" placeholder="{{ 'Sentences' | translate }}" title="Sentences" rows="5"></textarea>
+                          {{createCkEditor()}}
+                        </div>
+                        <div *ngIf="editedProblem.type =='WES' || editedProblem.type =='SAL' || editedProblem.type =='SRL'">
                           <textarea name="sentences" class="form-control needfull" placeholder="{{ 'Text' | translate }}" title="Text" rows="5" [(ngModel)]="editedProblem.content.text"></textarea>
                         </div>
                         <div *ngIf="editedProblem.type =='SRS' || editedProblem.type =='SSA' || editedProblem.type =='LWS' || editedProblem.type =='LSA' || editedProblem.type =='LTW' || editedProblem.type =='LSB' ||  editedProblem.type =='LCD' || editedProblem.type =='LTS'">

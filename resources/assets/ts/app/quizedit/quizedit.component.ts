@@ -983,6 +983,10 @@ export class QuizeditComponent implements OnInit, OnDestroy {
     convertContentToCkData() {
         var content = this.editedProblem.content.text;
         switch (this.editedProblem.type) {
+            case 'WSM':
+                this._CKEDITOR.instances.ck_editor.setData(content);
+                break;
+
             case 'LCD':
                 var reg = /\{\{\}\}/;
                 var index = 0;
